@@ -1683,28 +1683,54 @@
 
     function procesarPago() {
       const archivo = document.getElementById('comprobantePago').files[0];
-      if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
+      if (!archivo) { 
+        mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); 
+        return; 
+      }
       
-      mostrarLoading('Procesando pago...');
+      // Verificar tamaño del archivo (máximo 5MB)
+      if (archivo.size > 5 * 1024 * 1024) {
+        mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error');
+        return;
+      }
+      
+      mostrarLoading('Procesando pago... esto puede tomar unos segundos');
       
       const reader = new FileReader();
       reader.onload = function(e) {
+        const base64Data = e.target.result.split(',')[1];
+        
         llamarGS('subirPagoAdministracion', [{
-          descripcion: `Pago de Administración - ${document.getElementById('paymentMonth').textContent}`,
+          descripcion: 'Pago de Administración - ' + document.getElementById('paymentMonth').textContent,
           apartamento: state.apartamento,
           nombreArchivo: archivo.name,
-          base64: e.target.result.split(',')[1],
+          base64: base64Data,
           mimeType: archivo.type
         }], function(res) {
+          ocultarLoading();
           cerrarModalPago();
+          
+          // ✅ CORREGIDO: Verificar si hubo error
+          if (res.ok === false) {
+            mostrarNotificacion('Error', res.mensaje || 'Error al procesar el pago', 'error');
+            console.error('Error en pago:', res);
+            return;
+          }
+          
+          if (res.status === 'error') {
+            mostrarNotificacion('Error', res.message || 'Error de conexión', 'error');
+            console.error('Error de servidor:', res);
+            return;
+          }
+          
+          // Solo si fue exitoso
           state.cache.ingresos = null;
           cargarDatosResidente();
-          mostrarNotificacion('Éxito', res.mensaje || 'Pago procesado', 'success');
+          mostrarNotificacion('Éxito', res.mensaje || 'Pago procesado correctamente', 'success');
         });
       };
       reader.readAsDataURL(archivo);
     }
-
     // ============================================
     // PAGO EFECTIVO
     // ============================================
@@ -1714,11 +1740,33 @@
       const valor = parseInt(document.getElementById('valorEfectivo').value.replace(/\D/g, '')) || 0;
       const correo = document.getElementById('correoEfectivo').value;
       
-      if (!desc || !apt || !valor || !correo) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+      if (!desc || !apt || !valor || !correo) { 
+        mostrarNotificacion('Error', 'Completa todos los campos', 'error'); 
+        return; 
+      }
       
       mostrarLoading('Procesando...');
-      llamarGS('subirPagoEfectivo', [{ descripcion: desc, apartamento: apt, valor: valor, correo: correo }], function(res) {
+      llamarGS('subirPagoEfectivo', [{ 
+        descripcion: desc, 
+        apartamento: apt, 
+        valor: valor, 
+        correo: correo 
+      }], function(res) {
+        ocultarLoading();
         cerrarModal('modalPagoEfectivo');
+        
+        // ✅ CORREGIDO: Verificar errores
+        if (res.ok === false) {
+          mostrarNotificacion('Error', res.mensaje || 'Error al procesar pago', 'error');
+          return;
+        }
+        
+        if (res.status === 'error') {
+          mostrarNotificacion('Error', res.message || 'Error de conexión', 'error');
+          return;
+        }
+        
+        // Limpiar formulario
         document.getElementById('descripcionEfectivo').value = '';
         document.getElementById('apartamentoEfectivo').value = '';
         document.getElementById('valorEfectivo').value = '';
@@ -1727,7 +1775,6 @@
         mostrarNotificacion('Éxito', res.mensaje || 'Pago registrado', 'success');
       });
     }
-
     // ============================================
     // EXENCIONES CUOTA EXTRAORDINARIA
     // ============================================
@@ -1883,12 +1930,18 @@
       if (!zona) { mostrarNotificacion('Error', 'Selecciona una zona', 'error'); return; }
       if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
       
-      mostrarLoading('Procesando...');
+      // Verificar tamaño
+      if (archivo.size > 5 * 1024 * 1024) {
+        mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error');
+        return;
+      }
+      
+      mostrarLoading('Procesando alquiler...');
       
       const reader = new FileReader();
       reader.onload = function(e) {
         llamarGS('subirAlquilerZona', [{
-          descripcion: `Alquiler de Zona - ${zona}`,
+          descripcion: 'Alquiler de Zona - ' + zona,
           apartamento: state.apartamento,
           nombreArchivo: archivo.name,
           base64: e.target.result.split(',')[1],
@@ -1896,14 +1949,26 @@
           zona: zona,
           cantidad: cantidad
         }], function(res) {
+          ocultarLoading();
           cerrarModalAlquiler();
+          
+          // ✅ CORREGIDO: Verificar errores
+          if (res.ok === false) {
+            mostrarNotificacion('Error', res.mensaje || 'Error al procesar alquiler', 'error');
+            return;
+          }
+          
+          if (res.status === 'error') {
+            mostrarNotificacion('Error', res.message || 'Error de conexión', 'error');
+            return;
+          }
+          
           state.cache.ingresos = null;
           mostrarNotificacion('Éxito', res.mensaje || 'Alquiler registrado', 'success');
         });
       };
       reader.readAsDataURL(archivo);
     }
-
     // ============================================
     // INICIALIZACIÓN
     // ============================================
