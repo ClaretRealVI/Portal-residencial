@@ -1458,7 +1458,7 @@
           <i class="fas fa-key"></i> Cambiar Contraseña
         </button>
         <span style="margin: 0 8px; color: var(--text-muted);">|</span>
-        <button class="btn btn-ghost btn-sm" onclick="irResidentesDesdeLogin()">
+        <button class="btn btn-ghost btn-sm" onclick="irResidentes()">
           <i class="fas fa-home"></i> Acceso Residentes
         </button>
       </div>
@@ -1468,7 +1468,7 @@
   <!-- ============ APARTMENT SELECTOR ============ -->
   <div id="apartamentoSelector" class="apt-selector-page" style="display:none;">
     <div class="apt-selector-header">
-      <button class="back-btn" onclick="volverDesdeAptos()"><i class="fas fa-arrow-left"></i> Volver</button>
+      <button class="back-btn" onclick="volverMenuPrincipal()"><i class="fas fa-arrow-left"></i> Volver</button>
       <h2>Selecciona tu Apartamento</h2>
       <p>Elige el número de tu unidad para acceder a tu portal</p>
     </div>
@@ -1667,7 +1667,7 @@
           <div style="display:flex; gap:8px; align-items:center;">
             <span id="filtroIngresosBadge" class="filter-badge hidden" onclick="limpiarFiltro('ingresos')"><i class="fas fa-filter"></i> <span id="filtroIngresosText"></span> <i class="fas fa-times"></i></span>
             <button class="btn btn-light btn-sm" onclick="abrirModal('modalFechas')"><i class="fas fa-calendar-alt"></i> Filtrar</button>
-            <button class="btn btn-primary btn-sm admin-only" onclick="abrirModalIngresoNuevo()"><i class="fas fa-plus"></i> Nuevo</button>
+            <button class="btn btn-primary btn-sm admin-only" onclick="limpiarFormularioIngreso(); abrirModal('modalIngreso')"><i class="fas fa-plus"></i> Nuevo</button>
           </div>
         </div>
         <div class="card">
@@ -1689,7 +1689,7 @@
           <div style="display:flex; gap:8px; align-items:center;">
             <span id="filtroEgresosBadge" class="filter-badge hidden" onclick="limpiarFiltro('egresos')"><i class="fas fa-filter"></i> <span id="filtroEgresosText"></span> <i class="fas fa-times"></i></span>
             <button class="btn btn-light btn-sm" onclick="abrirModal('modalFechas')"><i class="fas fa-calendar-alt"></i> Filtrar</button>
-            <button class="btn btn-primary btn-sm admin-only" onclick="abrirModalEgresoNuevo()"><i class="fas fa-plus"></i> Nuevo</button>
+            <button class="btn btn-primary btn-sm admin-only" onclick="limpiarFormularioEgreso(); abrirModal('modalEgreso')"><i class="fas fa-plus"></i> Nuevo</button>
           </div>
         </div>
         <div class="card">
@@ -1739,7 +1739,7 @@
       <div id="solicitudesSection">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; flex-wrap:wrap; gap:12px;">
           <h2 style="font-size:1.2rem; font-weight:700; color:var(--primary);"><i class="fas fa-clipboard-list" style="color:var(--accent);"></i> Solicitudes</h2>
-          <button class="btn btn-primary btn-sm" onclick="abrirModalSolicitudNueva()"><i class="fas fa-plus"></i> Nueva Solicitud</button>
+          <button class="btn btn-primary btn-sm" onclick="abrirModal('modalSolicitud')"><i class="fas fa-plus"></i> Nueva Solicitud</button>
         </div>
         <div class="card">
           <div class="card-body" style="padding:0;">
