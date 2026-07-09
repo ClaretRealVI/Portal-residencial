@@ -2055,13 +2055,10 @@
     // CONFIGURACIÓN
     // ============================================
     const API_URL = 'https://script.google.com/macros/s/AKfycbzksjlENchxiD7vCQt3E8gtj4akj01o5NWa8yTpR4UDE_OAydHbe2SsLohzTADBScuk/exec';
-    const APARTAMENTOS = ['201','202','203','204','301','302','303','304','401','402','403','404','501','502','503','504'];
-    const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
-    const PRECIOS_ALQUILER = { 'Salón Comunal': 100000, 'Zona de BBQ': 50000, 'Sillas': 2000 };
     const QR_URL = 'https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=https%3A%2F%2Fnequi.com%2Fe%2F3214583531';
 
     // ============================================
-    // STATE
+    // ESTADO GLOBAL
     // ============================================
     const state = {
       usuario: '',
@@ -2074,17 +2071,24 @@
       cache: { ingresos: null, egresos: null, solicitudes: null, activos: null }
     };
 
+    const APARTAMENTOS = ['201','202','203','204','301','302','303','304','401','402','403','404','501','502','503','504'];
+    const PRECIOS_ALQUILER = { 'Salón Comunal': 100000, 'Zona de BBQ': 50000, 'Sillas': 2000 };
+    const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+
     // ============================================
-    // UI UTILITIES
+    // UTILIDADES UI
     // ============================================
     function mostrarLoading(texto) {
       texto = texto || 'Procesando...';
-      document.getElementById('loadingOverlay').querySelector('.loading-text').textContent = texto;
+      var loadingText = document.getElementById('loadingOverlay').querySelector('.loading-text');
+      if (loadingText) loadingText.textContent = texto;
       document.getElementById('loadingOverlay').classList.add('active');
     }
+
     function ocultarLoading() {
       document.getElementById('loadingOverlay').classList.remove('active');
     }
+
     function mostrarNotificacion(titulo, mensaje, tipo) {
       tipo = tipo || 'info';
       var container = document.getElementById('notificationContainer');
@@ -2098,6 +2102,12 @@
       container.appendChild(notif);
       setTimeout(function() { if (notif.parentElement) notif.remove(); }, 5000);
     }
+
+    function formatearMoneda(val) {
+      if (val === null || val === undefined || isNaN(val)) return '$0';
+      return '$' + parseInt(val).toLocaleString('es-CO');
+    }
+
     function abrirModal(id) { document.getElementById(id).classList.add('active'); }
     function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
     function toggleSidebar() {
@@ -2107,12 +2117,8 @@
     function togglePassword(id) {
       var input = document.getElementById(id);
       var icon = input.parentElement.querySelector('.password-toggle i');
-      if (input.type === 'password') { input.type = 'text'; icon.className = 'fas fa-eye-slash'; }
-      else { input.type = 'password'; icon.className = 'fas fa-eye'; }
-    }
-    function formatearMoneda(val) {
-      if (val === null || val === undefined || isNaN(val)) return '$0';
-      return '$' + parseInt(val).toLocaleString('es-CO');
+      if (input.type === 'password') { input.type = 'text'; if (icon) icon.className = 'fas fa-eye-slash'; }
+      else { input.type = 'password'; if (icon) icon.className = 'fas fa-eye'; }
     }
 
     // ============================================
@@ -2125,6 +2131,7 @@
         ocultarLoading();
         mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
       };
+
       var payload = { funcion: funcion, argumentos: params };
       var requestOptions = {
         method: 'POST',
@@ -2133,6 +2140,7 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       };
+
       fetch(API_URL, requestOptions)
         .then(function(response) {
           if (!response.ok) throw new Error('Error de red o el servidor no respondió correctamente.');
@@ -2143,7 +2151,7 @@
     }
 
     // ============================================
-    // LANDING & LOGIN NAVIGATION
+    // LANDING & LOGIN NAVIGATION (adapted for new HTML)
     // ============================================
     function abrirLoginModal() {
       document.getElementById('loginModal').classList.add('active');
@@ -2151,13 +2159,16 @@
     function cerrarLoginModal() {
       document.getElementById('loginModal').classList.remove('active');
     }
-    function irResidentesDesdeLogin() {
+    function irAdministracion() {
+      abrirLoginModal();
+    }
+    function irResidentes() {
       cerrarLoginModal();
       document.getElementById('landingPage').style.display = 'none';
       document.getElementById('floatingLogin').style.display = 'none';
       document.getElementById('apartamentoSelector').style.display = 'flex';
     }
-    function volverDesdeAptos() {
+    function volverMenuPrincipal() {
       document.getElementById('apartamentoSelector').style.display = 'none';
       document.getElementById('landingPage').style.display = 'block';
       document.getElementById('floatingLogin').style.display = 'flex';
@@ -2168,12 +2179,9 @@
       document.getElementById('cambioClavePaso2').classList.add('hidden');
       abrirModal('modalCambioClave');
     }
-    function irAdministracion() {
-      abrirLoginModal();
-    }
 
     // ============================================
-    // APARTMENT SELECTION
+    // APARTMENT SELECTION (adapted for new HTML)
     // ============================================
     function seleccionarApartamento(apt) {
       state.apartamento = apt;
@@ -2184,7 +2192,7 @@
       // Hide admin elements
       document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
 
-      // Show dashboard
+      // Show dashboard, hide selector
       document.getElementById('apartamentoSelector').style.display = 'none';
       document.getElementById('floatingLogin').style.display = 'none';
       document.getElementById('dashboard').classList.add('active');
@@ -2194,28 +2202,34 @@
       document.getElementById('userName').textContent = 'Apto ' + apt;
       document.getElementById('userRole').textContent = 'Residente';
 
+      // Show payment banner for residents
+      document.getElementById('paymentSection').style.display = 'block';
+
       // Load data
-      cargarDatosResidente();
       mostrarSeccion('bienvenida');
+      cargarDatosResidente();
     }
 
     // ============================================
-    // LOGIN
+    // LOGIN (FIX #1: res.status === 'success' not res.ok)
     // ============================================
     function validarLogin() {
       var usuario = document.getElementById('usuario').value.trim();
       var contrasena = document.getElementById('contrasena').value.trim();
+
       if (!usuario || !contrasena) {
-        mostrarNotificacion('Error', 'Ingresa usuario y contraseña', 'warning');
+        mostrarNotificacion('Error', 'Completa todos los campos', 'error');
         return;
       }
-      mostrarLoading('Validando credenciales...');
+
+      mostrarLoading('Validando...');
+
       llamarGS('validarCredenciales', [usuario, contrasena], function(res) {
         ocultarLoading();
-        if (res.ok) {
+        if (res.status === 'success') {
           state.usuario = usuario;
-          state.rol = res.rol || 'Administrador';
-          state.esAdmin = (state.rol === 'Administrador');
+          state.esAdmin = true;
+          state.rol = 'Administrador';
 
           cerrarLoginModal();
           document.getElementById('landingPage').style.display = 'none';
@@ -2223,9 +2237,7 @@
           document.getElementById('dashboard').classList.add('active');
 
           // Show/hide admin elements
-          document.querySelectorAll('.admin-only').forEach(function(el) {
-            el.style.display = state.esAdmin ? '' : 'none';
-          });
+          document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = ''; });
 
           // Update user info
           document.getElementById('userAvatar').textContent = usuario.charAt(0).toUpperCase();
@@ -2233,29 +2245,21 @@
           document.getElementById('userRole').textContent = state.rol;
 
           // Hide payment banner for admin
-          document.getElementById('paymentSection').style.display = state.esAdmin ? 'none' : 'block';
+          document.getElementById('paymentSection').style.display = 'none';
 
-          // Load data
-          if (state.esAdmin) {
-            actualizarEstadisticas();
-          }
-          cargarFormatos();
+          mostrarNotificacion('Éxito', 'Bienvenido', 'success');
           mostrarSeccion('bienvenida');
-          mostrarNotificacion('Bienvenido', 'Has iniciado sesión como ' + state.rol, 'success');
         } else {
-          mostrarNotificacion('Error', res.mensaje || 'Credenciales incorrectas', 'error');
+          mostrarNotificacion('Error', res.message || 'Credenciales incorrectas', 'error');
         }
       });
     }
 
     // ============================================
-    // LOGOUT
+    // LOGOUT (adapted for new HTML)
     // ============================================
     function cerrarSesion() {
-      state.usuario = '';
-      state.rol = '';
-      state.apartamento = '';
-      state.esAdmin = false;
+      Object.assign(state, { usuario: '', rol: '', apartamento: '', esAdmin: false });
       state.cache = { ingresos: null, egresos: null, solicitudes: null, activos: null };
       state.filtroInicio = null;
       state.filtroFin = null;
@@ -2264,45 +2268,44 @@
       document.getElementById('landingPage').style.display = 'block';
       document.getElementById('floatingLogin').style.display = 'flex';
 
-      // Reset login form
       document.getElementById('usuario').value = '';
       document.getElementById('contrasena').value = '';
 
       // Reset sidebar
       document.querySelectorAll('.sidebar-nav a').forEach(function(a) { a.classList.remove('active'); });
-      document.querySelector('.sidebar-nav a[data-section="bienvenida"]').classList.add('active');
+      var bienvenidaLink = document.querySelector('.sidebar-nav a[data-section="bienvenida"]');
+      if (bienvenidaLink) bienvenidaLink.classList.add('active');
 
       // Clear filters
       document.querySelectorAll('[id^="filtro"][id$="Badge"]').forEach(function(b) { b.classList.add('hidden'); });
 
-      mostrarNotificacion('Sesión cerrada', 'Has cerrado sesión correctamente', 'info');
+      mostrarNotificacion('Info', 'Sesión cerrada', 'info');
     }
 
     // ============================================
-    // SECTION NAVIGATION
+    // SECTION NAVIGATION (FIX #17: always call data loader)
+    // (adapted for new HTML: data-section, active class)
     // ============================================
     function mostrarSeccion(seccion) {
       state.seccionActual = seccion;
 
-      // Update nav links
+      // Update sidebar nav links
       document.querySelectorAll('.sidebar-nav a').forEach(function(a) { a.classList.remove('active'); });
       var activeLink = document.querySelector('.sidebar-nav a[data-section="' + seccion + '"]');
       if (activeLink) activeLink.classList.add('active');
 
-      // Hide all sections
+      // Hide all sections, show target
       var sections = ['bienvenida', 'resumen', 'ingresos', 'egresos', 'activos', 'formatos', 'solicitudes'];
       sections.forEach(function(s) {
         var el = document.getElementById(s + 'Section');
         if (el) el.classList.remove('active');
       });
-
-      // Show target
       var target = document.getElementById(seccion + 'Section');
       if (target) target.classList.add('active');
 
-      // Load data
+      // Always call data loader
       switch (seccion) {
-        case 'bienvenida': if (state.esAdmin) actualizarEstadisticas(); break;
+        case 'bienvenida': actualizarEstadisticas(); break;
         case 'resumen': cargarResumen(); break;
         case 'ingresos': cargarIngresos(); break;
         case 'egresos': cargarEgresos(); break;
@@ -2319,83 +2322,89 @@
     }
 
     // ============================================
-    // DATA LOADING
+    // CARGA DE DATOS RESIDENTE (FIX #2: correct field names)
+    // (adapted for new HTML element IDs)
     // ============================================
     function cargarDatosResidente() {
       if (!state.apartamento) return;
-      mostrarLoading('Cargando información...');
-      llamarGS('cargarDatosResidente', [state.apartamento], function(data) {
-        ocultarLoading();
-        if (data.error) { mostrarNotificacion('Error', data.error, 'error'); return; }
-
-        var mes = data.mesActual || 'Mes no disponible';
-        var valor = data.valorTotal || 0;
-        var estado = data.estado || 'pendiente';
-
-        document.getElementById('paymentMonth').textContent = mes;
-        document.getElementById('paymentValue').textContent = formatearMoneda(valor);
+      mostrarLoading('Cargando...');
+      llamarGS('cargarDatosResidente', [state.apartamento], function(datos) {
+        document.getElementById('paymentMonth').textContent = datos.mesActual;
+        document.getElementById('paymentValue').textContent = '$' + datos.valorPago.toLocaleString('es-CO');
         document.getElementById('paymentApt').textContent = 'Apto ' + state.apartamento;
 
+        if (datos.pagado) {
+          document.getElementById('paymentMonth').textContent = datos.mesSiguiente;
+        }
+
+        var breakdown = document.getElementById('paymentBreakdown');
+        if (datos.cuotaExtraordinaria > 0) {
+          breakdown.textContent = '$' + datos.valorBase.toLocaleString('es-CO') + ' (admin) + $' + datos.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)';
+        } else {
+          breakdown.textContent = '$' + datos.valorBase.toLocaleString('es-CO') + ' (admin)';
+        }
+
         var statusEl = document.getElementById('paymentStatus');
-        if (estado === 'pagado') {
+        if (datos.pagado) {
           statusEl.className = 'payment-status paid';
           statusEl.innerHTML = '<i class="fas fa-check-circle"></i> Pagado';
-        } else if (estado === 'mora') {
+        } else if (datos.estadoPago === 'Con mora') {
           statusEl.className = 'payment-status overdue';
-          statusEl.innerHTML = '<i class="fas fa-exclamation-circle"></i> En Mora';
+          statusEl.innerHTML = '<i class="fas fa-exclamation-triangle"></i> Con mora';
         } else {
           statusEl.className = 'payment-status pending';
           statusEl.innerHTML = '<i class="fas fa-clock"></i> Pendiente';
         }
 
-        var desglose = '';
-        if (data.desglose) {
-          desglose = 'Admin: ' + formatearMoneda(data.desglose.administracion || 0);
-          if (data.desglose.extraordinario > 0) desglose += ' | Extra: ' + formatearMoneda(data.desglose.extraordinario);
-          if (data.desglose.mora > 0) desglose += ' | Mora: ' + formatearMoneda(data.desglose.mora);
-        }
-        document.getElementById('paymentBreakdown').textContent = desglose;
-
-        actualizarEstadisticas();
+        ocultarLoading();
       });
     }
 
+    // ============================================
+    // ACTUALIZAR ESTADÍSTICAS (FIX #3: pendientes.length, mora.length are arrays)
+    // (adapted for new HTML element IDs)
+    // ============================================
     function actualizarEstadisticas() {
-      if (state.esAdmin) {
-        llamarGS('obtenerEstadisticasDashboard', [], function(data) {
-          document.getElementById('statPagosDia').textContent = data.pagosAlDia || '0';
-          document.getElementById('statPendientes').textContent = data.pendientes || '0';
-          document.getElementById('statMora').textContent = data.enMora || '0';
-          document.getElementById('statSolicitudes').textContent = data.solicitudesActivas || '0';
-        });
-      } else {
-        // Resident sees their own stats
-        document.getElementById('statPagosDia').textContent = '1';
+      if (!state.esAdmin) {
+        document.getElementById('statPagosDia').textContent = '-';
         document.getElementById('statPendientes').textContent = '-';
         document.getElementById('statMora').textContent = '-';
         document.getElementById('statSolicitudes').textContent = '-';
-        // Try to get solicitudes count
-        llamarGS('obtenerSolicitudes', [], function(solicitudes) {
-          if (Array.isArray(solicitudes)) {
-            var activas = solicitudes.filter(function(s) { return s.estado === 'Pendiente'; }).length;
-            document.getElementById('statSolicitudes').textContent = activas;
-          }
-        });
+        return;
       }
+      mostrarLoading('Actualizando...');
+      llamarGS('obtenerEstadisticasDashboard', [], function(est) {
+        document.getElementById('statPagosDia').textContent = est.pagosAlDia;
+        document.getElementById('statPendientes').textContent = est.pendientes.length;
+        document.getElementById('statMora').textContent = est.mora.length;
+        document.getElementById('statSolicitudes').textContent = est.solicitudesActivas;
+        ocultarLoading();
+      });
     }
 
+    // ============================================
+    // CARGAR RESUMEN (FIX #4: pass filter params, correct field names)
+    // (adapted for new HTML: resumenStats div)
+    // ============================================
     function cargarResumen() {
       mostrarLoading('Cargando resumen...');
-      llamarGS('obtenerResumen', [], function(data) {
-        ocultarLoading();
+      llamarGS('obtenerResumen', [state.filtroInicio, state.filtroFin], function(data) {
+        var ingresos = data.filtroIngresos || 0;
+        var egresos = data.filtroEgresos || 0;
+        var extraordinarios = data.filtroExtraordinarios || 0;
+        var alquileres = data.filtroAlquileres || 0;
+        var balance = ingresos - egresos;
+        var disponible = balance - extraordinarios - alquileres;
+
+        // Build stats HTML for resumenStats div
         var statsHTML = '';
         var statItems = [
-          { label: 'Total Ingresos', value: data.totalIngresos || 0, icon: 'fa-arrow-down', cls: 'success' },
-          { label: 'Total Egresos', value: data.totalEgresos || 0, icon: 'fa-arrow-up', cls: 'danger' },
-          { label: 'Extraordinarios', value: data.totalExtraordinarios || 0, icon: 'fa-star', cls: 'secondary' },
-          { label: 'Alquileres', value: data.totalAlquileres || 0, icon: 'fa-building', cls: 'accent' },
-          { label: 'Disponible', value: data.disponible || 0, icon: 'fa-landmark', cls: 'info' },
-          { label: 'Balance', value: data.balance || 0, icon: 'fa-balance-scale', cls: data.balance >= 0 ? 'success' : 'danger' }
+          { label: 'Total Ingresos', value: ingresos, icon: 'fa-arrow-down', cls: 'success' },
+          { label: 'Total Egresos', value: egresos, icon: 'fa-arrow-up', cls: 'danger' },
+          { label: 'Extraordinarios', value: extraordinarios, icon: 'fa-star', cls: 'secondary' },
+          { label: 'Alquileres', value: alquileres, icon: 'fa-building', cls: 'accent' },
+          { label: 'Disponible', value: disponible, icon: 'fa-landmark', cls: disponible >= 0 ? 'info' : 'danger' },
+          { label: 'Balance', value: balance, icon: 'fa-balance-scale', cls: balance >= 0 ? 'success' : 'danger' }
         ];
         statItems.forEach(function(item) {
           var changeHTML = '';
@@ -2425,410 +2434,337 @@
           return dia + '/' + mes + '/' + anio;
         }
 
-        // Disponible table
-        var tbodyDisponible = document.getElementById('tablaDisponibleBody');
-        tbodyDisponible.innerHTML = '';
-        if (data.detalleDisponible && data.detalleDisponible.length) {
-          data.detalleDisponible.forEach(function(item) {
-            if (!item || item.length < 2) return;
-            tbodyDisponible.innerHTML += '<tr><td>' + item[0] + '</td><td style="text-align:right;">' + formatearMoneda(item[1]) + '</td></tr>';
-          });
-        } else {
-          tbodyDisponible.innerHTML = '<tr><td colspan="2" style="text-align:center; color:var(--text-muted);">Sin datos</td></tr>';
-        }
-
-        // Extraordinarios table
-        var tbodyExtra = document.getElementById('tablaExtraordinariosBody');
-        tbodyExtra.innerHTML = '';
-        (data.detalleExtraordinarios || []).forEach(function(item) {
-          if (!item || item.length < 4) return;
-          tbodyExtra.innerHTML += '<tr><td>' + obtenerMesSeguro(item[0]) + '</td><td>' + item[1] + '</td><td>' + item[2] + '</td><td>' + formatearMoneda(item[3]) + '</td></tr>';
-        });
-        if (!tbodyExtra.innerHTML) tbodyExtra.innerHTML = '<tr><td colspan="4" style="text-align:center; color:var(--text-muted);">Sin datos</td></tr>';
-
-        // Alquileres table
+        // TABLA DETALLE ALQUILERES
         var tbodyAlq = document.getElementById('tablaAlquileresBody');
-        tbodyAlq.innerHTML = '';
+        var filasAlq = '';
         (data.detalleAlquileres || []).forEach(function(item) {
           if (!item || item.length < 4) return;
           var descAlquiler = String(item[2] || '');
           descAlquiler = descAlquiler.replace(/Alquiler\s+de\s+/i, 'Alquiler ');
-          tbodyAlq.innerHTML += '<tr><td>' + obtenerMesSeguro(item[0]) + '</td><td>' + item[1] + '</td><td>' + descAlquiler + '</td><td>' + (item[3] || '') + '</td><td>' + formatearMoneda(item[4]) + '</td></tr>';
+          filasAlq += '<tr>' +
+            '<td>' + obtenerMesSeguro(item[0]) + '</td>' +
+            '<td>' + item[1] + '</td>' +
+            '<td>' + descAlquiler + '</td>' +
+            '<td><span class="badge badge-info">Apto ' + (item[4] || '-') + '</span></td>' +
+            '<td style="color: #e91e63; font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td>' +
+            '</tr>';
         });
-        if (!tbodyAlq.innerHTML) tbodyAlq.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin datos</td></tr>';
+        if (filasAlq) {
+          filasAlq += '<tr style="background: linear-gradient(135deg, #e91e63, #f06292); color: white; font-weight: bold;">' +
+            '<td colspan="4">TOTAL ALQUILERES</td>' +
+            '<td>$' + alquileres.toLocaleString('es-CO') + '</td></tr>';
+          tbodyAlq.innerHTML = filasAlq;
+        } else {
+          tbodyAlq.innerHTML = '<tr><td colspan="5" style="text-align:center">Sin alquileres registrados</td></tr>';
+        }
+
+        // TABLA DETALLE EXTRAORDINARIOS
+        var tbodyExt = document.getElementById('tablaExtraordinariosBody');
+        var filasExt = '';
+        (data.detalleExtraordinarios || []).forEach(function(item) {
+          if (!item || item.length < 4) return;
+          filasExt += '<tr>' +
+            '<td>' + obtenerMesSeguro(item[0]) + '</td>' +
+            '<td>' + item[1] + '</td>' +
+            '<td>' + item[2] + '</td>' +
+            '<td style="color: var(--primary); font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td>' +
+            '</tr>';
+        });
+        if (filasExt) {
+          filasExt += '<tr style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; font-weight: bold;">' +
+            '<td colspan="3">TOTAL EXTRAORDINARIOS</td>' +
+            '<td>$' + extraordinarios.toLocaleString('es-CO') + '</td></tr>';
+          tbodyExt.innerHTML = filasExt;
+        } else {
+          tbodyExt.innerHTML = '<tr><td colspan="4" style="text-align:center">Sin cuotas extraordinarias registradas</td></tr>';
+        }
+
+        // TABLA DISPONIBLE EDIFICIO
+        var tbodyDisp = document.getElementById('tablaDisponibleBody');
+        var filasDisp =
+          '<tr style="border-bottom: 2px solid #00838f;">' +
+            '<td style="font-weight: 600; color: var(--dark);">Total Dinero Ingresado</td>' +
+            '<td style="text-align: right; font-weight: 600;">$' + ingresos.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr><td style="padding-left: 30px; color: var(--gray);">(-) Cuotas Extraordinarias</td>' +
+            '<td style="text-align: right; color: var(--gray);">- $' + extraordinarios.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr><td style="padding-left: 30px; color: var(--gray);">(-) Alquileres Salón / Sillas</td>' +
+            '<td style="text-align: right; color: var(--gray);">- $' + alquileres.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr style="border-bottom: 2px solid var(--danger);">' +
+            '<td style="padding-left: 30px; color: var(--danger); font-weight: 500;">(-) Total Egresos del Edificio</td>' +
+            '<td style="text-align: right; color: var(--danger); font-weight: 500;">- $' + egresos.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr style="background: linear-gradient(135deg, #00bcd4, #26c6da); color: white; font-weight: bold; font-size: 18px;">' +
+            '<td style="padding-left: 15px;">= DISPONIBLE EDIFICIO</td>' +
+            '<td style="text-align: right;">$' + disponible.toLocaleString('es-CO') + '</td></tr>';
+        tbodyDisp.innerHTML = filasDisp;
+
+        ocultarLoading();
       });
     }
 
+    // ============================================
+    // CARGA DE INGRESOS (FIX #18: always call filtrarPorFecha)
+    // ============================================
     function cargarIngresos() {
-      if (state.cache.ingresos) { renderizarIngresos(state.cache.ingresos); return; }
-      mostrarLoading('Cargando ingresos...');
+      mostrarLoading('Cargando...');
       llamarGS('obtenerDatosingresos', [], function(data) {
-        ocultarLoading();
         state.cache.ingresos = data;
-        renderizarIngresos(data);
+        var filtrados = filtrarPorFecha(data);
+        renderizarIngresos(filtrados);
+        ocultarLoading();
       });
     }
 
+    // ============================================
+    // CARGA DE EGRESOS (FIX #18: always call filtrarPorFecha)
+    // ============================================
     function cargarEgresos() {
-      if (state.cache.egresos) { renderizarEgresos(state.cache.egresos); return; }
-      mostrarLoading('Cargando egresos...');
+      mostrarLoading('Cargando...');
       llamarGS('obtenerDatos', [], function(data) {
-        ocultarLoading();
         state.cache.egresos = data;
-        renderizarEgresos(data);
+        var filtrados = filtrarPorFecha(data);
+        renderizarEgresos(filtrados);
+        ocultarLoading();
       });
     }
 
     function cargarActivos() {
-      if (state.cache.activos) { renderizarActivos(state.cache.activos); return; }
-      mostrarLoading('Cargando activos...');
+      mostrarLoading('Cargando...');
       llamarGS('obtenerDatosActivos', [], function(data) {
-        ocultarLoading();
         state.cache.activos = data;
-        renderizarActivos(data);
+        var tbody = document.getElementById('tablaActivosBody');
+        // FIX #6: r[0]=ID, r[1]=fecha, r[2]=tipo, r[3]=código, r[4]=desc, r[5]=asignado
+        tbody.innerHTML = data.length ? data.map(function(r) {
+          var acciones = state.esAdmin
+            ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="eliminarActivo(\'' + r[0] + '\')"><i class="fas fa-trash"></i></button></td>'
+            : '';
+          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td>' + acciones + '</tr>';
+        }).join('') : '<tr><td colspan="6" style="text-align:center">Sin datos</td></tr>';
+        ocultarLoading();
       });
     }
 
+    // FIX #8: formatos is array of arrays, f[0]=name, f[1]=URL
     function cargarFormatos() {
-      llamarGS('obtenerFormatos', [], function(data) {
+      mostrarLoading('Cargando...');
+      llamarGS('obtenerFormatos', [], function(formatos) {
         var select = document.getElementById('listaFormatos');
-        select.innerHTML = '<option value="">Selecciona un formato...</option>';
-        if (Array.isArray(data)) {
-          data.forEach(function(item) {
-            select.innerHTML += '<option value="' + item.url + '">' + item.nombre + '</option>';
-          });
-        }
+        select.innerHTML = '<option value="">-- Selecciona --</option>' + formatos.map(function(f) {
+          return '<option value="' + f[1] + '">' + f[0] + '</option>';
+        }).join('');
+        ocultarLoading();
       });
     }
 
     function mostrarFormato() {
       var url = document.getElementById('listaFormatos').value;
-      var frame = document.getElementById('formatoFrame');
       var iframe = document.getElementById('iframeFormato');
-      if (url) { iframe.src = url; frame.style.display = 'block'; }
-      else { frame.style.display = 'none'; iframe.src = ''; }
+      var frame = document.getElementById('formatoFrame');
+      if (url) {
+        iframe.src = url.includes('/edit') ? url.replace('/edit', '/preview') : url;
+        frame.style.display = 'block';
+      } else {
+        frame.style.display = 'none';
+        iframe.src = '';
+      }
     }
 
+    // FIX #7: r[0]=fecha, r[1]=tipo, r[2]=solicitud, r[3]=fechaSolicitada, r[4]=horario, r[5]=soporte, r[6]=estado, r[7]=ID
     function cargarSolicitudes() {
-      if (state.cache.solicitudes) { renderizarSolicitudes(state.cache.solicitudes); return; }
-      mostrarLoading('Cargando solicitudes...');
+      mostrarLoading('Cargando...');
       llamarGS('obtenerSolicitudes', [], function(data) {
-        ocultarLoading();
         state.cache.solicitudes = data;
-        renderizarSolicitudes(data);
+        var tbody = document.getElementById('tablaSolicitudesBody');
+        tbody.innerHTML = data.length ? data.map(function(r) {
+          var estado = r[6] || 'Pendiente';
+          var badgeClass = estado === 'Aprobado' ? 'badge-success' : estado === 'Rechazado' ? 'badge-danger' : 'badge-warning';
+          var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
+          var acciones = state.esAdmin
+            ? '<td class="table-actions"><button class="btn btn-sm btn-success" onclick="actualizarEstadoSol(\'' + r[7] + '\',\'Aprobado\')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger" onclick="actualizarEstadoSol(\'' + r[7] + '\',\'Rechazado\')"><i class="fas fa-times"></i></button></td>'
+            : '';
+          return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + soporte + '</td><td><span class="badge ' + badgeClass + '">' + estado + '</span></td>' + acciones + '</tr>';
+        }).join('') : '<tr><td colspan="8" style="text-align:center">Sin datos</td></tr>';
+        ocultarLoading();
       });
     }
 
     // ============================================
-    // TABLE RENDERING
+    // RENDERIZADO DE TABLAS
+    // FIX #5: Ingresos/Egresos r[0]=ID, r[1]=fecha, r[2]=tipo, r[3]=desc, r[4]=valor, r[5]=soporte
+    // FIX #15: filtrarPorFecha requires BOTH dates, uses r[1] for date
+    // FIX #18: cargarIngresos/Egresos always pass filtered result to render
     // ============================================
     function filtrarPorFecha(datos) {
-      if (!state.filtroInicio && !state.filtroFin) return datos;
-      return datos.filter(function(row) {
-        var fechaStr = row[0] || '';
-        if (!fechaStr || typeof fechaStr !== 'string') return false;
-        var partes = fechaStr.split('/');
-        if (partes.length !== 3) return false;
-        var fecha = new Date(partes[2], partes[1] - 1, partes[0]);
-        if (state.filtroInicio && fecha < new Date(state.filtroInicio + 'T00:00:00')) return false;
-        if (state.filtroFin && fecha > new Date(state.filtroFin + 'T23:59:59')) return false;
-        return true;
+      if (!state.filtroInicio || !state.filtroFin || !datos) return datos;
+      var inicio = new Date(state.filtroInicio);
+      var fin = new Date(state.filtroFin);
+      fin.setHours(23, 59, 59, 999);
+      return datos.filter(function(r) {
+        var f = new Date(r[1]);
+        return f >= inicio && f <= fin;
       });
-    }
-
-    function obtenerFechaSegura(fechaStr) {
-      if (!fechaStr || typeof fechaStr !== 'string') return '';
-      var partes = fechaStr.split('/');
-      if (partes.length !== 3) return fechaStr;
-      var dia = parseInt(partes[0], 10);
-      var mes = parseInt(partes[1], 10);
-      var anio = parseInt(partes[2], 10);
-      if (isNaN(dia) || isNaN(mes) || isNaN(anio)) return fechaStr;
-      if (mes < 1 || mes > 12 || anio < 2020 || anio > 2100) return fechaStr;
-      return dia + '/' + mes + '/' + anio;
     }
 
     function renderizarIngresos(data) {
-      var datos = state.filtroInicio || state.filtroFin ? filtrarPorFecha(data || []) : (data || []);
       var tbody = document.getElementById('tablaIngresosBody');
-      if (!datos.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i>Sin registros</td></tr>'; return; }
-      tbody.innerHTML = datos.map(function(row, idx) {
-        if (!row || row.length < 4) return '';
-        var soporte = (row.length > 4 && row[4]) ? '<a href="' + row[4] + '" target="_blank" class="btn btn-xs btn-light"><i class="fas fa-file"></i></a>' : '-';
-        var acciones = '';
-        if (state.esAdmin) {
-          acciones = '<button class="btn btn-xs btn-warning" onclick="editarIngreso(' + (idx + 1) + ')"><i class="fas fa-edit"></i></button> ' +
-            '<button class="btn btn-xs btn-danger" onclick="eliminarIngreso(' + (idx + 1) + ')"><i class="fas fa-trash"></i></button>';
-        }
-        return '<tr><td>' + obtenerFechaSegura(row[0]) + '</td><td>' + (row[1] || '') + '</td><td>' + (row[2] || '') + '</td>' +
-          '<td style="text-align:right;">' + formatearMoneda(row[3]) + '</td><td>' + soporte + '</td><td class="table-actions">' + acciones + '</td></tr>';
-      }).join('');
+      // r[0]=ID, r[1]=fecha, r[2]=tipo, r[3]=desc, r[4]=valor, r[5]=soporte — render r[1] through r[5]
+      tbody.innerHTML = (data && data.length) ? data.map(function(r) {
+        var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
+        var acciones = state.esAdmin
+          ? '<td class="table-actions"><button class="btn btn-sm btn-primary" onclick="editarIngreso(\'' + r[0] + '\')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="eliminarIngreso(\'' + r[0] + '\')"><i class="fas fa-trash"></i></button></td>'
+          : '';
+        return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>$' + r[4].toLocaleString('es-CO') + '</td><td>' + soporte + '</td>' + acciones + '</tr>';
+      }).join('') : '<tr><td colspan="6" style="text-align:center">Sin datos</td></tr>';
     }
 
     function renderizarEgresos(data) {
-      var datos = state.filtroInicio || state.filtroFin ? filtrarPorFecha(data || []) : (data || []);
       var tbody = document.getElementById('tablaEgresosBody');
-      if (!datos.length) { tbody.innerHTML = '<tr><td colspan="6" class="empty-state"><i class="fas fa-inbox"></i>Sin registros</td></tr>'; return; }
-      tbody.innerHTML = datos.map(function(row, idx) {
-        if (!row || row.length < 4) return '';
-        var soporte = (row.length > 4 && row[4]) ? '<a href="' + row[4] + '" target="_blank" class="btn btn-xs btn-light"><i class="fas fa-file"></i></a>' : '-';
-        var acciones = '';
-        if (state.esAdmin) {
-          acciones = '<button class="btn btn-xs btn-warning" onclick="editarEgreso(' + (idx + 1) + ')"><i class="fas fa-edit"></i></button> ' +
-            '<button class="btn btn-xs btn-danger" onclick="eliminarEgreso(' + (idx + 1) + ')"><i class="fas fa-trash"></i></button>';
-        }
-        return '<tr><td>' + obtenerFechaSegura(row[0]) + '</td><td>' + (row[1] || '') + '</td><td>' + (row[2] || '') + '</td>' +
-          '<td style="text-align:right;">' + formatearMoneda(row[3]) + '</td><td>' + soporte + '</td><td class="table-actions">' + acciones + '</td></tr>';
-      }).join('');
-    }
-
-    function renderizarActivos(data) {
-      var tbody = document.getElementById('tablaActivosBody');
-      if (!data || !data.length) { tbody.innerHTML = '<tr><td colspan="7" class="empty-state"><i class="fas fa-inbox"></i>Sin registros</td></tr>'; return; }
-      tbody.innerHTML = data.map(function(row, idx) {
-        if (!row || row.length < 5) return '';
-        var acciones = '';
-        if (state.esAdmin) {
-          acciones = '<button class="btn btn-xs btn-danger" onclick="eliminarActivo(' + (idx + 1) + ')"><i class="fas fa-trash"></i></button>';
-        }
-        return '<tr><td>' + obtenerFechaSegura(row[0]) + '</td><td>' + (row[1] || '') + '</td><td>' + (row[2] || '') + '</td>' +
-          '<td>' + (row[3] || '') + '</td><td>' + (row[4] || '') + '</td><td style="text-align:right;">' + formatearMoneda(row[5]) + '</td>' +
-          '<td class="table-actions">' + acciones + '</td></tr>';
-      }).join('');
-    }
-
-    function renderizarSolicitudes(data) {
-      var tbody = document.getElementById('tablaSolicitudesBody');
-      if (!data || !data.length) { tbody.innerHTML = '<tr><td colspan="8" class="empty-state"><i class="fas fa-inbox"></i>Sin solicitudes</td></tr>'; return; }
-      tbody.innerHTML = data.map(function(row, idx) {
-        if (!row || row.length < 7) return '';
-        var soporte = row[5] ? '<a href="' + row[5] + '" target="_blank" class="btn btn-xs btn-light"><i class="fas fa-file"></i></a>' : '-';
-        var estadoBadge = '';
-        var estadoLower = (row[6] || '').toLowerCase();
-        if (estadoLower === 'aprobado') estadoBadge = '<span class="badge badge-success">Aprobado</span>';
-        else if (estadoLower === 'rechazado') estadoBadge = '<span class="badge badge-danger">Rechazado</span>';
-        else estadoBadge = '<span class="badge badge-warning">Pendiente</span>';
-        var acciones = '';
-        if (state.esAdmin && estadoLower === 'pendiente') {
-          acciones = '<button class="btn btn-xs btn-success" onclick="actualizarEstadoSol(' + (idx + 1) + ',\'Aprobado\')"><i class="fas fa-check"></i></button> ' +
-            '<button class="btn btn-xs btn-danger" onclick="actualizarEstadoSol(' + (idx + 1) + ',\'Rechazado\')"><i class="fas fa-times"></i></button>';
-        }
-        return '<tr><td>' + obtenerFechaSegura(row[0]) + '</td><td>' + (row[1] || '') + '</td><td>' + (row[2] || '') + '</td>' +
-          '<td>' + (row[3] || '') + '</td><td>' + (row[4] || '') + '</td><td>' + soporte + '</td><td>' + estadoBadge + '</td>' +
-          '<td class="table-actions">' + acciones + '</td></tr>';
-      }).join('');
+      // r[0]=ID, r[1]=fecha, r[2]=tipo, r[3]=desc, r[4]=valor, r[5]=soporte — render r[1] through r[5]
+      tbody.innerHTML = (data && data.length) ? data.map(function(r) {
+        var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
+        var acciones = state.esAdmin
+          ? '<td class="table-actions"><button class="btn btn-sm btn-primary" onclick="editarEgreso(\'' + r[0] + '\')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="eliminarEgreso(\'' + r[0] + '\')"><i class="fas fa-trash"></i></button></td>'
+          : '<td></td>';
+        return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>$' + r[4].toLocaleString('es-CO') + '</td><td>' + soporte + '</td>' + acciones + '</tr>';
+      }).join('') : '<tr><td colspan="6" style="text-align:center">Sin datos</td></tr>';
     }
 
     // ============================================
     // CRUD OPERATIONS
+    // FIX #9: guardarIngreso without file uses individual params
     // ============================================
-    function abrirModalIngresoNuevo() {
-      document.getElementById('filaIngresoEditando').value = '';
-      document.getElementById('modalIngresoTitulo').innerHTML = '<i class="fas fa-plus-circle"></i> Nuevo Ingreso';
-      document.getElementById('tipoIngreso').value = 'Administración';
-      document.getElementById('descripcionIngreso').value = '';
-      document.getElementById('valorIngreso').value = '';
-      document.getElementById('soporteIngreso').value = '';
-      abrirModal('modalIngreso');
-    }
-
     function guardarIngreso() {
-      var filaEditando = document.getElementById('filaIngresoEditando').value;
       var tipo = document.getElementById('tipoIngreso').value;
-      var descripcion = document.getElementById('descripcionIngreso').value.trim();
+      var desc = document.getElementById('descripcionIngreso').value;
       var valor = parseInt(document.getElementById('valorIngreso').value.replace(/\D/g, '')) || 0;
-      var archivo = document.getElementById('soporteIngreso').files[0];
+      var fila = document.getElementById('filaIngresoEditando').value;
 
-      if (!descripcion || !valor) { mostrarNotificacion('Error', 'Completa descripción y valor', 'warning'); return; }
+      if (!tipo || !desc || !valor) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
 
-      mostrarLoading('Guardando...');
-      if (archivo) {
-        if (archivo.size > 5 * 1024 * 1024) { ocultarLoading(); mostrarNotificacion('Error', 'Archivo máximo 5MB', 'error'); return; }
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var payload = { tipo: tipo, descripcion: descripcion, valor: valor, nombreArchivo: archivo.name, base64: e.target.result.split(',')[1], mimeType: archivo.type };
-          if (filaEditando) { payload.fila = parseInt(filaEditando); llamarGS('actualizarIngresoGS', [payload], function(res) { ocultarLoading(); if (res.ok) { cerrarModal('modalIngreso'); state.cache.ingresos = null; cargarIngresos(); mostrarNotificacion('Éxito', res.mensaje || 'Ingreso actualizado', 'success'); } else { mostrarNotificacion('Error', res.mensaje, 'error'); } }); }
-          else { llamarGS('agregarIngreso', [payload], function(res) { ocultarLoading(); if (res.ok) { cerrarModal('modalIngreso'); state.cache.ingresos = null; cargarIngresos(); mostrarNotificacion('Éxito', res.mensaje || 'Ingreso guardado', 'success'); } else { mostrarNotificacion('Error', res.mensaje, 'error'); } }); }
-        };
-        reader.readAsDataURL(archivo);
-      } else {
-        if (filaEditando) {
-          llamarGS('actualizarIngresoGS', [{ fila: parseInt(filaEditando), tipo: tipo, descripcion: descripcion, valor: valor }], function(res) {
-            ocultarLoading();
-            if (res.ok) { cerrarModal('modalIngreso'); state.cache.ingresos = null; cargarIngresos(); mostrarNotificacion('Éxito', res.mensaje || 'Ingreso actualizado', 'success'); }
-            else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-          });
-        } else {
-          llamarGS('agregarIngreso', [{ tipo: tipo, descripcion: descripcion, valor: valor }], function(res) {
-            ocultarLoading();
-            if (res.ok) { cerrarModal('modalIngreso'); state.cache.ingresos = null; cargarIngresos(); mostrarNotificacion('Éxito', res.mensaje || 'Ingreso guardado', 'success'); }
-            else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-          });
-        }
-      }
-    }
+      mostrarLoading(fila ? 'Actualizando...' : 'Guardando...');
 
-    function editarIngreso(fila) {
-      mostrarLoading('Cargando...');
-      llamarGS('obtenerIngresoPorFila', [fila], function(data) {
-        ocultarLoading();
-        if (data && data.ok) {
-          document.getElementById('filaIngresoEditando').value = fila;
-          document.getElementById('modalIngresoTitulo').innerHTML = '<i class="fas fa-edit"></i> Editar Ingreso';
-          document.getElementById('tipoIngreso').value = data.tipo || '';
-          document.getElementById('descripcionIngreso').value = data.descripcion || '';
-          document.getElementById('valorIngreso').value = data.valor ? parseInt(data.valor).toLocaleString('es-CO') : '';
-          abrirModal('modalIngreso');
-        } else { mostrarNotificacion('Error', 'No se pudo cargar el ingreso', 'error'); }
-      });
-    }
-
-    function eliminarIngreso(fila) {
-      if (!confirm('¿Eliminar este ingreso?')) return;
-      mostrarLoading('Eliminando...');
-      llamarGS('eliminarIngresoGS', [fila], function(res) {
-        ocultarLoading();
-        if (res.ok) { state.cache.ingresos = null; cargarIngresos(); mostrarNotificacion('Éxito', res.mensaje || 'Ingreso eliminado', 'success'); }
-        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-      });
-    }
-
-    function abrirModalEgresoNuevo() {
-      document.getElementById('filaEgresoEditando').value = '';
-      document.getElementById('modalEgresoTitulo').innerHTML = '<i class="fas fa-minus-circle"></i> Nuevo Egreso';
-      document.getElementById('tipoEgreso').value = 'Mantenimiento';
-      document.getElementById('descripcionEgreso').value = '';
-      document.getElementById('valorEgreso').value = '';
-      document.getElementById('soporteEgreso').value = '';
-      document.getElementById('esActivoFijo').checked = false;
-      abrirModal('modalEgreso');
-    }
-
-    function guardarEgreso() {
-      var filaEditando = document.getElementById('filaEgresoEditando').value;
-      var tipo = document.getElementById('tipoEgreso').value;
-      var descripcion = document.getElementById('descripcionEgreso').value.trim();
-      var valor = parseInt(document.getElementById('valorEgreso').value.replace(/\D/g, '')) || 0;
-      var archivo = document.getElementById('soporteEgreso').files[0];
-      var esActivo = document.getElementById('esActivoFijo').checked;
-
-      if (!descripcion || !valor) { mostrarNotificacion('Error', 'Completa descripción y valor', 'warning'); return; }
-
-      mostrarLoading('Guardando...');
-      if (esActivo && !filaEditando) {
-        // Create as fixed asset
-        if (archivo) {
-          if (archivo.size > 5 * 1024 * 1024) { ocultarLoading(); mostrarNotificacion('Error', 'Archivo máximo 5MB', 'error'); return; }
-          var reader = new FileReader();
-          reader.onload = function(e) {
-            llamarGS('agregarActivoConSoporte', [{ tipo: tipo, descripcion: descripcion, valor: valor, nombreArchivo: archivo.name, base64: e.target.result.split(',')[1], mimeType: archivo.type }], function(res) {
-              ocultarLoading();
-              if (res.ok) { cerrarModal('modalEgreso'); state.cache.egresos = null; state.cache.activos = null; cargarEgresos(); mostrarNotificacion('Éxito', 'Activo fijo creado', 'success'); }
-              else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-            });
-          };
-          reader.readAsDataURL(archivo);
-        } else {
-          llamarGS('agregarActivoConSoporte', [{ tipo: tipo, descripcion: descripcion, valor: valor }], function(res) {
-            ocultarLoading();
-            if (res.ok) { cerrarModal('modalEgreso'); state.cache.egresos = null; state.cache.activos = null; cargarEgresos(); mostrarNotificacion('Éxito', 'Activo fijo creado', 'success'); }
-            else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-          });
-        }
-        return;
-      }
-
-      if (archivo) {
-        if (archivo.size > 5 * 1024 * 1024) { ocultarLoading(); mostrarNotificacion('Error', 'Archivo máximo 5MB', 'error'); return; }
-        var reader2 = new FileReader();
-        reader2.onload = function(e) {
-          var payload = { tipo: tipo, descripcion: descripcion, valor: valor, nombreArchivo: archivo.name, base64: e.target.result.split(',')[1], mimeType: archivo.type };
-          if (filaEditando) { payload.fila = parseInt(filaEditando); llamarGS('actualizarEgresoGS', [payload], function(res) { ocultarLoading(); if (res.ok) { cerrarModal('modalEgreso'); state.cache.egresos = null; cargarEgresos(); mostrarNotificacion('Éxito', res.mensaje || 'Egreso actualizado', 'success'); } else { mostrarNotificacion('Error', res.mensaje, 'error'); } }); }
-          else { llamarGS('agregarActivoConSoporte', [payload], function(res) { ocultarLoading(); if (res.ok) { cerrarModal('modalEgreso'); state.cache.egresos = null; cargarEgresos(); mostrarNotificacion('Éxito', res.mensaje || 'Egreso guardado', 'success'); } else { mostrarNotificacion('Error', res.mensaje, 'error'); } }); }
-        };
-        reader2.readAsDataURL(archivo);
-      } else {
-        if (filaEditando) {
-          llamarGS('actualizarEgresoGS', [{ fila: parseInt(filaEditando), tipo: tipo, descripcion: descripcion, valor: valor }], function(res) {
-            ocultarLoading();
-            if (res.ok) { cerrarModal('modalEgreso'); state.cache.egresos = null; cargarEgresos(); mostrarNotificacion('Éxito', res.mensaje || 'Egreso actualizado', 'success'); }
-            else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-          });
-        } else {
-          llamarGS('agregarActivoConSoporte', [{ tipo: tipo, descripcion: descripcion, valor: valor }], function(res) {
-            ocultarLoading();
-            if (res.ok) { cerrarModal('modalEgreso'); state.cache.egresos = null; cargarEgresos(); mostrarNotificacion('Éxito', res.mensaje || 'Egreso guardado', 'success'); }
-            else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-          });
-        }
-      }
-    }
-
-    function editarEgreso(fila) {
-      mostrarLoading('Cargando...');
-      llamarGS('obtenerEgresoPorFila', [fila], function(data) {
-        ocultarLoading();
-        if (data && data.ok) {
-          document.getElementById('filaEgresoEditando').value = fila;
-          document.getElementById('modalEgresoTitulo').innerHTML = '<i class="fas fa-edit"></i> Editar Egreso';
-          document.getElementById('tipoEgreso').value = data.tipo || '';
-          document.getElementById('descripcionEgreso').value = data.descripcion || '';
-          document.getElementById('valorEgreso').value = data.valor ? parseInt(data.valor).toLocaleString('es-CO') : '';
-          document.getElementById('esActivoFijo').checked = false;
-          abrirModal('modalEgreso');
-        } else { mostrarNotificacion('Error', 'No se pudo cargar el egreso', 'error'); }
-      });
-    }
-
-    function eliminarEgreso(fila) {
-      if (!confirm('¿Eliminar este egreso?')) return;
-      mostrarLoading('Eliminando...');
-      llamarGS('eliminarEgresoGS', [fila], function(res) {
-        ocultarLoading();
-        if (res.ok) { state.cache.egresos = null; cargarEgresos(); mostrarNotificacion('Éxito', res.mensaje || 'Egreso eliminado', 'success'); }
-        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-      });
-    }
-
-    function eliminarActivo(fila) {
-      if (!confirm('¿Eliminar este activo fijo?')) return;
-      mostrarLoading('Eliminando...');
-      llamarGS('eliminarActivoGS', [fila], function(res) {
-        ocultarLoading();
-        if (res.ok) { state.cache.activos = null; cargarActivos(); mostrarNotificacion('Éxito', res.mensaje || 'Activo eliminado', 'success'); }
-        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-      });
-    }
-
-    function guardarActivo() {
-      var tipo = document.getElementById('tipoActivo').value;
-      var descripcion = document.getElementById('descripcionActivo').value.trim();
-      var valor = parseInt(document.getElementById('valorActivo').value.replace(/\D/g, '')) || 0;
-      var archivo = document.getElementById('soporteActivo').files[0];
-
-      if (!descripcion || !valor) { mostrarNotificacion('Error', 'Completa descripción y valor', 'warning'); return; }
-
-      mostrarLoading('Guardando...');
-      if (archivo) {
-        if (archivo.size > 5 * 1024 * 1024) { ocultarLoading(); mostrarNotificacion('Error', 'Archivo máximo 5MB', 'error'); return; }
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          llamarGS('agregarActivoConSoporte', [{ tipo: tipo, descripcion: descripcion, valor: valor, nombreArchivo: archivo.name, base64: e.target.result.split(',')[1], mimeType: archivo.type }], function(res) {
-            ocultarLoading();
-            if (res.ok) { cerrarModal('modalActivo'); state.cache.activos = null; cargarActivos(); mostrarNotificacion('Éxito', 'Activo creado', 'success'); }
-            else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-          });
-        };
-        reader.readAsDataURL(archivo);
-      } else {
-        llamarGS('agregarActivoConSoporte', [{ tipo: tipo, descripcion: descripcion, valor: valor }], function(res) {
+      if (fila) {
+        llamarGS('actualizarIngresoGS', [parseInt(fila), { tipo: tipo, descripcion: desc, valor: valor }], function(res) {
           ocultarLoading();
-          if (res.ok) { cerrarModal('modalActivo'); state.cache.activos = null; cargarActivos(); mostrarNotificacion('Éxito', 'Activo creado', 'success'); }
-          else { mostrarNotificacion('Error', res.mensaje, 'error'); }
+          state.cache.ingresos = null;
+          cerrarModal('modalIngreso');
+          limpiarFormularioIngreso();
+          cargarIngresos();
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+        });
+      } else {
+        // FIX #9: individual params, not object
+        llamarGS('agregarIngreso', [tipo, desc, valor], function(res) {
+          ocultarLoading();
+          state.cache.ingresos = null;
+          cerrarModal('modalIngreso');
+          limpiarFormularioIngreso();
+          cargarIngresos();
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
         });
       }
     }
 
+    function limpiarFormularioIngreso() {
+      document.getElementById('filaIngresoEditando').value = '';
+      document.getElementById('tipoIngreso').value = '';
+      document.getElementById('descripcionIngreso').value = '';
+      document.getElementById('valorIngreso').value = '';
+      document.getElementById('soporteIngreso').value = '';
+      document.getElementById('modalIngresoTitulo').innerHTML = '<i class="fas fa-plus-circle"></i> Nuevo Ingreso';
+    }
+
+    // FIX #10: guardarEgreso without file uses individual params with categoria
+    function guardarEgreso() {
+      var tipo = document.getElementById('tipoEgreso').value;
+      var desc = document.getElementById('descripcionEgreso').value;
+      var valor = parseInt(document.getElementById('valorEgreso').value.replace(/\D/g, '')) || 0;
+      var esActivo = document.getElementById('esActivoFijo').checked;
+      var categoria = esActivo ? 'Activo Fijo' : 'Gasto';
+      var archivo = document.getElementById('soporteEgreso').files[0];
+      var fila = document.getElementById('filaEgresoEditando').value;
+
+      if (!tipo || !desc || !valor) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+
+      mostrarLoading(fila ? 'Actualizando...' : 'Guardando...');
+
+      if (fila) {
+        llamarGS('actualizarEgresoGS', [parseInt(fila), { tipo: tipo, descripcion: desc, valor: valor }], function(res) {
+          ocultarLoading();
+          state.cache.egresos = null;
+          cerrarModal('modalEgreso');
+          limpiarFormularioEgreso();
+          cargarEgresos();
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+        });
+      } else if (archivo) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          llamarGS('agregarActivoConSoporte', [tipo, desc, valor, categoria, archivo.name, e.target.result.split(',')[1]], function(res) {
+            ocultarLoading();
+            state.cache.egresos = null;
+            cerrarModal('modalEgreso');
+            limpiarFormularioEgreso();
+            cargarEgresos();
+            mostrarNotificacion('Éxito', res.mensaje, 'success');
+          });
+        };
+        reader.readAsDataURL(archivo);
+      } else {
+        // FIX #10: individual params with categoria
+        llamarGS('agregarActivoConSoporte', [tipo, desc, valor, categoria], function(res) {
+          ocultarLoading();
+          state.cache.egresos = null;
+          cerrarModal('modalEgreso');
+          limpiarFormularioEgreso();
+          cargarEgresos();
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+        });
+      }
+    }
+
+    function limpiarFormularioEgreso() {
+      document.getElementById('filaEgresoEditando').value = '';
+      document.getElementById('tipoEgreso').value = '';
+      document.getElementById('descripcionEgreso').value = '';
+      document.getElementById('valorEgreso').value = '';
+      document.getElementById('soporteEgreso').value = '';
+      document.getElementById('esActivoFijo').checked = false;
+      document.getElementById('modalEgresoTitulo').innerHTML = '<i class="fas fa-minus-circle"></i> Nuevo Egreso';
+    }
+
+    function guardarActivo() {
+      var tipo = document.getElementById('tipoActivo').value;
+      var desc = document.getElementById('descripcionActivo').value;
+      var valor = parseInt(document.getElementById('valorActivo').value.replace(/\D/g, '')) || 0;
+      var archivo = document.getElementById('soporteActivo').files[0];
+
+      if (!tipo || !desc || !valor) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+
+      mostrarLoading('Guardando...');
+
+      if (archivo) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          llamarGS('agregarActivoConSoporte', [tipo, desc, valor, 'Activo Fijo', archivo.name, e.target.result.split(',')[1]], function(res) {
+            ocultarLoading();
+            state.cache.egresos = null;
+            cerrarModal('modalActivo');
+            cargarActivos();
+            mostrarNotificacion('Éxito', res.mensaje, 'success');
+          });
+        };
+        reader.readAsDataURL(archivo);
+      } else {
+        llamarGS('agregarActivoConSoporte', [tipo, desc, valor, 'Activo Fijo'], function(res) {
+          ocultarLoading();
+          cerrarModal('modalActivo');
+          cargarActivos();
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+        });
+      }
+    }
+
+    // FIX #11: guardarSolicitud uses individual params
     function guardarSolicitud() {
       var tipo = document.getElementById('tipoSolicitud').value;
       var solicitud = document.getElementById('solicitud').value;
@@ -2836,132 +2772,222 @@
       var horario = document.getElementById('horarioSolicitud').value;
       var archivo = document.getElementById('soporteSolicitud').files[0];
 
-      if (!solicitud) { mostrarNotificacion('Error', 'Selecciona una solicitud', 'warning'); return; }
-      if (!fecha) { mostrarNotificacion('Error', 'Selecciona una fecha', 'warning'); return; }
+      if (!tipo || !solicitud || !fecha || !horario) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
 
-      // Check availability for rentals
+      mostrarLoading('Procesando...');
+
+      function enviar(base64) {
+        llamarGS('agregarSolicitud', [tipo, solicitud, fecha, horario, archivo ? archivo.name : '', base64 || ''], function(res) {
+          ocultarLoading();
+          cerrarModal('modalSolicitud');
+          document.getElementById('tipoSolicitud').value = '';
+          document.getElementById('solicitud').innerHTML = '<option value="">Primero selecciona tipo</option>';
+          document.getElementById('fechaSolicitud').value = '';
+          document.getElementById('horarioSolicitud').value = '';
+          document.getElementById('soporteSolicitud').value = '';
+          cargarSolicitudes();
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+        });
+      }
+
       if (tipo === 'Alquiler') {
-        mostrarLoading('Verificando disponibilidad...');
-        llamarGS('validarDisponibilidadAlquiler', [fecha], function(res) {
-          ocultarLoading();
-          if (res && res.disponible === false) {
-            mostrarNotificacion('No Disponible', res.mensaje || 'La fecha ya está reservada', 'warning');
-            return;
-          }
-          enviarSolicitud(tipo, solicitud, fecha, horario, archivo);
+        llamarGS('validarDisponibilidadAlquiler', [solicitud, fecha, horario], function(disponible) {
+          if (!disponible) { ocultarLoading(); mostrarNotificacion('Error', 'Ya existe una solicitud para esa fecha/horario', 'error'); return; }
+          if (archivo) { var r = new FileReader(); r.onload = function(e) { enviar(e.target.result.split(',')[1]); }; r.readAsDataURL(archivo); }
+          else enviar('');
         });
       } else {
-        enviarSolicitud(tipo, solicitud, fecha, horario, archivo);
+        if (archivo) { var r2 = new FileReader(); r2.onload = function(e) { enviar(e.target.result.split(',')[1]); }; r2.readAsDataURL(archivo); }
+        else enviar('');
       }
-    }
-
-    function enviarSolicitud(tipo, solicitud, fecha, horario, archivo) {
-      mostrarLoading('Enviando solicitud...');
-      if (archivo) {
-        if (archivo.size > 5 * 1024 * 1024) { ocultarLoading(); mostrarNotificacion('Error', 'Archivo máximo 5MB', 'error'); return; }
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          var payload = { tipo: tipo, solicitud: solicitud, fecha: fecha, horario: horario, nombreArchivo: archivo.name, base64: e.target.result.split(',')[1], mimeType: archivo.type };
-          llamarGS('agregarSolicitud', [payload], function(res) {
-            ocultarLoading();
-            if (res.ok) { cerrarModal('modalSolicitud'); state.cache.solicitudes = null; cargarSolicitudes(); mostrarNotificacion('Éxito', res.mensaje || 'Solicitud enviada', 'success'); }
-            else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-          });
-        };
-        reader.readAsDataURL(archivo);
-      } else {
-        llamarGS('agregarSolicitud', [{ tipo: tipo, solicitud: solicitud, fecha: fecha, horario: horario }], function(res) {
-          ocultarLoading();
-          if (res.ok) { cerrarModal('modalSolicitud'); state.cache.solicitudes = null; cargarSolicitudes(); mostrarNotificacion('Éxito', res.mensaje || 'Solicitud enviada', 'success'); }
-          else { mostrarNotificacion('Error', res.mensaje, 'error'); }
-        });
-      }
-    }
-
-    function abrirModalSolicitudNueva() {
-      document.getElementById('tipoSolicitud').value = 'Alquiler';
-      document.getElementById('solicitud').innerHTML = '';
-      document.getElementById('fechaSolicitud').value = '';
-      document.getElementById('horarioSolicitud').value = 'Diurno';
-      document.getElementById('soporteSolicitud').value = '';
-      actualizarOpcionesSolicitud();
-      abrirModal('modalSolicitud');
     }
 
     function actualizarOpcionesSolicitud() {
       var tipo = document.getElementById('tipoSolicitud').value;
-      var select = document.getElementById('solicitud');
-      select.innerHTML = '';
+      var sel = document.getElementById('solicitud');
       var opciones = {
-        'Alquiler': ['Salón Comunal', 'Zona de BBQ'],
-        'Solicitud': ['Mantenimiento', 'Reparación', 'Limpieza', 'Otro'],
-        'Queja': ['Ruido', 'Mascotas', 'Parqueadero', 'Áreas comunes', 'Otro'],
-        'Sugerencia': ['Mejoras', 'Eventos', 'Servicios', 'Otro']
+        'Alquiler': ['Salón Social', 'Zona BBQ', 'Terraza'],
+        'Solicitud': ['Mudanza', 'Inicio de obra'],
+        'Queja': ['Ruido excesivo', 'Mascotas', 'Estacionamiento'],
+        'Sugerencia': ['Mejoras áreas comunes', 'Eventos', 'Nuevos servicios']
       };
-      (opciones[tipo] || []).forEach(function(op) {
-        select.innerHTML += '<option>' + op + '</option>';
+      sel.innerHTML = '<option value="">Selecciona</option>' + (opciones[tipo] || []).map(function(o) { return '<option value="' + o + '">' + o + '</option>'; }).join('');
+    }
+
+    // ============================================
+    // EDITAR/ELIMINAR INGRESOS
+    // FIX #12: editarIngreso response uses res.datos.tipo not res.tipo
+    // ============================================
+    function editarIngreso(fila) {
+      if (!state.esAdmin) { mostrarNotificacion('Error', 'Sin permisos', 'error'); return; }
+
+      mostrarLoading('Cargando...');
+      llamarGS('obtenerIngresoPorFila', [fila], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          document.getElementById('filaIngresoEditando').value = fila;
+          document.getElementById('tipoIngreso').value = res.datos.tipo;
+          document.getElementById('descripcionIngreso').value = res.datos.descripcion;
+          document.getElementById('valorIngreso').value = res.datos.valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+          document.getElementById('modalIngresoTitulo').innerHTML = '<i class="fas fa-edit"></i> Editar Ingreso';
+          abrirModal('modalIngreso');
+        } else {
+          mostrarNotificacion('Error', res.mensaje, 'error');
+        }
+      });
+    }
+
+    function eliminarIngreso(fila) {
+      if (!state.esAdmin) return;
+      if (!confirm('¿Eliminar este ingreso?')) return;
+
+      mostrarLoading('Eliminando...');
+      llamarGS('eliminarIngresoGS', [fila], function(res) {
+        state.cache.ingresos = null;
+        ocultarLoading();
+        if (res.ok) { mostrarNotificacion('Éxito', res.mensaje, 'success'); cargarIngresos(); }
+        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
+      });
+    }
+
+    // ============================================
+    // EDITAR/ELIMINAR EGRESOS
+    // FIX #12: editarEgreso response uses res.datos.tipo not res.tipo
+    // ============================================
+    function editarEgreso(fila) {
+      if (!state.esAdmin) { mostrarNotificacion('Error', 'Sin permisos', 'error'); return; }
+
+      mostrarLoading('Cargando...');
+      llamarGS('obtenerEgresoPorFila', [fila], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          document.getElementById('filaEgresoEditando').value = fila;
+          document.getElementById('tipoEgreso').value = res.datos.tipo;
+          document.getElementById('descripcionEgreso').value = res.datos.descripcion;
+          document.getElementById('valorEgreso').value = res.datos.valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+          document.getElementById('modalEgresoTitulo').innerHTML = '<i class="fas fa-edit"></i> Editar Egreso';
+          abrirModal('modalEgreso');
+        } else {
+          mostrarNotificacion('Error', res.mensaje, 'error');
+        }
+      });
+    }
+
+    function eliminarEgreso(fila) {
+      if (!state.esAdmin) return;
+      if (!confirm('¿Eliminar este egreso?')) return;
+
+      mostrarLoading('Eliminando...');
+      llamarGS('eliminarEgresoGS', [fila], function(res) {
+        state.cache.egresos = null;
+        ocultarLoading();
+        if (res.ok) { mostrarNotificacion('Éxito', res.mensaje, 'success'); cargarEgresos(); }
+        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
+      });
+    }
+
+    function eliminarActivo(fila) {
+      if (!state.esAdmin) return;
+      if (!confirm('¿Eliminar este activo fijo?')) return;
+
+      mostrarLoading('Eliminando...');
+      llamarGS('eliminarActivoGS', [fila], function(res) {
+        state.cache.activos = null;
+        ocultarLoading();
+        if (res.ok) { mostrarNotificacion('Éxito', res.mensaje, 'success'); cargarActivos(); }
+        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
       });
     }
 
     function actualizarEstadoSol(fila, estado) {
       if (!confirm('¿Cambiar estado a "' + estado + '"?')) return;
       mostrarLoading('Actualizando...');
-      llamarGS('actualizarEstadoSolicitud', [fila, estado], function(res) {
-        ocultarLoading();
-        if (res.ok) { state.cache.solicitudes = null; cargarSolicitudes(); mostrarNotificacion('Éxito', res.mensaje || 'Estado actualizado', 'success'); }
-        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
+      llamarGS('actualizarEstadoSolicitud', [fila, estado], function() {
+        cargarSolicitudes();
+        mostrarNotificacion('Éxito', 'Estado actualizado', 'success');
       });
     }
 
     // ============================================
-    // PASSWORD CHANGE
+    // CAMBIO DE CONTRASEÑA
+    // FIX #13: guardarNuevaClave uses cedula NOT usuario
+    // FIX #14: validarCredencialesCambio checks if (res) not if (res.ok)
+    // (adapted for new HTML: cambioClavePaso1/Paso2)
     // ============================================
     function validarCredencialesCambio() {
-      var cedula = document.getElementById('cedulaCambio').value.trim();
-      var usuario = document.getElementById('usuarioCambio').value.trim();
+      var cedula = document.getElementById('cedulaCambio').value;
+      var usuario = document.getElementById('usuarioCambio').value;
       var clave = document.getElementById('claveActual').value;
-      if (!cedula || !usuario || !clave) { mostrarNotificacion('Error', 'Completa todos los campos', 'warning'); return; }
-      mostrarLoading('Verificando...');
+
+      if (!cedula || !usuario || !clave) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+
+      mostrarLoading('Validando...');
       llamarGS('verificarCredencialesCambio', [cedula, usuario, clave], function(res) {
         ocultarLoading();
-        if (res.ok) { document.getElementById('cambioClavePaso1').classList.add('hidden'); document.getElementById('cambioClavePaso2').classList.remove('hidden'); }
-        else { mostrarNotificacion('Error', res.mensaje || 'Credenciales incorrectas', 'error'); }
+        // FIX #14: check truthy, not res.ok
+        if (res) {
+          document.getElementById('cambioClavePaso1').classList.add('hidden');
+          document.getElementById('cambioClavePaso2').classList.remove('hidden');
+          mostrarNotificacion('Éxito', 'Credenciales válidas', 'success');
+        } else {
+          mostrarNotificacion('Error', 'Credenciales incorrectas', 'error');
+        }
       });
     }
 
     function guardarNuevaClave() {
+      var cedula = document.getElementById('cedulaCambio').value;
       var nueva = document.getElementById('nuevaClave').value;
       var confirmar = document.getElementById('confirmarClave').value;
-      if (!nueva || nueva.length < 4) { mostrarNotificacion('Error', 'Mínimo 4 caracteres', 'warning'); return; }
-      if (nueva !== confirmar) { mostrarNotificacion('Error', 'Las contraseñas no coinciden', 'warning'); return; }
-      var usuario = document.getElementById('usuarioCambio').value.trim();
-      mostrarLoading('Guardando...');
-      llamarGS('actualizarContrasena', [usuario, nueva], function(res) {
+
+      if (!nueva || !confirmar) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+      if (nueva !== confirmar) { mostrarNotificacion('Error', 'Las contraseñas no coinciden', 'error'); return; }
+      if (nueva.length < 4) { mostrarNotificacion('Error', 'Mínimo 4 caracteres', 'error'); return; }
+
+      mostrarLoading('Actualizando...');
+      // FIX #13: use cedula NOT usuario
+      llamarGS('actualizarContrasena', [cedula, nueva], function() {
+        cerrarModal('modalCambioClave');
+        document.getElementById('cedulaCambio').value = '';
+        document.getElementById('usuarioCambio').value = '';
+        document.getElementById('claveActual').value = '';
+        document.getElementById('nuevaClave').value = '';
+        document.getElementById('confirmarClave').value = '';
+        document.getElementById('cambioClavePaso2').classList.add('hidden');
+        document.getElementById('cambioClavePaso1').classList.remove('hidden');
         ocultarLoading();
-        if (res.ok) { cerrarModal('modalCambioClave'); mostrarNotificacion('Éxito', 'Contraseña actualizada', 'success'); }
-        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
+        mostrarNotificacion('Éxito', 'Contraseña actualizada', 'success');
       });
     }
 
     // ============================================
-    // FILTERS
+    // FILTROS (FIX #15: requires BOTH dates)
+    // (adapted for new HTML: filtroXBadge / filtroXText)
     // ============================================
     function aplicarFiltro() {
       var inicio = document.getElementById('fechaInicio').value;
       var fin = document.getElementById('fechaFin').value;
-      if (!inicio && !fin) { mostrarNotificacion('Info', 'Selecciona al menos una fecha', 'warning'); return; }
-      state.filtroInicio = inicio || null;
-      state.filtroFin = fin || null;
+
+      // FIX #15: require BOTH dates
+      if (!inicio || !fin) { mostrarNotificacion('Error', 'Selecciona ambas fechas', 'error'); return; }
+
+      state.filtroInicio = inicio;
+      state.filtroFin = fin;
+
       cerrarModal('modalFechas');
+      document.getElementById('fechaInicio').value = '';
+      document.getElementById('fechaFin').value = '';
+
       // Show filter badge
       var seccion = state.seccionActual;
-      var badge = document.getElementById('filtro' + seccion.charAt(0).toUpperCase() + seccion.slice(1) + 'Badge');
-      var badgeText = document.getElementById('filtro' + seccion.charAt(0).toUpperCase() + seccion.slice(1) + 'Text');
+      var capSeccion = seccion.charAt(0).toUpperCase() + seccion.slice(1);
+      var badge = document.getElementById('filtro' + capSeccion + 'Badge');
+      var badgeText = document.getElementById('filtro' + capSeccion + 'Text');
       if (badge && badgeText) {
-        var text = (inicio || '...') + ' a ' + (fin || '...');
-        badgeText.textContent = text;
+        badgeText.textContent = 'Del ' + inicio + ' al ' + fin;
         badge.classList.remove('hidden');
       }
+
       // Reload current section
       switch (seccion) {
         case 'ingresos': state.cache.ingresos = null; cargarIngresos(); break;
@@ -2973,12 +2999,10 @@
     function limpiarFiltro(seccion) {
       state.filtroInicio = null;
       state.filtroFin = null;
-      document.getElementById('fechaInicio').value = '';
-      document.getElementById('fechaFin').value = '';
-      // Hide badge
-      var badge = document.getElementById('filtro' + seccion.charAt(0).toUpperCase() + seccion.slice(1) + 'Badge');
+      var capSeccion = seccion.charAt(0).toUpperCase() + seccion.slice(1);
+      var badge = document.getElementById('filtro' + capSeccion + 'Badge');
       if (badge) badge.classList.add('hidden');
-      // Reload
+
       switch (seccion) {
         case 'ingresos': state.cache.ingresos = null; cargarIngresos(); break;
         case 'egresos': state.cache.egresos = null; cargarEgresos(); break;
@@ -2987,19 +3011,25 @@
     }
 
     // ============================================
-    // DIGITAL PAYMENT
+    // PAGO DIGITAL (FIX #16: use info.valor, info.mes, etc.)
     // ============================================
     function abrirModalPago() {
       if (!state.apartamento) return;
-      mostrarLoading('Verificando...');
-      llamarGS('verificarMoraPago', [state.apartamento], function(data) {
-        ocultarLoading();
-        document.getElementById('pagoModalMes').textContent = document.getElementById('paymentMonth').textContent;
+      mostrarLoading('Cargando información...');
+      llamarGS('verificarMoraPago', [state.apartamento], function(info) {
+        document.getElementById('pagoModalMes').textContent = info.mes;
         document.getElementById('pagoModalApto').textContent = state.apartamento;
-        document.getElementById('pagoModalValor').textContent = document.getElementById('paymentValue').textContent;
-        document.getElementById('pagoModalDesglose').textContent = document.getElementById('paymentBreakdown').textContent;
+        document.getElementById('pagoModalValor').textContent = '$' + info.valor.toLocaleString('es-CO');
+
+        var desglose = '$' + info.valorBase.toLocaleString('es-CO') + ' (admin)';
+        if (info.cuotaExtraordinaria > 0) desglose += ' + $' + info.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)';
+        if (info.valorMora > 0) desglose += ' + $' + info.valorMora.toLocaleString('es-CO') + ' (mora)';
+        document.getElementById('pagoModalDesglose').textContent = desglose;
+
         document.getElementById('qrCode').src = QR_URL;
         document.getElementById('comprobantePago').value = '';
+
+        ocultarLoading();
         abrirModal('modalPago');
       });
     }
@@ -3011,16 +3041,18 @@
 
     function procesarPago() {
       var archivo = document.getElementById('comprobantePago').files[0];
-      if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'warning'); return; }
-      if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'Máximo 5MB', 'error'); return; }
-      mostrarLoading('Procesando...');
+      if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
+      if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error'); return; }
+
+      mostrarLoading('Procesando pago... esto puede tomar unos segundos');
       var reader = new FileReader();
       reader.onload = function(e) {
+        var base64Data = e.target.result.split(',')[1];
         llamarGS('subirPagoAdministracion', [{
           descripcion: 'Pago de Administración - ' + document.getElementById('paymentMonth').textContent,
           apartamento: state.apartamento,
           nombreArchivo: archivo.name,
-          base64: e.target.result.split(',')[1],
+          base64: base64Data,
           mimeType: archivo.type
         }], function(res) {
           ocultarLoading();
@@ -3036,14 +3068,16 @@
     }
 
     // ============================================
-    // CASH PAYMENT
+    // PAGO EFECTIVO
     // ============================================
     function procesarPagoEfectivo() {
       var desc = document.getElementById('descripcionEfectivo').value;
       var apt = document.getElementById('apartamentoEfectivo').value;
       var valor = parseInt(document.getElementById('valorEfectivo').value.replace(/\D/g, '')) || 0;
       var correo = document.getElementById('correoEfectivo').value;
+
       if (!desc || !apt || !valor || !correo) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+
       mostrarLoading('Procesando...');
       llamarGS('subirPagoEfectivo', [{ descripcion: desc, apartamento: apt, valor: valor, correo: correo }], function(res) {
         ocultarLoading();
@@ -3051,6 +3085,7 @@
         if (res.ok === false) { mostrarNotificacion('Error', res.mensaje || 'Error al procesar pago', 'error'); return; }
         if (res.status === 'error') { mostrarNotificacion('Error', res.message || 'Error de conexión', 'error'); return; }
         document.getElementById('descripcionEfectivo').value = '';
+        document.getElementById('apartamentoEfectivo').value = '';
         document.getElementById('valorEfectivo').value = '';
         document.getElementById('correoEfectivo').value = '';
         state.cache.ingresos = null;
@@ -3059,7 +3094,8 @@
     }
 
     // ============================================
-    // EXEMPTIONS
+    // EXENCIONES CUOTA EXTRAORDINARIA
+    // (adapted for new HTML: tab-btn class)
     // ============================================
     function abrirModalGestionExenciones() {
       var mesActual = new Date().toISOString().slice(0, 7);
@@ -3075,6 +3111,7 @@
       var contNueva = document.getElementById('contenidoNuevaExencion');
       var contExist = document.getElementById('contenidoExencionesExistentes');
       var btnGuardar = document.getElementById('btnGuardarExencion');
+
       if (tab === 'nueva') {
         tabNueva.className = 'tab-btn active';
         tabExist.className = 'tab-btn';
@@ -3095,22 +3132,34 @@
       var apt = document.getElementById('aptoExencion').value;
       var mesInput = document.getElementById('mesExencion').value;
       var motivo = document.getElementById('motivoExencion').value;
+
       if (!apt || !mesInput || !motivo) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+
       var parts = mesInput.split('-');
       var mesAnio = MESES[parseInt(parts[1]) - 1] + ' de ' + parts[0];
+
       mostrarLoading('Guardando...');
       llamarGS('gestionarAutorizacionExentaCuotaExtraordinaria', [apt, mesAnio, motivo], function(res) {
         ocultarLoading();
-        if (res.ok) { mostrarNotificacion('Éxito', res.mensaje, 'success'); cerrarModal('modalGestionExenciones'); document.getElementById('motivoExencion').value = ''; if (!state.esAdmin && state.apartamento) cargarDatosResidente(); }
-        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
+        if (res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+          cerrarModal('modalGestionExenciones');
+          document.getElementById('aptoExencion').value = '';
+          document.getElementById('motivoExencion').value = '';
+          if (!state.esAdmin && state.apartamento) cargarDatosResidente();
+        } else {
+          mostrarNotificacion('Error', res.mensaje, 'error');
+        }
       });
     }
 
     function cargarExenciones() {
       var mesInput = document.getElementById('filtroMesExenciones').value;
       if (!mesInput) return;
+
       var parts = mesInput.split('-');
       var mesAnio = MESES[parseInt(parts[1]) - 1] + ' de ' + parts[0];
+
       mostrarLoading('Cargando...');
       llamarGS('obtenerExencionesCuotaExtraordinaria', [mesAnio], function(exenciones) {
         ocultarLoading();
@@ -3124,16 +3173,22 @@
 
     function eliminarExencion(apartamento, mesAnio) {
       if (!confirm('¿Eliminar exención para Apto ' + apartamento + ' en ' + mesAnio + '?')) return;
+
       mostrarLoading('Eliminando...');
       llamarGS('eliminarAutorizacionExentaCuotaExtraordinaria', [apartamento, mesAnio], function(res) {
         ocultarLoading();
-        if (res.ok) { mostrarNotificacion('Éxito', res.mensaje, 'success'); cargarExenciones(); if (!state.esAdmin && state.apartamento) cargarDatosResidente(); }
-        else { mostrarNotificacion('Error', res.mensaje, 'error'); }
+        if (res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+          cargarExenciones();
+          if (!state.esAdmin && state.apartamento) cargarDatosResidente();
+        } else {
+          mostrarNotificacion('Error', res.mensaje, 'error');
+        }
       });
     }
 
     // ============================================
-    // ZONE RENTAL
+    // ALQUILER DE ZONAS
     // ============================================
     function abrirModalAlquilerZonas() {
       document.getElementById('rentalApartment').textContent = state.apartamento;
@@ -3153,7 +3208,9 @@
       var cantidadInput = document.getElementById('cantidadSillas');
       var paymentZone = document.getElementById('paymentZone');
       var rentalValue = document.getElementById('rentalValue');
+
       if (!zona) { paymentZone.textContent = '-'; rentalValue.textContent = '$0'; groupCantidad.classList.add('hidden'); return; }
+
       if (zona === 'Sillas') {
         groupCantidad.classList.remove('hidden');
         var cantidad = parseInt(cantidadInput.value) || 1;
@@ -3172,9 +3229,11 @@
       var zona = document.getElementById('rentalZone').value;
       var archivo = document.getElementById('comprobanteAlquiler').files[0];
       var cantidad = zona === 'Sillas' ? (parseInt(document.getElementById('cantidadSillas').value) || 1) : 1;
+
       if (!zona) { mostrarNotificacion('Error', 'Selecciona una zona', 'error'); return; }
       if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
-      if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'Máximo 5MB', 'error'); return; }
+      if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error'); return; }
+
       mostrarLoading('Procesando alquiler...');
       var reader = new FileReader();
       reader.onload = function(e) {
@@ -3199,7 +3258,7 @@
     }
 
     // ============================================
-    // INITIALIZATION
+    // INICIALIZACIÓN (adapted for new HTML: floor grids)
     // ============================================
     function inicializar() {
       // Generate floor-based apartment grids
@@ -3216,21 +3275,23 @@
         }
       });
 
-      // Generate select options for apartments
+      // Generate selects de apartamentos
       var optionsAptos = '<option value="">Seleccione</option>' + APARTAMENTOS.map(function(a) { return '<option>' + a + '</option>'; }).join('');
       document.getElementById('apartamentoEfectivo').innerHTML = optionsAptos;
       document.getElementById('aptoExencion').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
 
-      // Currency format for inputs
+      // Formato de moneda para inputs
       document.querySelectorAll('.currency-input').forEach(function(input) {
         input.addEventListener('input', function(e) {
           var value = e.target.value.replace(/\D/g, '');
-          if (value) { value = parseInt(value).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }); }
+          if (value) {
+            value = parseInt(value).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
+          }
           e.target.value = value;
         });
       });
 
-      // Min date for requests
+      // Fecha mínima para solicitudes
       var fechaSol = document.getElementById('fechaSolicitud');
       if (fechaSol) fechaSol.min = new Date().toISOString().split('T')[0];
     }
@@ -3238,12 +3299,10 @@
     // Handle Enter key on login
     document.addEventListener('DOMContentLoaded', function() {
       inicializar();
-      document.getElementById('contrasena').addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') validarLogin();
-      });
-      document.getElementById('usuario').addEventListener('keyup', function(e) {
-        if (e.key === 'Enter') document.getElementById('contrasena').focus();
-      });
+      var contrasenaEl = document.getElementById('contrasena');
+      var usuarioEl = document.getElementById('usuario');
+      if (contrasenaEl) contrasenaEl.addEventListener('keyup', function(e) { if (e.key === 'Enter') validarLogin(); });
+      if (usuarioEl) usuarioEl.addEventListener('keyup', function(e) { if (e.key === 'Enter') contrasenaEl.focus(); });
     });
   </script>
 </body>
