@@ -5,14 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <title>Portal de Gestión Conjunto Residencial</title>
-  <link rel="icon" type="image/png" href="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png">  
+  <link rel="icon" type="image/png" href="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   <style>
-:root {
-      --primary: #1e293b;
-      --primary-light: #334155;
-      --primary-dark: #0f172a;
+    :root {
+      --primary: #0f172a;
+      --primary-light: #1e293b;
+      --primary-mid: #334155;
       --secondary: #059669;
       --secondary-light: #10b981;
       --accent: #7c3aed;
@@ -20,38 +20,51 @@
       --warning: #d97706;
       --danger: #dc2626;
       --surface: #ffffff;
-      --bg: #f1f5f9;
-      --text: #1e293b;
+      --bg: #f8fafc;
+      --text: #0f172a;
       --text-secondary: #64748b;
+      --text-muted: #94a3b8;
       --border: #e2e8f0;
-      --white: #ffffff;
-      --shadow: 0 1px 3px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.06);
-      --shadow-lg: 0 4px 12px rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.1);
-      --radius: 12px;
-      --radius-lg: 16px;
-      --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      --border-light: #f1f5f9;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 16px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
     }
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
-    html { scroll-behavior: smooth; }
+    html {
+      scroll-behavior: smooth;
+      overflow: hidden;
+      height: 100%;
+    }
 
     body {
       font-family: 'Inter', sans-serif;
-      background: #f1f5f9;
+      background: var(--bg);
       color: var(--text);
-      line-height: 1.7;
-      min-height: 100vh;
-      overflow-x: hidden;
+      line-height: 1.6;
+      height: 100%;
+      overflow: hidden;
     }
 
-    /* ============================================
-       ANIMATIONS
-    ============================================ */
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+    body.dashboard-active {
+      overflow: auto;
+    }
+    html.dashboard-active {
+      overflow: auto;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInScale { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
-    @keyframes slideInRight { from { opacity: 0; transform: translateX(40px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
 
     .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; }
@@ -62,75 +75,74 @@
     ============================================ */
     .card {
       background: var(--surface);
-      border: 1px solid #e2e8f0;
-      border-radius: 14px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.03);
-      padding: 22px;
-      margin-bottom: 18px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 20px;
+      animation: fadeIn 0.3s ease;
     }
-    .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid #f1f5f9; flex-wrap: wrap; gap: 10px; }
-    .card-title { font-size: 18px; font-weight: 600; color: #1e293b; display: flex; align-items: center; gap: 8px; }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-light);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 600; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-title i {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
 
     /* ============================================
        BUTTONS
     ============================================ */
     .btn {
-      display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-      padding: 9px 18px; border: none; border-radius: 10px;
-      font-size: 13.5px; font-weight: 500; cursor: pointer; transition: all 0.2s ease;
-      text-align: center; letter-spacing: 0.01em;
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 9px 18px; border: none; border-radius: var(--radius);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: var(--transition); text-align: center;
+      letter-spacing: 0.01em; font-family: inherit;
     }
     .btn:hover { transform: translateY(-1px); }
-    .btn-primary {
-      background: #1e293b;
-      color: var(--white);
-      box-shadow: 0 1px 3px rgba(30,41,59,0.2);
-    }
-    .btn-primary:hover { background: #334155; }
-    .btn-secondary {
-      background: #059669;
-      color: var(--white);
-    }
-    .btn-secondary:hover { background: #10b981; }
-    .btn-success {
-      background: #059669;
-      color: var(--white);
-    }
-    .btn-success:hover { background: #10b981; }
-    .btn-warning {
-      background: #d97706;
-      color: var(--white);
-    }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--primary-light); color: white; }
+    .btn-primary:hover { background: var(--primary-mid); }
+    .btn-secondary { background: var(--secondary); color: white; }
+    .btn-secondary:hover { background: var(--secondary-light); }
+    .btn-success { background: var(--secondary); color: white; }
+    .btn-success:hover { background: var(--secondary-light); }
+    .btn-warning { background: var(--warning); color: white; }
     .btn-warning:hover { background: #f59e0b; }
-    .btn-danger {
-      background: #dc2626;
-      color: var(--white);
-    }
+    .btn-danger { background: var(--danger); color: white; }
     .btn-danger:hover { background: #ef4444; }
-    .btn-accent {
-      background: #7c3aed;
-      color: var(--white);
-    }
+    .btn-accent { background: var(--accent); color: white; }
     .btn-accent:hover { background: #8b5cf6; }
-    .btn-light { background: white; color: #475569; border: 1.5px solid #e2e8f0; }
-    .btn-light:hover { border-color: #059669; color: #059669; background: white; }
-    .btn-sm { padding: 8px 16px; font-size: 13px; border-radius: 10px; }
-    .btn-icon { width: 40px; height: 40px; padding: 0; border-radius: 50%; }
+    .btn-light { background: white; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-light:hover { border-color: var(--secondary); color: var(--secondary); }
+    .btn-sm { padding: 7px 14px; font-size: 12.5px; }
+    .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; }
 
     /* ============================================
        FORMS
     ============================================ */
-    .form-group { margin-bottom: 20px; }
-    .form-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; color: #475569; }
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; color: var(--text-secondary); }
     .form-control {
-      width: 100%; padding: 11px 14px;
-      border: 1.5px solid #e2e8f0; border-radius: 10px;
-      font-size: 14px; transition: all 0.2s ease;
-      background: var(--white); color: var(--text);
+      width: 100%; padding: 10px 14px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      font-size: 14px; transition: var(--transition);
+      background: var(--surface); color: var(--text);
+      font-family: inherit;
     }
     .form-control:focus {
       outline: none;
-      border-color: #059669;
+      border-color: var(--secondary);
       box-shadow: 0 0 0 3px rgba(5,150,105,0.08);
     }
 
@@ -138,32 +150,309 @@
        TABLE
     ============================================ */
     .table-container {
-      width: 100%;
-      overflow-x: auto;
-      border-radius: 12px;
+      width: 100%; overflow-x: auto;
+      border-radius: var(--radius);
       margin: 14px 0;
       -webkit-overflow-scrolling: touch;
-      border: 1px solid #e2e8f0;
+      border: 1px solid var(--border);
     }
-    .table {
-      width: 100%; border-collapse: collapse;
-      background: var(--white);
-    }
+    .table { width: 100%; border-collapse: collapse; background: var(--surface); }
     .table th {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: var(--white); font-weight: 600;
-      padding: 13px 16px; text-align: left;
-      font-size: 13px; text-transform: uppercase;
-      white-space: nowrap; letter-spacing: 0.5px;
+      background: var(--primary);
+      color: white; font-weight: 600;
+      padding: 12px 16px; text-align: left;
+      font-size: 11.5px; text-transform: uppercase;
+      white-space: nowrap; letter-spacing: 0.6px;
     }
     .table td {
-      padding: 12px 16px;
-      border-bottom: 1px solid #e2e8f0;
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border-light);
       font-size: 13.5px;
     }
-    .table tbody tr:nth-child(even) { background: #f8fafc; }
     .table tbody tr:hover { background: #f0fdf4; }
-    .table-actions { display: flex; gap: 8px; justify-content: center; }
+    .table-actions { display: flex; gap: 6px; justify-content: center; }
+
+    /* ============================================
+       SECTION TABS
+    ============================================ */
+    .section-tabs {
+      display: flex; gap: 0; margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-light);
+    }
+    .section-tab {
+      padding: 10px 20px; background: none; border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px; color: var(--text-muted);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: var(--transition); font-family: inherit;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-tab:hover { color: var(--text); }
+    .section-tab.active {
+      color: var(--secondary); border-bottom-color: var(--secondary);
+      font-weight: 600;
+    }
+
+    /* ============================================
+       TOPBAR
+    ============================================ */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 58px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 900;
+    }
+    .topbar-left {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .topbar-toggle {
+      width: 38px; height: 38px; border-radius: 8px;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: var(--transition);
+    }
+    .topbar-toggle:hover { background: var(--border-light); color: var(--text); }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .topbar-brand img {
+      width: 32px; height: 32px; border-radius: 8px; object-fit: cover;
+    }
+    .topbar-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700; color: var(--primary);
+    }
+    .topbar-center {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .topbar-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px; font-size: 12px;
+      font-weight: 500; color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .topbar-badge i { font-size: 12px; }
+    .topbar-badge.danger { color: var(--danger); border-color: rgba(220,38,38,0.15); background: rgba(220,38,38,0.04); }
+    .topbar-badge.success { color: var(--success); border-color: rgba(5,150,105,0.15); background: rgba(5,150,105,0.04); }
+    .topbar-badge.warning { color: var(--warning); border-color: rgba(217,119,6,0.15); background: rgba(217,119,6,0.04); }
+    .topbar-right { display: flex; align-items: center; gap: 10px; position: relative; }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px; cursor: pointer;
+      transition: var(--transition); user-select: none;
+    }
+    .user-avatar:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(5,150,105,0.3); }
+    .user-dropdown {
+      position: absolute; top: calc(100% + 10px); right: 0;
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
+      min-width: 220px; overflow: hidden; display: none; z-index: 910;
+      animation: fadeInScale 0.2s ease;
+    }
+    .user-dropdown.active { display: block; }
+    .user-dropdown-header {
+      padding: 16px; border-bottom: 1px solid var(--border-light);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .user-dropdown-header .user-avatar { width: 40px; height: 40px; font-size: 13px; cursor: default; }
+    .user-dropdown-header .info h4 { font-size: 13px; font-weight: 600; color: var(--text); }
+    .user-dropdown-header .info p { font-size: 11px; color: var(--text-muted); }
+    .user-dropdown-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 16px; color: var(--text-secondary);
+      cursor: pointer; transition: var(--transition);
+      font-size: 13px; text-decoration: none; border: none;
+      background: none; width: 100%; text-align: left;
+      font-family: inherit;
+    }
+    .user-dropdown-item:hover { background: var(--bg); color: var(--text); }
+    .user-dropdown-item.danger { color: var(--danger); }
+    .user-dropdown-item.danger:hover { background: rgba(220,38,38,0.04); }
+    .user-dropdown-item i { width: 18px; text-align: center; }
+
+    /* ============================================
+       SIDEBAR
+    ============================================ */
+    .sidebar-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(15,23,42,0.3); backdrop-filter: blur(2px);
+      z-index: 950; display: none; opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    .sidebar-overlay.active { display: block; opacity: 1; }
+    .sidebar {
+      position: fixed; top: 0; left: 0;
+      width: 260px; height: 100%;
+      background: var(--surface);
+      z-index: 960; display: flex; flex-direction: column;
+      transform: translateX(-100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: none;
+    }
+    .sidebar.active { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.08); }
+    .sidebar-brand {
+      padding: 16px 20px; display: flex; align-items: center; gap: 12px;
+      border-bottom: 1px solid var(--border-light);
+      flex-shrink: 0; height: 58px;
+    }
+    .sidebar-brand img {
+      width: 36px; height: 36px; border-radius: 8px; object-fit: cover;
+    }
+    .sidebar-brand h3 { font-size: 15px; font-weight: 700; color: var(--primary); }
+    .sidebar-brand p { font-size: 11px; color: var(--text-muted); }
+    .sidebar-nav {
+      flex: 1; padding: 12px; overflow-y: auto;
+    }
+    .sidebar-nav a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-radius: 8px;
+      color: var(--text-secondary); text-decoration: none;
+      font-size: 13.5px; font-weight: 500;
+      transition: var(--transition); margin-bottom: 2px;
+    }
+    .sidebar-nav a:hover { background: var(--bg); color: var(--text); }
+    .sidebar-nav a.active {
+      background: rgba(5,150,105,0.08); color: var(--secondary); font-weight: 600;
+    }
+    .sidebar-nav a i { width: 20px; text-align: center; font-size: 15px; }
+    .sidebar-divider { height: 1px; background: var(--border-light); margin: 8px 14px; }
+    .sidebar-footer {
+      padding: 12px; border-top: 1px solid var(--border-light); flex-shrink: 0;
+    }
+    .sidebar-footer a {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 14px; border-radius: 8px;
+      color: var(--text-muted); text-decoration: none;
+      font-size: 13.5px; font-weight: 500; transition: var(--transition);
+    }
+    .sidebar-footer a:hover { background: rgba(220,38,38,0.04); color: var(--danger); }
+    .sidebar-footer a i { width: 20px; text-align: center; font-size: 15px; }
+
+    /* ============================================
+       STATS GRID
+    ============================================ */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 14px; margin-bottom: 20px; }
+    .stats-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 16px;
+      border-left: 3px solid transparent; transition: var(--transition);
+    }
+    .stat-card:hover { box-shadow: var(--shadow-md); }
+    .stat-card.success { border-left-color: var(--success); }
+    .stat-card.danger { border-left-color: var(--danger); }
+    .stat-card.warning { border-left-color: var(--warning); }
+    .stat-card.info { border-left-color: var(--primary-light); }
+    .stat-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 10px; }
+    .stat-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white; flex-shrink: 0;
+    }
+    .stat-icon.success { background: linear-gradient(135deg, #059669, #10b981); }
+    .stat-icon.danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
+    .stat-icon.warning { background: linear-gradient(135deg, #d97706, #f59e0b); }
+    .stat-icon.info { background: linear-gradient(135deg, #1e293b, #334155); }
+    .stat-title { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+    .stat-value { font-size: 24px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+    .stat-change { font-size: 12px; display: flex; align-items: center; gap: 5px; }
+    .stat-change.positive { color: var(--success); }
+    .stat-change.negative { color: var(--danger); }
+
+    /* ============================================
+       PAYMENT BANNER
+    ============================================ */
+    .payment-banner {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      border-radius: var(--radius-xl);
+      padding: 20px 24px; margin-bottom: 24px;
+      color: white; display: flex; align-items: center;
+      justify-content: space-between; flex-wrap: wrap; gap: 16px;
+    }
+    .payment-banner-left {
+      display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
+    }
+    .payment-banner-stat { text-align: center; }
+    .payment-banner-label {
+      font-size: 10.5px; text-transform: uppercase;
+      letter-spacing: 0.6px; opacity: 0.6; margin-bottom: 3px;
+    }
+    .payment-banner-value { font-size: 17px; font-weight: 700; }
+    .payment-banner-divider {
+      width: 1px; height: 36px; background: rgba(255,255,255,0.15);
+    }
+    .payment-banner-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+    .payment-banner .btn-light {
+      background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85);
+      border-color: rgba(255,255,255,0.12); font-size: 12.5px;
+    }
+    .payment-banner .btn-light:hover {
+      background: rgba(255,255,255,0.15); color: white;
+      border-color: rgba(255,255,255,0.25);
+    }
+    .payment-banner .btn-accent { font-size: 12.5px; }
+    .payment-banner-paid {
+      background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+    }
+
+    /* ============================================
+       LOADING OVERLAY
+    ============================================ */
+    .loading-overlay {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(255,255,255,0.92); backdrop-filter: blur(6px);
+      display: none; justify-content: center; align-items: center; z-index: 2000;
+    }
+    .loading-overlay.active { display: flex; }
+    .loading-spinner {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: conic-gradient(from 0deg, transparent 0%, #059669 100%);
+      animation: spin 0.8s linear infinite; margin: 0 auto 16px; position: relative;
+    }
+    .loading-spinner::before {
+      content: ''; position: absolute; inset: 4px;
+      border-radius: 50%; background: rgba(255,255,255,0.92);
+    }
+    .loading-text { font-size: 14px; color: var(--secondary); font-weight: 500; text-align: center; }
+
+    /* ============================================
+       NOTIFICATIONS
+    ============================================ */
+    .notification-container { position: fixed; top: 10px; right: 10px; z-index: 2000; max-width: calc(100% - 20px); }
+    .notification {
+      background: var(--surface); border-radius: var(--radius);
+      box-shadow: var(--shadow-lg); padding: 14px 16px; margin-bottom: 8px;
+      min-width: 280px; display: flex; align-items: center; gap: 12px;
+      animation: slideInRight 0.3s ease; border-left: 3px solid;
+    }
+    .notification.success { border-left-color: var(--success); }
+    .notification.error { border-left-color: var(--danger); }
+    .notification.warning { border-left-color: var(--warning); }
+    .notification.info { border-left-color: var(--primary-light); }
+    .notification-icon { font-size: 16px; flex-shrink: 0; }
+    .notification.success .notification-icon { color: var(--success); }
+    .notification.error .notification-icon { color: var(--danger); }
+    .notification.warning .notification-icon { color: var(--warning); }
+    .notification.info .notification-icon { color: var(--primary-light); }
+    .notification-content { flex: 1; }
+    .notification-title { font-weight: 600; margin-bottom: 1px; font-size: 13px; }
+    .notification-message { font-size: 12.5px; color: var(--text-secondary); }
+    .notification-close { background: none; border: none; color: var(--text-muted); cursor: pointer; font-size: 14px; padding: 4px; }
+
+    /* ============================================
+       BADGES
+    ============================================ */
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11.5px; font-weight: 600; }
+    .badge-success { background: rgba(5,150,105,0.1); color: var(--success); }
+    .badge-warning { background: rgba(217,119,6,0.1); color: var(--warning); }
+    .badge-danger { background: rgba(220,38,38,0.1); color: var(--danger); }
+    .badge-info { background: rgba(30,41,59,0.06); color: var(--primary-light); }
 
     /* ============================================
        MODAL
@@ -171,376 +460,95 @@
     .modal {
       display: none; position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
-      background: rgba(15,23,42,0.6);
-      backdrop-filter: blur(8px);
-      z-index: 1000; justify-content: center; align-items: center;
-      padding: 10px;
+      background: rgba(15,23,42,0.5); backdrop-filter: blur(6px);
+      z-index: 1100; justify-content: center; align-items: center; padding: 16px;
     }
     .modal.active { display: flex; }
     .modal-content {
-      background: var(--white);
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.1);
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.1);
-      width: 100%; max-width: 600px;
-      max-height: 85vh; overflow: hidden;
-      display: flex; flex-direction: column;
-      animation: fadeIn 0.25s ease;
+      background: var(--surface); border-radius: var(--radius-xl);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+      width: 100%; max-width: 560px; max-height: 85vh;
+      overflow: hidden; display: flex; flex-direction: column;
+      animation: fadeInScale 0.25s ease;
     }
     .modal-header {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: var(--white); padding: 20px 24px;
-      position: relative; flex-shrink: 0;
+      background: var(--primary); color: white;
+      padding: 18px 22px; position: relative; flex-shrink: 0;
     }
-    .modal-title { font-size: 18px; font-weight: 600; padding-right: 30px; }
+    .modal-title { font-size: 16px; font-weight: 600; padding-right: 30px; }
     .modal-close {
-      position: absolute; top: 15px; right: 15px;
-      background: rgba(255,255,255,0.15); border: none;
-      color: var(--white); width: 32px; height: 32px;
-      border-radius: 50%; cursor: pointer;
-      transition: all 0.2s ease;
-      display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 14px; right: 14px;
+      background: rgba(255,255,255,0.12); border: none;
+      color: white; width: 30px; height: 30px; border-radius: 8px;
+      cursor: pointer; transition: var(--transition);
+      display: flex; align-items: center; justify-content: center; font-size: 13px;
     }
-    .modal-close:hover { background: rgba(255,255,255,0.3); transform: rotate(90deg); }
-    .modal-body { padding: 24px; overflow-y: auto; flex-grow: 1; }
+    .modal-close:hover { background: rgba(255,255,255,0.25); }
+    .modal-body { padding: 22px; overflow-y: auto; flex-grow: 1; }
     .modal-footer {
-      padding: 16px 24px;
-      border-top: 1px solid #f1f5f9;
-      display: flex; justify-content: flex-end; gap: 10px;
+      padding: 14px 22px; border-top: 1px solid var(--border-light);
+      display: flex; justify-content: flex-end; gap: 8px;
       flex-wrap: wrap; flex-shrink: 0;
     }
 
     /* ============================================
-       SIDEBAR
-    ============================================ */
-    .sidebar {
-      position: fixed; top: 0; left: -300px;
-      width: 280px; height: 100%;
-      background: var(--white);
-      box-shadow: var(--shadow-lg);
-      z-index: 999; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      overflow-y: auto;
-    }
-    .sidebar.active { left: 0; }
-    .sidebar-header {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: var(--white); padding: 24px 20px; text-align: center;
-    }
-    .sidebar-logo {
-      width: 70px; height: 70px; border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.2);
-      margin-bottom: 10px; object-fit: cover;
-    }
-    .sidebar-title { font-size: 16px; font-weight: 600; }
-    .sidebar-subtitle { font-size: 12px; opacity: 0.7; margin-top: 2px; }
-    .sidebar-menu { list-style: none; padding: 12px 0; }
-    .sidebar-menu a {
-      display: flex; align-items: center; gap: 12px;
-      padding: 13px 24px; color: var(--text);
-      text-decoration: none; transition: all 0.2s ease;
-      border-left: 3px solid transparent; margin: 0 12px;
-      border-radius: 10px;
-      font-size: 14px;
-    }
-    .sidebar-menu a:hover {
-      background: rgba(0,0,0,0.03);
-      border-left-color: rgba(5,150,105,0.3);
-    }
-    .sidebar-menu a.active {
-      background: rgba(5,150,105,0.08);
-      color: #059669;
-      font-weight: 600;
-      border-left-color: #059669;
-    }
-    .sidebar-toggle {
-      position: fixed; top: 18px; left: 18px; z-index: 998;
-      background: linear-gradient(135deg, #1e293b, #334155);
-      color: var(--white); border: none;
-      border-radius: 50%; width: 42px; height: 42px;
-      cursor: pointer; box-shadow: 0 2px 10px rgba(0,0,0,0.15);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; transition: all 0.2s ease;
-    }
-    .sidebar-toggle:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
-
-    /* ============================================
-       STATS GRID
-    ============================================ */
-    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 14px; margin-bottom: 24px; }
-    .stats-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 24px; }
-
-    .stat-card {
-      background: var(--white);
-      border: 1px solid #e2e8f0;
-      border-radius: 12px;
-      padding: 14px 16px;
-      border-left: 3px solid transparent;
-    }
-    .stat-card:hover { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
-    .stat-card.success { border-left-color: var(--success); }
-    .stat-card.danger { border-left-color: var(--danger); }
-    .stat-card.warning { border-left-color: var(--warning); }
-    .stat-card.info { border-left-color: var(--primary); }
-    .stat-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
-    .stat-icon {
-      width: 36px; height: 36px;
-      border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 15px; color: var(--white); flex-shrink: 0;
-    }
-    .stat-icon.success { background: linear-gradient(135deg, #059669, #10b981); }
-    .stat-icon.danger { background: linear-gradient(135deg, #dc2626, #ef4444); }
-    .stat-icon.warning { background: linear-gradient(135deg, #d97706, #f59e0b); }
-    .stat-icon.info { background: linear-gradient(135deg, #1e293b, #334155); }
-    .stat-title { font-size: 12px; color: #64748b; font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
-    .stat-value { font-size: 22px; font-weight: 700; color: var(--text); margin-bottom: 2px; }
-    .stat-change { font-size: 12px; display: flex; align-items: center; gap: 5px; }
-    .stat-change.positive { color: var(--success); }
-    .stat-change.negative { color: var(--danger); }
-
-    /* ============================================
-       LOADING OVERLAY
-    ============================================ */
-    .loading-overlay {
-      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(8px);
-      display: none; justify-content: center; align-items: center;
-      z-index: 2000;
-    }
-    .loading-overlay.active { display: flex; }
-    .loading-spinner {
-      width: 56px; height: 56px;
-      border-radius: 50%;
-      background: conic-gradient(from 0deg, transparent 0%, #059669 100%);
-      animation: spin 0.8s linear infinite;
-      margin: 0 auto 20px;
-      position: relative;
-    }
-    .loading-spinner::before {
-      content: '';
-      position: absolute;
-      inset: 4px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.95);
-    }
-    .loading-text { font-size: 16px; color: var(--secondary); font-weight: 500; text-align: center; }
-
-    /* ============================================
-       NOTIFICATIONS
-    ============================================ */
-    .notification-container { position: fixed; top: 10px; right: 10px; z-index: 2000; max-width: calc(100% - 20px); }
-    .notification {
-      background: var(--white);
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.08), 0 12px 28px rgba(0,0,0,0.1);
-      padding: 16px 18px; margin-bottom: 10px;
-      min-width: 300px; display: flex; align-items: center; gap: 14px;
-      animation: slideInRight 0.35s ease;
-      border-left: 4px solid;
-    }
-    .notification.success { border-left-color: var(--success); }
-    .notification.error { border-left-color: var(--danger); }
-    .notification.warning { border-left-color: var(--warning); }
-    .notification.info { border-left-color: var(--primary); }
-    .notification-icon { font-size: 18px; flex-shrink: 0; }
-    .notification.success .notification-icon { color: var(--success); }
-    .notification.error .notification-icon { color: var(--danger); }
-    .notification.warning .notification-icon { color: var(--warning); }
-    .notification.info .notification-icon { color: var(--primary); }
-    .notification-content { flex: 1; }
-    .notification-title { font-weight: 600; margin-bottom: 2px; font-size: 14px; }
-    .notification-message { font-size: 13px; color: var(--text-secondary); }
-    .notification-close { background: none; border: none; color: var(--text-secondary); cursor: pointer; font-size: 16px; padding: 4px; }
-
-    /* ============================================
-       BADGES
-    ============================================ */
-    .badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
-    .badge-success { background: rgba(5,150,105,0.12); color: var(--success); }
-    .badge-warning { background: rgba(217,119,6,0.12); color: var(--warning); }
-    .badge-danger { background: rgba(220,38,38,0.12); color: var(--danger); }
-    .badge-info { background: rgba(30,41,59,0.1); color: var(--primary); }
-
-    /* ============================================
        AUTH MODAL
     ============================================ */
-    #modalAuth .modal-content {
-      max-width: 460px;
-      border-radius: 20px;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.1);
-    }
+    #modalAuth .modal-content { max-width: 440px; border-radius: var(--radius-xl); }
     #modalAuth .modal-header {
-      padding: 28px 24px 20px;
-      text-align: center;
-      position: relative;
-      background: linear-gradient(135deg, #0f172a, #1e293b);
+      padding: 24px 22px 18px; text-align: center; position: relative;
     }
     #modalAuth .modal-header img {
-      width: 70px;
-      height: 70px;
-      border-radius: 50%;
-      border: 3px solid rgba(255,255,255,0.2);
-      margin-bottom: 12px;
+      width: 60px; height: 60px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.2); margin-bottom: 10px;
     }
     #modalAuth .modal-header h3 {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
-      font-weight: 700;
+      font-family: 'Playfair Display', serif; font-size: 20px; font-weight: 700;
     }
-    #modalAuth .modal-header p {
-      font-size: 13px;
-      opacity: 0.6;
-      margin-top: 4px;
-    }
-    #modalAuth .modal-body {
-      padding: 24px;
-      background: #f8fafc;
-    }
-    .auth-choice-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-    }
+    #modalAuth .modal-header p { font-size: 12px; opacity: 0.6; margin-top: 3px; }
+    #modalAuth .modal-body { padding: 22px; background: #f8fafc; }
+    .auth-choice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
     .auth-choice-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      padding: 28px 16px;
-      background: white;
-      border: 2px solid #e2e8f0;
-      border-radius: 16px;
-      cursor: pointer;
-      transition: all 0.25s ease;
-      color: #1e293b;
-      font-size: 14px;
-      font-weight: 600;
+      display: flex; flex-direction: column; align-items: center; gap: 10px;
+      padding: 24px 16px; background: white;
+      border: 2px solid var(--border); border-radius: var(--radius-lg);
+      cursor: pointer; transition: var(--transition);
+      color: var(--text); font-size: 13.5px; font-weight: 600; font-family: inherit;
     }
-    .auth-choice-btn i {
-      font-size: 28px;
-      color: #059669;
-    }
+    .auth-choice-btn i { font-size: 24px; color: var(--secondary); }
     .auth-choice-btn:hover {
-      border-color: #059669;
-      transform: translateY(-3px);
-      box-shadow: 0 8px 25px rgba(5,150,105,0.15);
+      border-color: var(--secondary); transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(5,150,105,0.12);
     }
-    .auth-panel { animation: fadeIn 0.3s ease; }
+    .auth-panel { animation: fadeIn 0.25s ease; }
     .auth-back-btn {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      background: none;
-      border: none;
-      color: #64748b;
-      cursor: pointer;
-      font-size: 13px;
-      padding: 4px 0;
-      margin-bottom: 16px;
-      transition: color 0.2s;
+      display: inline-flex; align-items: center; gap: 6px;
+      background: none; border: none; color: var(--text-muted);
+      cursor: pointer; font-size: 13px; padding: 4px 0;
+      margin-bottom: 14px; transition: color 0.2s; font-family: inherit;
     }
-    .auth-back-btn:hover { color: #1e293b; }
-    .auth-panel-title {
-      font-size: 17px;
-      font-weight: 600;
-      color: #1e293b;
-      margin-bottom: 20px;
-    }
-    .auth-panel-subtitle {
-      font-size: 13px;
-      color: #64748b;
-      margin-top: -14px;
-      margin-bottom: 18px;
-    }
-    .auth-form .form-group { margin-bottom: 16px; }
-    .auth-form .form-label { font-size: 13px; font-weight: 500; color: #475569; margin-bottom: 6px; }
-    .auth-form .form-control {
-      border: 1.5px solid #e2e8f0;
-      border-radius: 10px;
-      padding: 11px 14px;
-      font-size: 14px;
-    }
-    .auth-form .form-control:focus {
-      border-color: #059669;
-      box-shadow: 0 0 0 3px rgba(5,150,105,0.08);
-    }
-    .auth-login-actions {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-      margin-top: 20px;
-    }
+    .auth-back-btn:hover { color: var(--text); }
+    .auth-panel-title { font-size: 16px; font-weight: 600; color: var(--text); margin-bottom: 16px; }
+    .auth-panel-subtitle { font-size: 13px; color: var(--text-muted); margin-top: -12px; margin-bottom: 16px; }
+    .auth-form .form-group { margin-bottom: 14px; }
+    .auth-form .form-label { font-size: 13px; font-weight: 500; color: var(--text-secondary); margin-bottom: 5px; }
+    .auth-form .form-control { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 14px; font-size: 14px; }
+    .auth-form .form-control:focus { border-color: var(--secondary); box-shadow: 0 0 0 3px rgba(5,150,105,0.08); }
+    .auth-login-actions { display: flex; flex-direction: column; gap: 8px; margin-top: 16px; }
     .auth-login-actions .btn { width: 100%; justify-content: center; }
-    @media (max-width: 480px) {
-      .auth-choice-grid { grid-template-columns: 1fr; }
-    }
-
-
 
     /* ============================================
-       DASHBOARD
+       APARTMENT GRID
     ============================================ */
-    .dashboard {
-      padding: 75px 24px 40px;
-      min-height: 100vh;
-      max-width: 1200px;
-      margin: 0 auto;
-    }
-    .dashboard-title { font-size: 22px; font-weight: 700; color: var(--primary); }
-
-    /* ============================================
-       PAYMENT SECTION
-    ============================================ */
-    .payment-section {
-      background: linear-gradient(135deg, #0f172a, #1e293b);
-      color: var(--white); border-radius: 14px;
-      padding: 18px 22px; margin-bottom: 18px;
-    }
-    .payment-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 10px; }
-    .payment-title { font-size: 16px; font-weight: 600; }
-    .payment-status {
-      display: flex; align-items: center; gap: 8px;
-      padding: 6px 14px; background: rgba(255,255,255,0.1);
-      border-radius: 20px; font-size: 12px;
-    }
-    .payment-details { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 14px; }
-    .payment-detail { background: rgba(255,255,255,0.06); padding: 10px; border-radius: 10px; }
-    .payment-detail-label { font-weight: 600; font-size: 11px; margin-bottom: 4px; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.04em; }
-    .payment-detail-value { font-size: 14px; font-weight: 600; }
-    .payment-section .btn-light {
-      background: rgba(255,255,255,0.08);
-      color: rgba(255,255,255,0.85);
-      border: 1px solid rgba(255,255,255,0.12);
-      font-size: 13px;
-      padding: 8px 16px;
-      border-radius: 8px;
-    }
-    .payment-section .btn-light:hover {
-      background: rgba(255,255,255,0.15);
-      color: white;
-      border-color: rgba(255,255,255,0.2);
-    }
-    .payment-section .btn-accent {
-      font-size: 13px;
-      padding: 8px 16px;
-      border-radius: 8px;
-    }
-
-    /* ============================================
-       APARTMENT GRID (inside auth modal)
-    ============================================ */
-    .apartment-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 16px; }
+    .apartment-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-bottom: 14px; }
     .apartment-btn {
-      padding: 10px 4px; border: 1.5px solid #e2e8f0;
-      background: white; border-radius: 10px;
-      cursor: pointer; transition: all 0.2s ease;
-      font-weight: 500; color: #1e293b; font-size: 13px;
+      padding: 10px 4px; border: 1.5px solid var(--border);
+      background: white; border-radius: 8px; cursor: pointer;
+      transition: var(--transition); font-weight: 500; color: var(--text);
+      font-size: 13px; font-family: inherit;
     }
     .apartment-btn:hover, .apartment-btn.selected {
-      background: #059669; color: white;
-      border-color: #059669;
+      background: var(--secondary); color: white; border-color: var(--secondary);
       box-shadow: 0 2px 8px rgba(5,150,105,0.3);
     }
 
@@ -548,314 +556,199 @@
        FILTER
     ============================================ */
     .filtro-activo {
-      background: rgba(5,150,105,0.08); border: 2px solid var(--secondary);
-      color: var(--secondary); padding: 8px 16px; border-radius: 12px;
-      font-size: 13px; margin-bottom: 15px;
+      background: rgba(5,150,105,0.06); border: 1px solid rgba(5,150,105,0.15);
+      color: var(--secondary); padding: 8px 14px; border-radius: 8px;
+      font-size: 13px; margin-bottom: 14px;
       display: inline-flex; align-items: center; gap: 8px; flex-wrap: wrap;
     }
 
     /* ============================================
        QR
     ============================================ */
-    .qr-container { display: flex; justify-content: center; margin: 20px 0; }
+    .qr-container { display: flex; justify-content: center; margin: 16px 0; }
     .qr-code {
-      width: 100%; max-width: 250px; height: auto;
-      border: 2px solid var(--border); border-radius: 12px;
-      padding: 10px; cursor: pointer; transition: var(--transition);
+      width: 100%; max-width: 220px; height: auto;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      padding: 8px; cursor: pointer; transition: var(--transition);
       aspect-ratio: 1/1; object-fit: contain;
     }
-    .qr-code:hover { transform: scale(1.02); box-shadow: 0 8px 24px rgba(5,150,105,0.15); }
+    .qr-code:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
 
     /* ============================================
-       RESPONSIVE MEDIA QUERIES
+       DASHBOARD
     ============================================ */
-    @media (max-width: 992px) {
-      .stats-grid-3 { grid-template-columns: repeat(2, 1fr); }
-      .card { padding: 24px; }
-      .card-title { font-size: 20px; }
+    .dashboard {
+      padding-top: 58px; min-height: 100vh; background: var(--bg);
     }
-
-    @media (max-width: 768px) {
-      body { font-size: 15px; }
-      .container { padding: 15px; }
-      .card { padding: 20px; border-radius: 14px; }
-      .card-header { flex-direction: column; align-items: flex-start; gap: 15px; }
-      .card-title { font-size: 20px; }
-      .stats-grid, .stats-grid-3 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .table th, .table td { padding: 12px 10px; font-size: 13px; }
-      .modal-body { padding: 20px; }
-      .modal-footer { padding: 15px 20px; }
-      .modal-footer .btn { padding: 10px 20px; font-size: 14px; }
-      .sidebar { width: 280px; left: -280px; }
-      .dashboard { padding: 60px 16px 30px; }
-      .sidebar-toggle { width: 42px; height: 42px; top: 18px; left: 18px; }
-      .apartment-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
-      .apartment-btn { padding: 12px; font-size: 14px; }
-      .payment-section { padding: 15px; }
-      .payment-details { grid-template-columns: 1fr 1fr; }
-      .payment-detail-value { font-size: 15px; }
-      .stat-value { font-size: 24px; }
-      .btn { padding: 10px 20px; font-size: 14px; }
-    }
-
-    @media (max-width: 480px) {
-      .payment-details { grid-template-columns: 1fr; }
-      .modal-title { font-size: 18px; }
-      .apartment-grid { grid-template-columns: 1fr; }
-      .stats-grid, .stats-grid-3 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
-      .apartment-btn { padding: 15px; }
+    .dashboard-content {
+      max-width: 1100px; margin: 0 auto; padding: 24px 20px 40px;
     }
 
     /* ============================================
-       LANDING PAGE - PREMIUM REDESIGN
+       LANDING PAGE
     ============================================ */
     .landing-page {
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
-      background-size: 200% 200%;
-      animation: shimmer 12s ease infinite;
-      overflow-y: auto;
-      overflow-x: hidden;
-      z-index: 1;
+      background-size: 200% 200%; animation: shimmer 12s ease infinite;
+      overflow-y: auto; overflow-x: hidden; z-index: 1;
     }
-
-    /* Decorative floating blobs */
     .landing-page::before {
-      content: '';
-      position: absolute;
-      top: -15%;
-      right: -10%;
-      width: 500px;
-      height: 500px;
-      background: radial-gradient(circle, rgba(5,150,105,0.12) 0%, transparent 70%);
-      border-radius: 50%;
-      filter: blur(60px);
-      animation: pulse 8s ease infinite;
+      content: ''; position: absolute; top: -15%; right: -10%;
+      width: 500px; height: 500px;
+      background: radial-gradient(circle, rgba(5,150,105,0.1) 0%, transparent 70%);
+      border-radius: 50%; filter: blur(60px); animation: pulse 8s ease infinite;
+      pointer-events: none;
     }
     .landing-page::after {
-      content: '';
-      position: absolute;
-      bottom: -10%;
-      left: -15%;
-      width: 400px;
-      height: 400px;
-      background: radial-gradient(circle, rgba(124,58,237,0.08) 0%, transparent 70%);
-      border-radius: 50%;
-      filter: blur(60px);
-      animation: pulse 10s ease infinite reverse;
+      content: ''; position: absolute; bottom: -10%; left: -15%;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(124,58,237,0.06) 0%, transparent 70%);
+      border-radius: 50%; filter: blur(60px); animation: pulse 10s ease infinite reverse;
+      pointer-events: none;
     }
-
     .login-corner-btn {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      z-index: 999;
-      width: 52px;
-      height: 52px;
-      border-radius: 50%;
-      background: var(--white);
-      border: none;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.25);
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      color: var(--primary);
-      font-size: 20px;
+      position: fixed; top: 20px; right: 20px; z-index: 999;
+      width: 48px; height: 48px; border-radius: 50%;
+      background: var(--surface); border: none;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition); color: var(--primary); font-size: 18px;
     }
-    .login-corner-btn:hover {
-      transform: scale(1.08);
-      box-shadow: 0 8px 30px rgba(0,0,0,0.35);
-    }
-
+    .login-corner-btn:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
     .landing-hero {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 100px 20px 40px;
+      position: relative; z-index: 1; text-align: center; padding: 90px 20px 36px;
     }
     .landing-logo {
-      width: 130px;
-      height: 130px;
-      border-radius: 50%;
-      border: 4px solid rgba(255,255,255,0.15);
-      margin: 0 auto 25px;
+      width: 120px; height: 120px; border-radius: 50%;
+      border: 3px solid rgba(255,255,255,0.15); margin: 0 auto 22px;
       object-fit: cover;
-      box-shadow: 0 0 60px rgba(5,150,105,0.15), 0 8px 32px rgba(0,0,0,0.3);
+      box-shadow: 0 0 50px rgba(5,150,105,0.12), 0 8px 30px rgba(0,0,0,0.3);
       animation: pulse 2s infinite;
     }
     .landing-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 44px;
-      color: var(--white);
-      margin-bottom: 12px;
-      text-shadow: 0 2px 20px rgba(0,0,0,0.3);
+      font-family: 'Playfair Display', serif; font-size: 40px;
+      color: white; margin-bottom: 10px; text-shadow: 0 2px 20px rgba(0,0,0,0.3);
     }
     .landing-subtitle {
-      font-size: 17px;
-      color: rgba(255,255,255,0.6);
-      font-weight: 300;
-      letter-spacing: 3px;
-      text-transform: uppercase;
+      font-size: 15px; color: rgba(255,255,255,0.5);
+      font-weight: 300; letter-spacing: 3px; text-transform: uppercase;
     }
     .landing-divider {
-      width: 60px;
-      height: 2px;
+      width: 50px; height: 2px;
       background: linear-gradient(90deg, #059669, transparent);
-      margin: 28px auto;
-      border-radius: 2px;
+      margin: 24px auto; border-radius: 2px;
     }
-
     .landing-info {
-      position: relative;
-      z-index: 1;
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 20px 40px;
+      position: relative; z-index: 1; max-width: 1000px;
+      margin: 0 auto; padding: 0 20px 36px;
     }
     .landing-info-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-      margin-bottom: 50px;
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px;
     }
     .landing-info-card {
-      background: rgba(255,255,255,0.06);
-      backdrop-filter: blur(12px);
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 16px;
-      padding: 28px 22px;
-      text-align: center;
-      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-      color: var(--white);
+      background: rgba(255,255,255,0.05); backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.07); border-radius: var(--radius-lg);
+      padding: 24px 18px; text-align: center;
+      transition: var(--transition); color: white;
     }
     .landing-info-card:hover {
-      transform: translateY(-4px);
-      background: rgba(255,255,255,0.1);
-      box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+      transform: translateY(-3px); background: rgba(255,255,255,0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.12);
     }
     .landing-info-icon {
-      width: 52px;
-      height: 52px;
-      border-radius: 14px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 16px;
-      font-size: 22px;
+      width: 48px; height: 48px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; font-size: 20px;
     }
     .landing-info-icon.green { background: linear-gradient(135deg, #059669, #10b981); }
     .landing-info-icon.blue { background: linear-gradient(135deg, #1e293b, #475569); }
     .landing-info-icon.purple { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
     .landing-info-icon.orange { background: linear-gradient(135deg, #d97706, #f59e0b); }
-    .landing-info-card h3 {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 8px;
-    }
-    .landing-info-card p {
-      font-size: 13px;
-      color: rgba(255,255,255,0.5);
-      line-height: 1.6;
-    }
-
+    .landing-info-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
+    .landing-info-card p { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; }
     .landing-rules {
-      position: relative;
-      z-index: 1;
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 0 20px 60px;
+      position: relative; z-index: 1; max-width: 750px;
+      margin: 0 auto; padding: 0 20px 50px;
     }
     .rules-title {
-      text-align: center;
-      font-size: 24px;
-      font-weight: 700;
-      color: var(--white);
-      margin-bottom: 8px;
+      text-align: center; font-size: 22px; font-weight: 700;
+      color: white; margin-bottom: 6px;
     }
     .rules-title::after {
-      content: '';
-      display: block;
-      width: 40px;
-      height: 2px;
+      content: ''; display: block; width: 36px; height: 2px;
       background: linear-gradient(90deg, #059669, transparent);
-      margin: 12px auto 30px;
-      border-radius: 2px;
+      margin: 10px auto 26px; border-radius: 2px;
     }
-    .rules-list {
-      display: grid;
-      gap: 12px;
-    }
+    .rules-list { display: grid; gap: 10px; }
     .rule-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 16px;
-      background: rgba(255,255,255,0.04);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255,255,255,0.06);
-      border-radius: 12px;
-      padding: 16px 20px;
-      transition: all 0.25s ease;
-      color: var(--white);
+      display: flex; align-items: flex-start; gap: 14px;
+      background: rgba(255,255,255,0.03); backdrop-filter: blur(8px);
+      border: 1px solid rgba(255,255,255,0.05); border-radius: var(--radius);
+      padding: 14px 18px; transition: var(--transition); color: white;
     }
-    .rule-item:hover {
-      background: rgba(255,255,255,0.08);
-    }
+    .rule-item:hover { background: rgba(255,255,255,0.06); }
     .rule-icon {
-      width: 36px;
-      height: 36px;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 15px;
-      flex-shrink: 0;
+      width: 34px; height: 34px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; flex-shrink: 0;
     }
     .rule-icon.warning-icon { background: linear-gradient(135deg, #d97706, #f59e0b); color: white; }
     .rule-icon.danger-icon { background: linear-gradient(135deg, #dc2626, #ef4444); color: white; }
     .rule-icon.info-icon { background: linear-gradient(135deg, #1e293b, #475569); color: white; }
     .rule-icon.success-icon { background: linear-gradient(135deg, #059669, #10b981); color: white; }
     .rule-icon.accent-icon { background: linear-gradient(135deg, #7c3aed, #8b5cf6); color: white; }
-    .rule-content h4 {
-      font-size: 14px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-    .rule-content p {
-      font-size: 13px;
-      color: rgba(255,255,255,0.5);
-      line-height: 1.6;
-    }
-
+    .rule-content h4 { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
+    .rule-content p { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; }
     .landing-footer {
-      position: relative;
-      z-index: 1;
-      text-align: center;
-      padding: 30px 20px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      color: rgba(255,255,255,0.4);
-      font-size: 13px;
+      position: relative; z-index: 1; text-align: center;
+      padding: 24px 20px; border-top: 1px solid rgba(255,255,255,0.05);
+      color: rgba(255,255,255,0.3); font-size: 12px;
     }
 
-    /* Landing responsive */
+    /* ============================================
+       RESPONSIVE
+    ============================================ */
+    @media (max-width: 992px) {
+      .stats-grid-3 { grid-template-columns: repeat(2, 1fr); }
+      .topbar-center { display: none; }
+    }
     @media (max-width: 768px) {
-      .landing-hero { padding: 60px 15px 30px; }
+      body { font-size: 14px; }
+      .card { padding: 18px; }
+      .stats-grid, .stats-grid-3 { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+      .table th, .table td { padding: 10px 12px; font-size: 12.5px; }
+      .modal-body { padding: 18px; }
+      .modal-footer { padding: 12px 18px; }
+      .sidebar { width: 280px; }
+      .dashboard-content { padding: 16px 14px 30px; }
+      .apartment-grid { grid-template-columns: repeat(3, 1fr); }
+      .payment-banner { padding: 16px; }
+      .payment-banner-left { gap: 16px; }
+      .payment-banner-value { font-size: 15px; }
+      .stat-value { font-size: 20px; }
+      .btn { padding: 9px 16px; font-size: 13px; }
+      .landing-hero { padding: 70px 16px 28px; }
       .landing-title { font-size: 30px; }
-      .landing-logo { width: 100px; height: 100px; }
-      .landing-info { padding: 0 15px 30px; }
-      .landing-info-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-      .landing-rules { padding: 0 15px 40px; }
-      .rules-title { font-size: 22px; }
-      .rule-item { padding: 14px 16px; }
-      .landing-info-card { padding: 22px 18px; }
+      .landing-logo { width: 90px; height: 90px; }
+      .landing-info { padding: 0 16px 28px; }
+      .landing-info-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+      .landing-rules { padding: 0 16px 36px; }
+      .rules-title { font-size: 20px; }
+      .landing-info-card { padding: 20px 14px; }
+      .topbar-brand h1 { font-size: 15px; }
     }
     @media (max-width: 480px) {
-      .landing-title { font-size: 26px; }
-      .landing-logo { width: 90px; height: 90px; }
+      .auth-choice-grid { grid-template-columns: 1fr; }
+      .apartment-grid { grid-template-columns: repeat(2, 1fr); }
       .landing-info-grid { grid-template-columns: 1fr; }
-      .login-corner-btn { width: 48px; height: 48px; font-size: 20px; top: 15px; right: 15px; }
+      .landing-title { font-size: 26px; }
+      .landing-logo { width: 80px; height: 80px; }
+      .login-corner-btn { width: 44px; height: 44px; font-size: 17px; top: 14px; right: 14px; }
+      .payment-banner { flex-direction: column; align-items: flex-start; }
+      .payment-banner-divider { display: none; }
+      .payment-banner-stat { text-align: left; }
+      .stats-grid, .stats-grid-3 { grid-template-columns: 1fr 1fr; }
     }
   </style>
 </head>
@@ -870,23 +763,20 @@
 
   <!-- Landing Page -->
   <div id="landingPage" class="landing-page">
-    <!-- Corner Login Button -->
     <button class="login-corner-btn" onclick="irALogin()" title="Iniciar Sesión">
       <i class="fas fa-user-lock"></i>
     </button>
 
-    <!-- Hero Section -->
     <div class="landing-hero">
       <img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo Claret Real VI" class="landing-logo">
       <h1 class="landing-title">Claret Real VI</h1>
       <p class="landing-subtitle">Conjunto Residencial</p>
       <div class="landing-divider"></div>
-      <p class="landing-subtitle" style="max-width: 500px; margin: 0 auto; font-size: 15px;">
+      <p class="landing-subtitle" style="max-width: 460px; margin: 0 auto; font-size: 14px; letter-spacing: 0.5px; text-transform: none;">
         Bienvenido a tu hogar. Un espacio de convivencia, seguridad y tranquilidad para ti y tu familia.
       </p>
     </div>
 
-    <!-- Info Cards -->
     <div class="landing-info">
       <div class="landing-info-grid">
         <div class="landing-info-card">
@@ -912,116 +802,71 @@
       </div>
     </div>
 
-    <!-- Rules Section -->
     <div class="landing-rules">
       <h2 class="rules-title"><i class="fas fa-gavel"></i> Reglamentos del Conjunto</h2>
       <div class="rules-list">
-
         <div class="rule-item">
           <div class="rule-icon danger-icon"><i class="fas fa-bell"></i></div>
-          <div class="rule-content">
-            <h4>Multa por Alarma</h4>
-            <p>Si la alarma suena 3 veces por un mismo apartamento de forma injustificada, se generará una multa de <strong>$30.000 COP</strong>. El servicio de alarma funciona las 24 horas.</p>
-          </div>
+          <div class="rule-content"><h4>Multa por Alarma</h4><p>Si la alarma suena 3 veces por un mismo apartamento de forma injustificada, se generará una multa de <strong>$30.000 COP</strong>. El servicio de alarma funciona las 24 horas.</p></div>
         </div>
-
         <div class="rule-item">
           <div class="rule-icon warning-icon"><i class="fas fa-volume-mute"></i></div>
-          <div class="rule-content">
-            <h4>Ruidos y Tranquilidad</h4>
-            <p>Se debe mantener silencio y respetar la tranquilidad de los vecinos después de las <strong>10:00 PM</strong>. Queda prohibido el ruido excesivo a cualquier hora.</p>
-          </div>
+          <div class="rule-content"><h4>Ruidos y Tranquilidad</h4><p>Se debe mantener silencio y respetar la tranquilidad de los vecinos después de las <strong>10:00 PM</strong>. Queda prohibido el ruido excesivo a cualquier hora.</p></div>
         </div>
-
         <div class="rule-item">
           <div class="rule-icon success-icon"><i class="fas fa-car"></i></div>
-          <div class="rule-content">
-            <h4>Parqueadero</h4>
-            <p>Cada apartamento tiene derecho a <strong>un (1) cupo de parqueadero</strong>. No se permite estacionar en cupos asignados a otros apartamentos ni en zonas de circulación.</p>
-          </div>
+          <div class="rule-content"><h4>Parqueadero</h4><p>Cada apartamento tiene derecho a <strong>un (1) cupo de parqueadero</strong>. No se permite estacionar en cupos asignados a otros apartamentos ni en zonas de circulación.</p></div>
         </div>
-
         <div class="rule-item">
           <div class="rule-icon info-icon"><i class="fas fa-paw"></i></div>
-          <div class="rule-content">
-            <h4>Mascotas</h4>
-            <p>Las mascotas deben transitar con <strong>correa y bozal</strong> en áreas comunes. El propietario es responsable de recoger los desechos de su mascota.</p>
-          </div>
+          <div class="rule-content"><h4>Mascotas</h4><p>Las mascotas deben transitar con <strong>correa y bozal</strong> en áreas comunes. El propietario es responsable de recoger los desechos de su mascota.</p></div>
         </div>
-
         <div class="rule-item">
           <div class="rule-icon accent-icon"><i class="fas fa-tools"></i></div>
-          <div class="rule-content">
-            <h4>Obras y Mudanzas</h4>
-            <p>Toda obra, reparación o mudanza debe ser <strong>solicitada con anticipación</strong> a través del portal. Solo se permiten en horario diurno (8:00 AM - 6:00 PM).</p>
-          </div>
+          <div class="rule-content"><h4>Obras y Mudanzas</h4><p>Toda obra, reparación o mudanza debe ser <strong>solicitada con anticipación</strong> a través del portal. Solo se permiten en horario diurno (8:00 AM - 6:00 PM).</p></div>
         </div>
-
         <div class="rule-item">
           <div class="rule-icon warning-icon"><i class="fas fa-money-bill-wave"></i></div>
-          <div class="rule-content">
-            <h4>Pago de Administración</h4>
-            <p>La cuota de <strong>$100.000 COP</strong> se paga mensualmente con <strong>5 días de gracia</strong>. Después de ese periodo se genera mora del 10% más $10.000 fijos por cada mes vencido.</p>
-          </div>
+          <div class="rule-content"><h4>Pago de Administración</h4><p>La cuota de <strong>$100.000 COP</strong> se paga mensualmente con <strong>5 días de gracia</strong>. Después de ese periodo se genera mora del 10% más $10.000 fijos por cada mes vencido.</p></div>
         </div>
-
         <div class="rule-item">
           <div class="rule-icon success-icon"><i class="fas fa-trash-alt"></i></div>
-          <div class="rule-content">
-            <h4>Aseo y Zonas Comunes</h4>
-            <p>Mantener limpias y ordenadas las áreas comunes. Está <strong>prohibido arrojar objetos por ventanas o balcones</strong>. Depositar basura en los sitios designados.</p>
-          </div>
+          <div class="rule-content"><h4>Aseo y Zonas Comunes</h4><p>Mantener limpias y ordenadas las áreas comunes. Está <strong>prohibido arrojar objetos por ventanas o balcones</strong>. Depositar basura en los sitios designados.</p></div>
         </div>
-
         <div class="rule-item">
           <div class="rule-icon info-icon"><i class="fas fa-door-open"></i></div>
-          <div class="rule-content">
-            <h4>Salón Comunal y BBQ</h4>
-            <p>El uso del Salón Comunal y Zona de BBQ requiere <strong>reserva previa</strong> a través del portal. Salón Comunal: $100.000 | Zona BBQ: $50.000 | Sillas: $2.000 c/u (máx 20).</p>
-          </div>
+          <div class="rule-content"><h4>Salón Comunal y BBQ</h4><p>El uso del Salón Comunal y Zona de BBQ requiere <strong>reserva previa</strong> a través del portal. Salón Comunal: $100.000 | Zona BBQ: $50.000 | Sillas: $2.000 c/u (máx 20).</p></div>
         </div>
-
       </div>
     </div>
 
-    <!-- Footer -->
     <div class="landing-footer">
       <p><i class="fas fa-building"></i> Claret Real VI &mdash; Portal de Gestión Conjunto Residencial</p>
     </div>
   </div>
 
-
-
-
-
-
-
   <!-- Auth Modal -->
   <div id="modalAuth" class="modal">
     <div class="modal-content">
       <div class="modal-header">
-        <button class="modal-close" onclick="cerrarModalAuth()" style="background: rgba(255,255,255,0.15);"><i class="fas fa-times"></i></button>
+        <button class="modal-close" onclick="cerrarModalAuth()"><i class="fas fa-times"></i></button>
         <img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo" style="display: block; margin: 0 auto;">
         <h3>Claret Real VI</h3>
         <p>Portal de Gestión</p>
       </div>
       <div class="modal-body">
-        <!-- Panel 1: Admin/Residente choice -->
         <div id="authChoice" class="auth-panel">
           <p class="auth-panel-title" style="text-align: center;">¿Cómo deseas ingresar?</p>
           <div class="auth-choice-grid">
             <button class="auth-choice-btn" onclick="irAdministracion()">
-              <i class="fas fa-user-shield"></i>
-              Administración
+              <i class="fas fa-user-shield"></i> Administración
             </button>
             <button class="auth-choice-btn" onclick="irResidentes()">
-              <i class="fas fa-home"></i>
-              Residentes
+              <i class="fas fa-home"></i> Residentes
             </button>
           </div>
         </div>
 
-        <!-- Panel 2: Admin Login -->
         <div id="authAdminLogin" class="auth-panel" style="display: none;">
           <button class="auth-back-btn" onclick="volverMenuPrincipal()"><i class="fas fa-arrow-left"></i> Volver</button>
           <p class="auth-panel-title">Iniciar Sesión</p>
@@ -1031,26 +876,23 @@
               <label class="form-label">Usuario</label>
               <input type="text" id="usuario" class="form-control" placeholder="Ingresa tu usuario">
             </div>
-            <div class="form-group">
+            <div class="form-group" style="position: relative;">
               <label class="form-label">Contraseña</label>
-              <div style="position: relative;">
-                <input type="password" id="contrasena" class="form-control" placeholder="Ingresa tu contraseña">
-                <button type="button" style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); background: none; border: none; color: #94a3b8; cursor: pointer; padding: 4px;" onclick="togglePassword('contrasena')"><i class="fas fa-eye"></i></button>
-              </div>
+              <input type="password" id="contrasena" class="form-control" placeholder="Ingresa tu contraseña">
+              <button type="button" onclick="togglePassword('contrasena')" style="position: absolute; right: 12px; top: 32px; background: none; border: none; color: var(--text-muted); cursor: pointer;"><i class="fas fa-eye"></i></button>
             </div>
             <div class="auth-login-actions">
-              <button class="btn btn-primary" onclick="validarLogin()"><i class="fas fa-sign-in-alt"></i> Iniciar Sesión</button>
-              <button class="btn btn-light" onclick="abrirModal('modalCambioClave')"><i class="fas fa-key"></i> ¿Olvidaste tu contraseña?</button>
+              <button class="btn btn-primary" onclick="validarLogin()"><i class="fas fa-sign-in-alt"></i> Ingresar</button>
+              <button class="btn btn-light" onclick="abrirModal('modalCambioClave')"><i class="fas fa-key"></i> Cambiar Contraseña</button>
             </div>
           </div>
         </div>
 
-        <!-- Panel 3: Residente apartment selector -->
         <div id="authResidenteSelect" class="auth-panel" style="display: none;">
           <button class="auth-back-btn" onclick="volverMenuPrincipal()"><i class="fas fa-arrow-left"></i> Volver</button>
           <p class="auth-panel-title">Selecciona tu Apartamento</p>
-          <p class="auth-panel-subtitle">Ingresa con tu número de apartamento</p>
-          <div class="apartment-grid" id="apartmentGrid"></div>
+          <p class="auth-panel-subtitle">Elige el apartamento correspondiente</p>
+          <div id="apartmentGrid" class="apartment-grid"></div>
         </div>
       </div>
     </div>
@@ -1058,40 +900,119 @@
 
   <!-- Dashboard -->
   <div id="dashboard" class="dashboard hidden">
-    <button class="sidebar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
-    
-    <div id="sidebar" class="sidebar">
-      <div class="sidebar-header">
-        <img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo" class="sidebar-logo">
-        <h3 class="sidebar-title">Portal de Gestión</h3>
-        <p class="sidebar-subtitle" id="userRole">Administrador</p>
+    <!-- Top Navigation Bar -->
+    <div class="topbar">
+      <div class="topbar-left">
+        <button class="topbar-toggle" onclick="toggleSidebar()"><i class="fas fa-bars"></i></button>
+        <div class="topbar-brand">
+          <img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo">
+          <h1>Claret Real VI</h1>
+        </div>
       </div>
-      <ul class="sidebar-menu">
-        <li><a href="#" onclick="mostrarSeccion('bienvenida')" class="active"><i class="fas fa-home"></i> Inicio</a></li>
-        <li><a href="#" onclick="mostrarSeccion('resumen')"><i class="fas fa-chart-pie"></i> Resumen</a></li>
-        <li><a href="#" onclick="mostrarSeccion('ingresos')"><i class="fas fa-arrow-up"></i> Ingresos</a></li>
-        <li><a href="#" onclick="mostrarSeccion('egresos')"><i class="fas fa-arrow-down"></i> Egresos</a></li>
-        <li class="admin-only"><a href="#" onclick="mostrarSeccion('activos')"><i class="fas fa-box"></i> Activos</a></li>
-        <li><a href="#" onclick="mostrarSeccion('formatos')"><i class="fas fa-file-alt"></i> Formatos</a></li>
-        <li><a href="#" onclick="mostrarSeccion('solicitudes')"><i class="fas fa-clipboard-list"></i> Solicitudes</a></li>
-        <li><a href="#" onclick="cerrarSesion()"><i class="fas fa-sign-out-alt"></i> Cerrar Sesión</a></li>
-      </ul>
+      <div class="topbar-center" id="topbarBadges">
+        <div class="topbar-badge warning" id="badgeMora" style="display:none;">
+          <i class="fas fa-exclamation-triangle"></i>
+          <span id="badgeMoraText">0 en mora</span>
+        </div>
+        <div class="topbar-badge" id="badgePendientes" style="display:none;">
+          <i class="fas fa-clock"></i>
+          <span id="badgePendientesText">0 pendientes</span>
+        </div>
+        <div class="topbar-badge success" id="badgePagoResidente" style="display:none;">
+          <i class="fas fa-check-circle"></i>
+          <span id="badgePagoText">Pago al día</span>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <div class="user-avatar" id="userAvatarBtn" onclick="toggleUserMenu()">Apto</div>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dropdown-header">
+            <div class="user-avatar" style="cursor:default;">Apto</div>
+            <div class="info">
+              <h4 id="dropdownUserName">-</h4>
+              <p id="dropdownUserRole">-</p>
+            </div>
+          </div>
+          <button class="user-dropdown-item" onclick="abrirModal('modalCambioClave'); toggleUserMenu();">
+            <i class="fas fa-key"></i> Cambiar Contraseña
+          </button>
+          <button class="user-dropdown-item danger" onclick="cerrarSesion()">
+            <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+          </button>
+        </div>
+      </div>
     </div>
 
-    <div id="dashboardContent">
-      <!-- Payment Section -->
-      <div class="payment-section" id="paymentSection">
-        <div class="payment-header">
-          <h3 class="payment-title"><i class="fas fa-credit-card"></i> Pago de Administración</h3>
-          <div class="payment-status"><i class="fas fa-clock"></i><span id="paymentStatus">Pendiente</span></div>
+    <!-- Sidebar Overlay -->
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleSidebar()"></div>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="sidebar">
+      <div class="sidebar-brand">
+        <img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo">
+        <div>
+          <h3>Claret Real VI</h3>
+          <p id="userRole">-</p>
         </div>
-        <div class="payment-details">
-          <div class="payment-detail"><div class="payment-detail-label">Mes Actual</div><div class="payment-detail-value" id="currentMonth">-</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Valor</div><div class="payment-detail-value" id="paymentAmount">$0</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Apartamento</div><div class="payment-detail-value" id="userApartment">-</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Estado</div><div class="payment-detail-value" id="paymentState">No pagado</div></div>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" onclick="mostrarSeccion('bienvenida'); return false;" class="active" data-section="bienvenida">
+          <i class="fas fa-th-large"></i> Inicio
+        </a>
+        <a href="#" onclick="mostrarSeccion('resumen'); return false;" data-section="resumen">
+          <i class="fas fa-chart-pie"></i> Resumen Financiero
+        </a>
+        <a href="#" onclick="mostrarSeccion('ingresos'); return false;" data-section="ingresos">
+          <i class="fas fa-arrow-up"></i> Ingresos
+        </a>
+        <a href="#" onclick="mostrarSeccion('egresos'); return false;" data-section="egresos">
+          <i class="fas fa-arrow-down"></i> Egresos
+        </a>
+        <a href="#" onclick="mostrarSeccion('activos'); return false;" data-section="activos" class="admin-only">
+          <i class="fas fa-box"></i> Activos Fijos
+        </a>
+        <div class="sidebar-divider admin-only"></div>
+        <a href="#" onclick="mostrarSeccion('solicitudes'); return false;" data-section="solicitudes">
+          <i class="fas fa-clipboard-list"></i> Solicitudes
+        </a>
+        <a href="#" onclick="mostrarSeccion('formatos'); return false;" data-section="formatos">
+          <i class="fas fa-file-alt"></i> Formatos
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <a href="#" onclick="cerrarSesion(); return false;">
+          <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
+        </a>
+      </div>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div class="dashboard-content" id="dashboardContent">
+
+      <!-- Payment Banner (for residents) -->
+      <div class="payment-banner" id="paymentSection">
+        <div class="payment-banner-left">
+          <div class="payment-banner-stat">
+            <div class="payment-banner-label">Mes Actual</div>
+            <div class="payment-banner-value" id="currentMonth">-</div>
+          </div>
+          <div class="payment-banner-divider"></div>
+          <div class="payment-banner-stat">
+            <div class="payment-banner-label">Valor a Pagar</div>
+            <div class="payment-banner-value" id="paymentAmount">$0</div>
+          </div>
+          <div class="payment-banner-divider"></div>
+          <div class="payment-banner-stat">
+            <div class="payment-banner-label">Apartamento</div>
+            <div class="payment-banner-value" id="userApartment">-</div>
+          </div>
+          <div class="payment-banner-divider"></div>
+          <div class="payment-banner-stat">
+            <div class="payment-banner-label">Estado</div>
+            <div class="payment-banner-value" id="paymentState"><span class="badge badge-warning">Pendiente</span></div>
+          </div>
         </div>
-        <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+        <div class="payment-banner-actions">
           <button class="btn btn-light" onclick="abrirModalPago()"><i class="fas fa-credit-card"></i> Pago Digital</button>
           <button class="btn btn-light admin-only" onclick="abrirModal('modalPagoEfectivo')"><i class="fas fa-money-bill"></i> Efectivo</button>
           <button class="btn btn-accent admin-only" onclick="abrirModalGestionExenciones()"><i class="fas fa-shield-alt"></i> Exenciones</button>
@@ -1099,19 +1020,49 @@
         </div>
       </div>
 
-      <!-- Bienvenida -->
+      <!-- Inicio / Bienvenida -->
       <div id="bienvenidaSection" class="card">
-        <div class="card-header"><h2 class="card-title"><i class="fas fa-home"></i> Inicio</h2></div>
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-th-large"></i> Panel General</h2>
+        </div>
         <div class="stats-grid">
-          <div class="stat-card info"><div class="stat-header"><div><div class="stat-title">Apartamentos</div><div class="stat-value">16</div></div><div class="stat-icon info"><i class="fas fa-building"></i></div></div></div>
-          <div class="stat-card success"><div class="stat-header"><div><div class="stat-title">Pagos al Día</div><div class="stat-value" id="paymentsUpToDate">0</div></div><div class="stat-icon success"><i class="fas fa-check-circle"></i></div></div><div id="apartamentosAlDia" style="margin-top: 6px; font-size: 12px; color: var(--text-secondary);"></div></div>
-          <div class="stat-card warning"><div class="stat-header"><div><div class="stat-title">Pendientes</div><div class="stat-value" id="pendingPayments">0</div></div><div class="stat-icon warning"><i class="fas fa-clock"></i></div></div><div id="apartamentosPendientes" style="margin-top: 6px; font-size: 12px; color: var(--text-secondary);"></div></div>
-          <div class="stat-card danger"><div class="stat-header"><div><div class="stat-title">En Mora</div><div class="stat-value" id="apartmentsInArrears">0</div></div><div class="stat-icon danger"><i class="fas fa-exclamation-triangle"></i></div></div><div id="apartamentosEnMora" style="margin-top: 6px; font-size: 12px; color: var(--text-secondary);"></div></div>
-          <div class="stat-card" style="border-left-color: #7c3aed;"><div class="stat-header"><div><div class="stat-title">Solicitudes</div><div class="stat-value" id="activeRequests">0</div></div><div class="stat-icon" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6);"><i class="fas fa-clipboard-list"></i></div></div></div>
+          <div class="stat-card info">
+            <div class="stat-header">
+              <div><div class="stat-title">Apartamentos</div><div class="stat-value">16</div></div>
+              <div class="stat-icon info"><i class="fas fa-building"></i></div>
+            </div>
+          </div>
+          <div class="stat-card success">
+            <div class="stat-header">
+              <div><div class="stat-title">Pagos al Día</div><div class="stat-value" id="paymentsUpToDate">0</div></div>
+              <div class="stat-icon success"><i class="fas fa-check-circle"></i></div>
+            </div>
+            <div id="apartamentosAlDia" style="margin-top: 6px; font-size: 11.5px; color: var(--text-muted);"></div>
+          </div>
+          <div class="stat-card warning">
+            <div class="stat-header">
+              <div><div class="stat-title">Pendientes</div><div class="stat-value" id="pendingPayments">0</div></div>
+              <div class="stat-icon warning"><i class="fas fa-clock"></i></div>
+            </div>
+            <div id="apartamentosPendientes" style="margin-top: 6px; font-size: 11.5px; color: var(--text-muted);"></div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-header">
+              <div><div class="stat-title">En Mora</div><div class="stat-value" id="apartmentsInArrears">0</div></div>
+              <div class="stat-icon danger"><i class="fas fa-exclamation-triangle"></i></div>
+            </div>
+            <div id="apartamentosEnMora" style="margin-top: 6px; font-size: 11.5px; color: var(--text-muted);"></div>
+          </div>
+          <div class="stat-card" style="border-left-color: var(--accent);">
+            <div class="stat-header">
+              <div><div class="stat-title">Solicitudes</div><div class="stat-value" id="activeRequests">0</div></div>
+              <div class="stat-icon" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6);"><i class="fas fa-clipboard-list"></i></div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- Resumen -->
+      <!-- Resumen Financiero -->
       <div id="resumenSection" class="card hidden">
         <div class="card-header">
           <h2 class="card-title"><i class="fas fa-chart-pie"></i> Resumen Financiero</h2>
@@ -1122,132 +1073,77 @@
           <span id="textoFiltroResumen"></span>
           <button class="btn btn-sm btn-light" onclick="limpiarFiltro('resumen')" style="margin-left: 10px;"><i class="fas fa-times"></i></button>
         </div>
-        
-        <!-- CARDS FINANCIERAS (Grid de 3 adaptado) -->
+
         <div class="stats-grid-3">
-          
-          <!-- 1. INGRESOS -->
           <div class="stat-card success">
             <div class="stat-header">
-              <div>
-                <div class="stat-title">INGRESOS</div>
-                <div class="stat-value" id="ingresosTotal">$0</div>
-              </div>
+              <div><div class="stat-title">INGRESOS</div><div class="stat-value" id="ingresosTotal">$0</div></div>
               <div class="stat-icon success"><i class="fas fa-arrow-up"></i></div>
             </div>
             <div class="stat-change positive"><i class="fas fa-check-circle"></i><span>Ingresos Claret Real VI</span></div>
           </div>
-          
-          <!-- 2. EGRESOS -->
           <div class="stat-card danger">
             <div class="stat-header">
-              <div>
-                <div class="stat-title">EGRESOS</div>
-                <div class="stat-value" id="egresosTotal">$0</div>
-              </div>
+              <div><div class="stat-title">EGRESOS</div><div class="stat-value" id="egresosTotal">$0</div></div>
               <div class="stat-icon danger"><i class="fas fa-arrow-down"></i></div>
             </div>
             <div class="stat-change negative"><i class="fas fa-receipt"></i><span>Gastos del edificio</span></div>
           </div>
-          
-          <!-- 3. EXTRAORDINARIOS -->
           <div class="stat-card info">
             <div class="stat-header">
-              <div>
-                <div class="stat-title">EXTRAORDINARIOS</div>
-                <div class="stat-value" id="extraordinariosTotal">$0</div>
-              </div>
+              <div><div class="stat-title">EXTRAORDINARIOS</div><div class="stat-value" id="extraordinariosTotal">$0</div></div>
               <div class="stat-icon info"><i class="fas fa-star"></i></div>
             </div>
-            <div class="stat-change" style="color: var(--primary);"><i class="fas fa-coins"></i><span>Cuotas especiales</span></div>
+            <div class="stat-change" style="color: var(--primary-light);"><i class="fas fa-coins"></i><span>Cuotas especiales</span></div>
           </div>
-          
-          <!-- 4. ALQUILER SALÓN COMUNAL -->
           <div class="stat-card" style="border-left-color: #e91e63;">
             <div class="stat-header">
-              <div>
-                <div class="stat-title">ALQUILER SALÓN</div>
-                <div class="stat-value" id="alquileresTotal">$0</div>
-              </div>
+              <div><div class="stat-title">ALQUILER SALÓN</div><div class="stat-value" id="alquileresTotal">$0</div></div>
               <div class="stat-icon" style="background: linear-gradient(135deg, #e91e63, #f06292);"><i class="fas fa-building"></i></div>
             </div>
             <div class="stat-change" style="color: #e91e63;"><i class="fas fa-calendar-check"></i><span>Alquileres de zonas</span></div>
           </div>
-          
-          <!-- 5. DISPONIBLE EDIFICIO -->
           <div class="stat-card" style="border-left-color: #00bcd4;">
             <div class="stat-header">
-              <div>
-                <div class="stat-title">DISPONIBLE EDIFICIO</div>
-                <div class="stat-value" id="disponibleEdificio" style="color: #00838f;">$0</div>
-              </div>
+              <div><div class="stat-title">DISPONIBLE</div><div class="stat-value" id="disponibleEdificio" style="color: #00838f;">$0</div></div>
               <div class="stat-icon" style="background: linear-gradient(135deg, #00bcd4, #26c6da);"><i class="fas fa-landmark"></i></div>
             </div>
             <div class="stat-change" style="color: #00838f;"><i class="fas fa-info-circle"></i><span>En Caja</span></div>
           </div>
-          
-          <!-- 6. BALANCE -->
           <div class="stat-card warning">
             <div class="stat-header">
-              <div>
-                <div class="stat-title">BALANCE</div>
-                <div class="stat-value" id="balanceTotal">$0</div>
-              </div>
+              <div><div class="stat-title">BALANCE</div><div class="stat-value" id="balanceTotal">$0</div></div>
               <div class="stat-icon warning"><i class="fas fa-balance-scale"></i></div>
             </div>
             <div class="stat-change" id="balanceChange"><i class="fas fa-minus"></i><span>Estable</span></div>
           </div>
-          
         </div>
-        
-        <!-- TABLA DE DISPONIBLE EDIFICIO -->
-        <div style="margin-top: 30px;">
-          <h3 style="margin-bottom: 15px; color: #00838f;"><i class="fas fa-landmark"></i> Detalle Disponible Edificio</h3>
+
+        <div style="margin-top: 28px;">
+          <h3 style="margin-bottom: 14px; color: #00838f; font-size: 15px;"><i class="fas fa-landmark"></i> Detalle Disponible Edificio</h3>
           <div class="table-container">
             <table class="table">
-              <thead>
-                <tr>
-                  <th>Concepto</th>
-                  <th style="text-align: right;">Valor</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Concepto</th><th style="text-align: right;">Valor</th></tr></thead>
               <tbody id="tablaDisponibleBody"></tbody>
             </table>
           </div>
         </div>
-      
-        <!-- TABLA DE EXTRAORDINARIOS -->
-        <div style="margin-top: 30px;">
-          <h3 style="margin-bottom: 15px; color: var(--primary);"><i class="fas fa-star"></i> Detalle Cuotas Extraordinarias</h3>
+
+        <div style="margin-top: 28px;">
+          <h3 style="margin-bottom: 14px; color: var(--primary-light); font-size: 15px;"><i class="fas fa-star"></i> Detalle Cuotas Extraordinarias</h3>
           <div class="table-container">
             <table class="table">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Tipo</th>
-                  <th>Descripción</th>
-                  <th>Valor Extraordinario</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Valor Extraordinario</th></tr></thead>
               <tbody id="tablaExtraordinariosBody"></tbody>
             </table>
           </div>
         </div>
-        
-        <!-- TABLA DE ALQUILERES -->
-        <div style="margin-top: 30px;">
-          <h3 style="margin-bottom: 15px; color: #e91e63;"><i class="fas fa-building"></i> Detalle Alquileres Salón Comunal</h3>
+
+        <div style="margin-top: 28px;">
+          <h3 style="margin-bottom: 14px; color: #e91e63; font-size: 15px;"><i class="fas fa-building"></i> Detalle Alquileres Salón Comunal</h3>
           <div class="table-container">
             <table class="table">
-              <thead>
-                <tr>
-                  <th>Fecha</th>
-                  <th>Tipo</th>
-                  <th>Descripción</th>
-                  <th>Apartamento</th>
-                  <th>Valor</th>
-                </tr>
-              </thead>
+              <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Apartamento</th><th>Valor</th></tr></thead>
               <tbody id="tablaAlquileresBody"></tbody>
             </table>
           </div>
@@ -1258,8 +1154,8 @@
       <div id="ingresosSection" class="card hidden">
         <div class="card-header">
           <h2 class="card-title"><i class="fas fa-arrow-up"></i> Ingresos</h2>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn btn-success admin-only" onclick="abrirModal('modalIngreso')"><i class="fas fa-plus"></i> Nuevo</button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-success btn-sm admin-only" onclick="abrirModal('modalIngreso')"><i class="fas fa-plus"></i> Nuevo</button>
             <button class="btn btn-primary btn-sm" onclick="abrirModal('modalFechas')"><i class="fas fa-filter"></i> Filtrar</button>
           </div>
         </div>
@@ -1271,8 +1167,8 @@
       <div id="egresosSection" class="card hidden">
         <div class="card-header">
           <h2 class="card-title"><i class="fas fa-arrow-down"></i> Egresos</h2>
-          <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-            <button class="btn btn-danger admin-only" onclick="abrirModal('modalEgreso')"><i class="fas fa-plus"></i> Nuevo</button>
+          <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+            <button class="btn btn-danger btn-sm admin-only" onclick="abrirModal('modalEgreso')"><i class="fas fa-plus"></i> Nuevo</button>
             <button class="btn btn-primary btn-sm" onclick="abrirModal('modalFechas')"><i class="fas fa-filter"></i> Filtrar</button>
           </div>
         </div>
@@ -1284,35 +1180,48 @@
       <div id="activosSection" class="card hidden">
         <div class="card-header">
           <h2 class="card-title"><i class="fas fa-box"></i> Activos Fijos</h2>
-          <div class="admin-only" style="display: flex; gap: 10px;">
-            <button class="btn btn-primary" onclick="abrirModal('modalActivo')"><i class="fas fa-plus"></i> Nuevo</button>
+          <div class="admin-only" style="display: flex; gap: 8px;">
+            <button class="btn btn-primary btn-sm" onclick="abrirModal('modalActivo')"><i class="fas fa-plus"></i> Nuevo</button>
           </div>
         </div>
         <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Código</th><th>Descripción</th><th>Asignado a</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaActivosBody"></tbody></table></div>
       </div>
 
-      <!-- Formatos -->
-      <div id="formatosSection" class="card hidden">
-        <div class="card-header"><h2 class="card-title"><i class="fas fa-file-alt"></i> Formatos y Documentos</h2></div>
-        <div class="form-group">
-          <label class="form-label">Selecciona un formato:</label>
-          <select id="listaFormatos" class="form-control" onchange="mostrarFormato()"><option value="">-- Selecciona --</option></select>
+      <!-- Solicitudes & Formatos (Merged) -->
+      <div id="solicitudesFormatosSection" class="card hidden">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Solicitudes & Formatos</h2>
+          <button class="btn btn-primary btn-sm" onclick="abrirModal('modalSolicitud')"><i class="fas fa-plus"></i> Nueva Solicitud</button>
         </div>
-        <div id="visorFormato" style="display: none;"><iframe id="iframeFormato" style="width: 100%; height: 500px; border-radius: var(--radius); border: 1px solid rgba(0,0,0,0.1);"></iframe></div>
+        <div class="section-tabs">
+          <button class="section-tab active" id="tabBtnSolicitudes" onclick="mostrarTabSF('solicitudes')">
+            <i class="fas fa-clipboard-list"></i> Solicitudes
+          </button>
+          <button class="section-tab" id="tabBtnFormatos" onclick="mostrarTabSF('formatos')">
+            <i class="fas fa-file-alt"></i> Formatos y Documentos
+          </button>
+        </div>
+
+        <div id="sfTabSolicitudes">
+          <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Solicitud</th><th>Fecha solicitada</th><th>Horario</th><th>Soporte</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaSolicitudesBody"></tbody></table></div>
+        </div>
+
+        <div id="sfTabFormatos" class="hidden">
+          <div class="form-group">
+            <label class="form-label">Selecciona un formato:</label>
+            <select id="listaFormatos" class="form-control" onchange="mostrarFormato()"><option value="">-- Selecciona --</option></select>
+          </div>
+          <div id="visorFormato" style="display: none;"><iframe id="iframeFormato" style="width: 100%; height: 500px; border-radius: var(--radius); border: 1px solid var(--border);"></iframe></div>
+        </div>
       </div>
 
-      <!-- Solicitudes -->
-      <div id="solicitudesSection" class="card hidden">
-        <div class="card-header">
-          <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Solicitudes</h2>
-          <button class="btn btn-primary" onclick="abrirModal('modalSolicitud')"><i class="fas fa-plus"></i> Nueva</button>
-        </div>
-        <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Solicitud</th><th>Fecha solicitada</th><th>Horario</th><th>Soporte</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaSolicitudesBody"></tbody></table></div>
-      </div>
     </div>
   </div>
 
-  <!-- MODALES -->
+  <!-- =============================================
+       MODALES
+       ============================================= -->
+
   <!-- Modal Cambio Clave -->
   <div id="modalCambioClave" class="modal">
     <div class="modal-content">
@@ -1409,23 +1318,23 @@
     <div class="modal-content">
       <div class="modal-header"><h3 class="modal-title">Pago Digital</h3><button class="modal-close" onclick="cerrarModalPago()"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
-        <div class="payment-details" style="background: var(--light); padding: 20px; border-radius: var(--radius); margin-bottom: 20px;">
-          <div class="payment-detail"><div class="payment-detail-label">Mes</div><div class="payment-detail-value" id="paymentMonth">-</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Apartamento</div><div class="payment-detail-value" id="paymentApartment">-</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Valor</div><div class="payment-detail-value" id="paymentValue">$0</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Desglose</div><div class="payment-detail-value" id="paymentBreakdown">-</div></div>
+        <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); margin-bottom: 18px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Mes</div><div style="font-size: 14px; font-weight: 600;" id="paymentMonth">-</div></div>
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="paymentApartment">-</div></div>
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600;" id="paymentValue">$0</div></div>
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Desglose</div><div style="font-size: 12px; font-weight: 600;" id="paymentBreakdown">-</div></div>
         </div>
         <div class="qr-container"><img src="https://i.imgur.com/G2pDQyY.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')"></div>
-        <div style="text-align: center; margin-top: 10px; color: var(--gray); font-size: 12px;"><i class="fas fa-download"></i> Click para descargar QR</div>
-        <div class="form-group" style="margin-top: 20px;">
+        <div style="text-align: center; margin-top: 8px; color: var(--text-muted); font-size: 12px;"><i class="fas fa-download"></i> Click para descargar QR</div>
+        <div class="form-group" style="margin-top: 18px;">
           <label class="form-label">Datos Transferencia</label>
-          <div style="background: var(--light); padding: 20px; border-radius: var(--radius);">
-            <div style="margin-bottom: 10px;"><strong>Llave:</strong> 3214583531</div>
-            <div style="margin-bottom: 10px;"><strong>Tipo:</strong> Bre-B</div>
+          <div style="background: var(--bg); padding: 16px; border-radius: var(--radius);">
+            <div style="margin-bottom: 8px;"><strong>Llave:</strong> 3214583531</div>
+            <div style="margin-bottom: 8px;"><strong>Tipo:</strong> Bre-B</div>
             <div><strong>Titular:</strong> Administracion Edificio</div>
           </div>
         </div>
-        <div class="form-group" style="margin-top: 20px;"><label class="form-label">Comprobante</label><input type="file" id="comprobantePago" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></div>
+        <div class="form-group" style="margin-top: 18px;"><label class="form-label">Comprobante</label><input type="file" id="comprobantePago" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="procesarPago()"><i class="fas fa-credit-card"></i> Procesar</button>
@@ -1456,8 +1365,8 @@
     <div class="modal-content">
       <div class="modal-header"><h3 class="modal-title"><i class="fas fa-shield-alt"></i> Exenciones Cuota Extraordinaria</h3><button class="modal-close" onclick="cerrarModal('modalGestionExenciones')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
-        <div style="display: flex; margin-bottom: 20px; border-bottom: 1px solid #eee;">
-          <button id="tabNuevaExencion" class="btn btn-sm btn-primary" onclick="mostrarTabExencion('nueva')" style="margin-right: 10px;"><i class="fas fa-plus"></i> Nueva</button>
+        <div style="display: flex; margin-bottom: 18px; border-bottom: 1px solid var(--border-light); padding-bottom: 12px;">
+          <button id="tabNuevaExencion" class="btn btn-sm btn-primary" onclick="mostrarTabExencion('nueva')" style="margin-right: 8px;"><i class="fas fa-plus"></i> Nueva</button>
           <button id="tabExencionesExistentes" class="btn btn-sm btn-light" onclick="mostrarTabExencion('existentes')"><i class="fas fa-list"></i> Existentes</button>
         </div>
         <div id="contenidoNuevaExencion">
@@ -1484,13 +1393,13 @@
       <div class="modal-body">
         <div class="form-group"><label class="form-label">Zona</label><select id="rentalZone" class="form-control" onchange="actualizarValorAlquiler()"><option value="">Selecciona</option><option value="Salón Comunal">Salón Comunal</option><option value="Zona de BBQ">Zona de BBQ</option><option value="Sillas">Sillas ($2.000 c/u)</option></select></div>
         <div class="form-group hidden" id="groupCantidadSillas"><label class="form-label">Cantidad (Máx 20)</label><input type="number" id="cantidadSillas" class="form-control" min="1" max="20" value="1" oninput="actualizarValorAlquiler()"></div>
-        <div class="payment-details" style="background: var(--light); padding: 20px; border-radius: var(--radius); margin-bottom: 20px;">
-          <div class="payment-detail"><div class="payment-detail-label">Zona</div><div class="payment-detail-value" id="paymentZone">-</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Apartamento</div><div class="payment-detail-value" id="rentalApartment">-</div></div>
-          <div class="payment-detail"><div class="payment-detail-label">Valor</div><div class="payment-detail-value" id="rentalValue">$0</div></div>
+        <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); margin-bottom: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Zona</div><div style="font-size: 14px; font-weight: 600;" id="paymentZone">-</div></div>
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="rentalApartment">-</div></div>
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600;" id="rentalValue">$0</div></div>
         </div>
         <div class="qr-container"><img src="https://i.imgur.com/MXfVtEQ.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')"></div>
-        <div class="form-group" style="margin-top: 20px;"><label class="form-label">Comprobante</label><input type="file" id="comprobanteAlquiler" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></div>
+        <div class="form-group" style="margin-top: 18px;"><label class="form-label">Comprobante</label><input type="file" id="comprobanteAlquiler" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="procesarAlquiler()"><i class="fas fa-credit-card"></i> Procesar</button>
@@ -1516,14 +1425,12 @@
     </div>
   </div>
 
-  <!-- Scripts (Igual que antes, no se requieren cambios lógicos para el CSS) -->
+  <!-- Scripts -->
   <script>
     // ============================================
-    // CONFIGURACIÓN API (AGREGA ESTO)
+    // CONFIGURACIÓN API
     // ============================================
-    // Reemplaza esta URL con la que te da Google al desplegar tu .gs como "Aplicación Web"
-    const API_URL = 'https://script.google.com/macros/s/AKfycbzksjlENchxiD7vCQt3E8gtj4akj01o5NWa8yTpR4UDE_OAydHbe2SsLohzTADBScuk/exec'; 
-
+    const API_URL = 'https://script.google.com/macros/s/AKfycbzksjlENchxiD7vCQt3E8gtj4akj01o5NWa8yTpR4UDE_OAydHbe2SsLohzTADBScuk/exec';
 
     // ============================================
     // ESTADO GLOBAL
@@ -1571,54 +1478,61 @@
 
     function abrirModal(id) { document.getElementById(id).classList.add('active'); }
     function cerrarModal(id) { document.getElementById(id).classList.remove('active'); }
-    function toggleSidebar() { document.getElementById('sidebar').classList.toggle('active'); }
-    function togglePassword(id) { const el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; }
+
+    function toggleSidebar() {
+      var sidebar = document.getElementById('sidebar');
+      var overlay = document.getElementById('sidebarOverlay');
+      sidebar.classList.toggle('active');
+      overlay.classList.toggle('active');
+    }
+
+    function closeSidebar() {
+      document.getElementById('sidebar').classList.remove('active');
+      document.getElementById('sidebarOverlay').classList.remove('active');
+    }
+
+    function toggleUserMenu() {
+      document.getElementById('userDropdown').classList.toggle('active');
+    }
+
+    function togglePassword(id) { var el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; }
+
+    // Close dropdowns on outside click
+    document.addEventListener('click', function(e) {
+      var dropdown = document.getElementById('userDropdown');
+      var avatarBtn = document.getElementById('userAvatarBtn');
+      if (dropdown && avatarBtn && !dropdown.contains(e.target) && !avatarBtn.contains(e.target)) {
+        dropdown.classList.remove('active');
+      }
+    });
 
     function llamarGS(funcion, params = [], successCb, errorCb) {
-      const cb = successCb || function() {};
-      const errCb = errorCb || function(e) { 
-        console.error('Error:', e); 
-        ocultarLoading(); 
-        mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error'); 
+      var cb = successCb || function() {};
+      var errCb = errorCb || function(e) {
+        console.error('Error:', e);
+        ocultarLoading();
+        mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
       };
 
-      // 1. Preparamos el "paquete" de datos que tu nuevo backend espera recibir
-      const payload = {
-        funcion: funcion,
-        argumentos: params
-      };
-
-      // 2. Configuramos la petición HTTP (fetch)
-      const requestOptions = {
+      var payload = { funcion: funcion, argumentos: params };
+      var requestOptions = {
         method: 'POST',
-        mode: 'cors', // Necesario para conectar GitHub con Google
+        mode: 'cors',
         cache: 'no-cache',
-        headers: {
-          // Usamos text/plain para evitar errores de "Preflight" comunes en Apps Script
-          'Content-Type': 'text/plain;charset=utf-8', 
-        },
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       };
 
-      // 3. Ejecutamos la llamada a la URL de tu Script
       fetch(API_URL, requestOptions)
-        .then(response => {
-          if (!response.ok) {
-            throw new Error('Error de red o el servidor no respondió correctamente.');
-          }
+        .then(function(response) {
+          if (!response.ok) throw new Error('Error de red o el servidor no respondió correctamente.');
           return response.json();
         })
-        .then(data => {
-          // 4. Si todo sale bien, pasamos el resultado a tu función original
-          // Nota: Tu código original maneja los {status: "error"} dentro del success, 
-          // así que aquí simplemente enviamos los datos.
+        .then(function(data) {
           if (!data) { errCb(new Error('Respuesta vacía del servidor')); return; }
           cb(data);
         })
-        .catch(error => {
-          // 5. Si falla la conexión, ejecutamos el manejador de errores
-          errCb(error);
-        });
+        .catch(function(error) { errCb(error); });
     }
 
     // ============================================
@@ -1626,12 +1540,7 @@
     // ============================================
     function mostrarAuthPanel(panelId) {
       ['authChoice', 'authAdminLogin', 'authResidenteSelect'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (id === panelId) {
-          el.style.display = 'block';
-        } else {
-          el.style.display = 'none';
-        }
+        document.getElementById(id).style.display = id === panelId ? 'block' : 'none';
       });
     }
 
@@ -1653,61 +1562,86 @@
       document.getElementById('modalAuth').classList.add('active');
     }
 
-    function irAdministracion() {
-      mostrarAuthPanel('authAdminLogin');
-    }
-
-    function irResidentes() {
-      mostrarAuthPanel('authResidenteSelect');
-    }
-
-    function volverMenuPrincipal() {
-      mostrarAuthPanel('authChoice');
-    }
+    function irAdministracion() { mostrarAuthPanel('authAdminLogin'); }
+    function irResidentes() { mostrarAuthPanel('authResidenteSelect'); }
+    function volverMenuPrincipal() { mostrarAuthPanel('authChoice'); }
 
     function seleccionarApartamento(apt) {
       state.apartamento = apt;
       state.esAdmin = false;
       state.rol = 'Residente';
-      
+
       document.getElementById('modalAuth').classList.remove('active');
       document.getElementById('landingPage').classList.add('hidden');
       document.querySelector('.login-corner-btn').style.display = 'none';
       document.getElementById('dashboard').classList.remove('hidden');
+      document.documentElement.classList.add('dashboard-active');
+      document.body.classList.add('dashboard-active');
+
+      // Update UI elements
       document.getElementById('userRole').textContent = 'Residente - Apto ' + apt;
       document.getElementById('userApartment').textContent = apt;
-      
-      document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
-      document.querySelectorAll('.apartment-btn').forEach(b => b.classList.remove('selected'));
+      document.getElementById('dropdownUserName').textContent = 'Apartamento ' + apt;
+      document.getElementById('dropdownUserRole').textContent = 'Residente';
+
+      // Update avatar
+      document.getElementById('userAvatarBtn').textContent = apt;
+
+      // Show/hide badges
+      document.getElementById('badgeMora').style.display = 'none';
+      document.getElementById('badgePendientes').style.display = 'none';
+      document.getElementById('badgePagoResidente').style.display = 'flex';
+
+      document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
+      document.querySelectorAll('.apartment-btn').forEach(function(b) { b.classList.remove('selected'); });
       if (event && event.target) event.target.classList.add('selected');
-      
+
+      // Hide payment banner for residents if not needed (we keep it)
+      closeSidebar();
       mostrarSeccion('bienvenida');
       cargarDatosResidente();
     }
 
     function validarLogin() {
-      const usuario = document.getElementById('usuario').value.trim();
-      const contrasena = document.getElementById('contrasena').value.trim();
-      
+      var usuario = document.getElementById('usuario').value.trim();
+      var contrasena = document.getElementById('contrasena').value.trim();
+
       if (!usuario || !contrasena) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-      
+
       mostrarLoading('Validando...');
-      
+
       llamarGS('validarCredenciales', [usuario, contrasena], function(res) {
         ocultarLoading();
         if (res.status === 'success') {
           state.usuario = usuario;
           state.esAdmin = true;
           state.rol = 'Administrador';
-          
+
           document.getElementById('modalAuth').classList.remove('active');
           document.getElementById('landingPage').classList.add('hidden');
           document.querySelector('.login-corner-btn').style.display = 'none';
           document.getElementById('dashboard').classList.remove('hidden');
+          document.documentElement.classList.add('dashboard-active');
+          document.body.classList.add('dashboard-active');
+
+          // Update UI elements
           document.getElementById('userRole').textContent = 'Administrador';
-          document.querySelectorAll('.admin-only').forEach(el => el.style.display = '');
-          
+          document.getElementById('dropdownUserName').textContent = usuario;
+          document.getElementById('dropdownUserRole').textContent = 'Administrador';
+          document.getElementById('userAvatarBtn').textContent = 'AD';
+
+          // Show/hide badges
+          document.getElementById('badgeMora').style.display = 'flex';
+          document.getElementById('badgePendientes').style.display = 'flex';
+          document.getElementById('badgePagoResidente').style.display = 'none';
+
+          // Hide payment banner for admin
+          document.getElementById('paymentSection').style.display = 'none';
+
+          document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = ''; });
+
           mostrarNotificacion('Éxito', 'Bienvenido', 'success');
+          closeSidebar();
           mostrarSeccion('bienvenida');
         } else {
           mostrarNotificacion('Error', res.message, 'error');
@@ -1716,41 +1650,81 @@
     }
 
     function cerrarSesion() {
+      document.getElementById('userDropdown').classList.remove('active');
       Object.assign(state, { usuario: '', rol: '', apartamento: '', esAdmin: false });
+
       document.getElementById('dashboard').classList.add('hidden');
+      document.documentElement.classList.remove('dashboard-active');
+      document.body.classList.remove('dashboard-active');
+
       document.getElementById('landingPage').classList.remove('hidden');
       document.getElementById('landingPage').style.opacity = '1';
       document.querySelector('.login-corner-btn').style.display = 'flex';
       document.getElementById('usuario').value = '';
       document.getElementById('contrasena').value = '';
+
+      // Reset payment banner visibility
+      document.getElementById('paymentSection').style.display = '';
+
+      closeSidebar();
       mostrarNotificacion('Info', 'Sesión cerrada', 'info');
     }
 
+    // ============================================
+    // SECTION TABS (Solicitudes & Formatos)
+    // ============================================
+    function mostrarTabSF(tab) {
+      document.getElementById('sfTabSolicitudes').classList.toggle('hidden', tab !== 'solicitudes');
+      document.getElementById('sfTabFormatos').classList.toggle('hidden', tab !== 'formatos');
+      document.getElementById('tabBtnSolicitudes').classList.toggle('active', tab === 'solicitudes');
+      document.getElementById('tabBtnFormatos').classList.toggle('active', tab === 'formatos');
+
+      if (tab === 'formatos') { cargarFormatos(); }
+      if (tab === 'solicitudes') { cargarSolicitudes(); }
+    }
+
+    // ============================================
+    // MOSTRAR SECCIÓN
+    // ============================================
     function mostrarSeccion(seccion) {
       state.seccionActual = seccion;
-      const secciones = ['bienvenidaSection', 'resumenSection', 'ingresosSection', 'egresosSection', 'activosSection', 'formatosSection', 'solicitudesSection'];
-      secciones.forEach(id => document.getElementById(id).classList.add('hidden'));
-      
-      document.getElementById(seccion + 'Section').classList.remove('hidden');
-      
-      document.querySelectorAll('.sidebar-menu a').forEach(link => {
+      var secciones = ['bienvenidaSection', 'resumenSection', 'ingresosSection', 'egresosSection', 'activosSection', 'solicitudesFormatosSection'];
+      secciones.forEach(function(id) { document.getElementById(id).classList.add('hidden'); });
+
+      // Map section names to section IDs
+      if (seccion === 'solicitudes' || seccion === 'formatos') {
+        document.getElementById('solicitudesFormatosSection').classList.remove('hidden');
+        if (seccion === 'formatos') {
+          mostrarTabSF('formatos');
+        } else {
+          mostrarTabSF('solicitudes');
+        }
+      } else {
+        document.getElementById(seccion + 'Section').classList.remove('hidden');
+      }
+
+      // Update sidebar active state
+      document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
         link.classList.remove('active');
-        if (link.textContent.toLowerCase().includes(seccion === 'bienvenida' ? 'inicio' : seccion)) {
+        var s = link.getAttribute('data-section');
+        if (s === seccion) {
           link.classList.add('active');
         }
       });
-      
-      // Cargar datos según sección
-      const cargadores = {
+
+      closeSidebar();
+
+      // Load data for section
+      var cargadores = {
         bienvenida: actualizarEstadisticas,
         resumen: cargarResumen,
         ingresos: cargarIngresos,
         egresos: cargarEgresos,
         activos: cargarActivos,
-        formatos: cargarFormatos,
-        solicitudes: cargarSolicitudes
+        solicitudes: cargarSolicitudes,
+        formatos: cargarFormatos
       };
-      
+
       if (cargadores[seccion]) cargadores[seccion]();
     }
 
@@ -1766,31 +1740,37 @@
           return;
         }
         document.getElementById('currentMonth').textContent = datos.mesActual || '-';
-        document.getElementById('paymentAmount').textContent = datos.valorPago ? `$${datos.valorPago.toLocaleString('es-CO')}` : '$0';
+        document.getElementById('paymentAmount').textContent = datos.valorPago ? '$' + datos.valorPago.toLocaleString('es-CO') : '$0';
         document.getElementById('userApartment').textContent = state.apartamento;
         document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-');
-        
-        const breakdown = document.getElementById('paymentBreakdown');
+
+        var breakdown = document.getElementById('paymentBreakdown');
         if (datos.cuotaExtraordinaria > 0) {
-          breakdown.textContent = `$${(datos.valorBase || 0).toLocaleString('es-CO')} (admin) + $${datos.cuotaExtraordinaria.toLocaleString('es-CO')} (extra)`;
+          breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin) + $' + datos.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)';
         } else {
-          breakdown.textContent = `$${(datos.valorBase || 0).toLocaleString('es-CO')} (admin)`;
+          breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin)';
         }
-        
-        const paymentSection = document.getElementById('paymentSection');
+
+        var paymentSection = document.getElementById('paymentSection');
+        var badgePagoText = document.getElementById('badgePagoText');
+
         if (datos.pagado) {
-          document.getElementById('paymentStatus').innerHTML = '<i class="fas fa-check-circle"></i> Pagado';
           document.getElementById('paymentState').innerHTML = '<span class="badge badge-success">Pagado</span>';
-          paymentSection.style.background = 'linear-gradient(135deg, #4caf50, #66bb6a)';
+          paymentSection.classList.add('payment-banner-paid');
+          badgePagoText.textContent = 'Pago al día';
+          document.getElementById('badgePagoResidente').className = 'topbar-badge success';
         } else if (datos.estadoPago === 'Con mora') {
-          document.getElementById('paymentStatus').innerHTML = '<i class="fas fa-exclamation-triangle"></i> Con mora';
           document.getElementById('paymentState').innerHTML = '<span class="badge badge-danger">Con mora</span>';
+          paymentSection.classList.remove('payment-banner-paid');
+          badgePagoText.textContent = 'Con mora';
+          document.getElementById('badgePagoResidente').className = 'topbar-badge danger';
         } else {
-          document.getElementById('paymentStatus').innerHTML = '<i class="fas fa-clock"></i> Pendiente';
           document.getElementById('paymentState').innerHTML = '<span class="badge badge-warning">Pendiente</span>';
-          paymentSection.style.background = 'linear-gradient(135deg, var(--primary), var(--primary-light))';
+          paymentSection.classList.remove('payment-banner-paid');
+          badgePagoText.textContent = 'Pago pendiente';
+          document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
         }
-        
+
         ocultarLoading();
       });
     }
@@ -1807,11 +1787,24 @@
         document.getElementById('pendingPayments').textContent = (est.pendientes || []).length;
         document.getElementById('apartmentsInArrears').textContent = (est.mora || []).length;
         document.getElementById('activeRequests').textContent = est.solicitudesActivas || 0;
-        
+
+        // Update topbar badges for admin
+        var moraCount = (est.mora || []).length;
+        var pendCount = (est.pendientes || []).length;
+        document.getElementById('badgeMoraText').textContent = moraCount + ' en mora';
+        document.getElementById('badgePendientesText').textContent = pendCount + ' pendientes';
+
+        if (moraCount > 0) {
+          document.getElementById('badgeMora').className = 'topbar-badge danger';
+        } else {
+          document.getElementById('badgeMora').className = 'topbar-badge success';
+          document.getElementById('badgeMoraText').textContent = 'Sin mora';
+        }
+
         document.getElementById('apartamentosAlDia').innerHTML = (est.alDia || []).length ? '<strong>Aptos:</strong> ' + est.alDia.join(', ') : '<em>Ninguno</em>';
         document.getElementById('apartamentosPendientes').innerHTML = (est.pendientes || []).length ? '<strong>Aptos:</strong> ' + est.pendientes.join(', ') : '<em>Ninguno</em>';
         document.getElementById('apartamentosEnMora').innerHTML = (est.mora || []).length ? '<strong>Aptos:</strong> ' + est.mora.join(', ') : '<em>Ninguno</em>';
-        
+
         ocultarLoading();
       });
     }
@@ -1819,31 +1812,25 @@
     function cargarResumen() {
       mostrarLoading('Cargando resumen...');
       llamarGS('obtenerResumen', [state.filtroInicio, state.filtroFin], function(data) {
-        
-        // 1. Capturar valores
-        const ingresos = data.filtroIngresos || 0;
-        const extraordinarios = data.filtroExtraordinarios || 0;
-        const alquileres = data.filtroAlquileres || 0;
-        const egresos = data.filtroEgresos || 0;
-        
-        // 2. Calcular Balance y Disponible
-        const balance = ingresos - egresos;
-        const disponible = balance - extraordinarios - alquileres;
-        
-        // ============================================
-        // ACTUALIZAR LAS 6 CARDS
-        // ============================================
+        var ingresos = data.filtroIngresos || 0;
+        var extraordinarios = data.filtroExtraordinarios || 0;
+        var alquileres = data.filtroAlquileres || 0;
+        var egresos = data.filtroEgresos || 0;
+
+        var balance = ingresos - egresos;
+        var disponible = balance - extraordinarios - alquileres;
+
         document.getElementById('ingresosTotal').textContent = '$' + ingresos.toLocaleString('es-CO');
         document.getElementById('egresosTotal').textContent = '$' + egresos.toLocaleString('es-CO');
         document.getElementById('extraordinariosTotal').textContent = '$' + extraordinarios.toLocaleString('es-CO');
         document.getElementById('alquileresTotal').textContent = '$' + alquileres.toLocaleString('es-CO');
-        
-        const disponibleEl = document.getElementById('disponibleEdificio');
+
+        var disponibleEl = document.getElementById('disponibleEdificio');
         disponibleEl.textContent = '$' + disponible.toLocaleString('es-CO');
         disponibleEl.style.color = disponible >= 0 ? '#00838f' : '#c62828';
-        
+
         document.getElementById('balanceTotal').textContent = '$' + balance.toLocaleString('es-CO');
-        const balanceChange = document.getElementById('balanceChange');
+        var balanceChange = document.getElementById('balanceChange');
         if (balance >= 0) {
           balanceChange.className = 'stat-change positive';
           balanceChange.innerHTML = '<i class="fas fa-arrow-up"></i><span>Positivo</span>';
@@ -1851,10 +1838,7 @@
           balanceChange.className = 'stat-change negative';
           balanceChange.innerHTML = '<i class="fas fa-arrow-down"></i><span>Negativo</span>';
         }
-        
-        // ============================================
-        // FUNCIÓN SEGURA PARA LEER FECHAS
-        // ============================================
+
         function obtenerMesSeguro(fechaStr) {
           if (!fechaStr || typeof fechaStr !== 'string') return '';
           var partes = fechaStr.split('/');
@@ -1868,91 +1852,41 @@
           return dia + '/' + mes + '/' + anio;
         }
 
-        // ============================================
-        // TABLA DETALLE ALQUILERES
-        // ============================================
         var tbodyAlq = document.getElementById('tablaAlquileresBody');
         var filasAlq = '';
-        
         (data.detalleAlquileres || []).forEach(function(item) {
           if (!item || item.length < 4) return;
-          var descAlquiler = String(item[2] || '');
-          descAlquiler = descAlquiler.replace(/Alquiler\s+de\s+/i, 'Alquiler ');
-          
-          filasAlq += '<tr>' +
-            '<td>' + obtenerMesSeguro(item[0]) + '</td>' +
-            '<td>' + item[1] + '</td>' +
-            '<td>' + descAlquiler + '</td>' +
-            '<td><span class="badge badge-info">Apto ' + (item[4] || '-') + '</span></td>' +
-            '<td style="color: #e91e63; font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td>' +
-            '</tr>';
+          var descAlquiler = String(item[2] || '').replace(/Alquiler\s+de\s+/i, 'Alquiler ');
+          filasAlq += '<tr><td>' + obtenerMesSeguro(item[0]) + '</td><td>' + item[1] + '</td><td>' + descAlquiler + '</td><td><span class="badge badge-info">Apto ' + (item[4] || '-') + '</span></td><td style="color: #e91e63; font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td></tr>';
         });
-        
         if (filasAlq) {
-          filasAlq += '<tr style="background: linear-gradient(135deg, #e91e63, #f06292); color: white; font-weight: bold;">' +
-            '<td colspan="4">TOTAL ALQUILERES</td>' +
-            '<td>$' + alquileres.toLocaleString('es-CO') + '</td>' +
-            '</tr>';
+          filasAlq += '<tr style="background: linear-gradient(135deg, #e91e63, #f06292); color: white; font-weight: bold;"><td colspan="4">TOTAL ALQUILERES</td><td>$' + alquileres.toLocaleString('es-CO') + '</td></tr>';
           tbodyAlq.innerHTML = filasAlq;
         } else {
           tbodyAlq.innerHTML = '<tr><td colspan="5" style="text-align:center">Sin alquileres registrados</td></tr>';
         }
 
-        // ============================================
-        // TABLA DETALLE EXTRAORDINARIOS
-        // ============================================
         var tbodyExt = document.getElementById('tablaExtraordinariosBody');
         var filasExt = '';
-        
         (data.detalleExtraordinarios || []).forEach(function(item) {
           if (!item || item.length < 4) return;
-          
-          filasExt += '<tr>' +
-            '<td>' + obtenerMesSeguro(item[0]) + '</td>' +
-            '<td>' + item[1] + '</td>' +
-            '<td>' + item[2] + '</td>' +
-            '<td style="color: var(--primary); font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td>' +
-            '</tr>';
+          filasExt += '<tr><td>' + obtenerMesSeguro(item[0]) + '</td><td>' + item[1] + '</td><td>' + item[2] + '</td><td style="color: var(--primary-light); font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td></tr>';
         });
-        
         if (filasExt) {
-          filasExt += '<tr style="background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: white; font-weight: bold;">' +
-            '<td colspan="3">TOTAL EXTRAORDINARIOS</td>' +
-            '<td>$' + extraordinarios.toLocaleString('es-CO') + '</td>' +
-            '</tr>';
+          filasExt += '<tr style="background: linear-gradient(135deg, var(--primary), var(--primary-mid)); color: white; font-weight: bold;"><td colspan="3">TOTAL EXTRAORDINARIOS</td><td>$' + extraordinarios.toLocaleString('es-CO') + '</td></tr>';
           tbodyExt.innerHTML = filasExt;
         } else {
           tbodyExt.innerHTML = '<tr><td colspan="4" style="text-align:center">Sin cuotas extraordinarias registradas</td></tr>';
         }
 
-        // ============================================
-        // TABLA DETALLE DISPONIBLE EDIFICIO (ESTADO DE CUENTA)
-        // ============================================
         var tbodyDisp = document.getElementById('tablaDisponibleBody');
-        
-        var filasDisp = 
-          '<tr style="border-bottom: 2px solid #00838f;">' +
-            '<td style="font-weight: 600; color: var(--dark);">Total Dinero Ingresado</td>' +
-            '<td style="text-align: right; font-weight: 600;">$' + ingresos.toLocaleString('es-CO') + '</td>' +
-            '</tr>' +
-          '<tr>' +
-            '<td style="padding-left: 30px; color: var(--gray);">(-) Cuotas Extraordinarias</td>' +
-            '<td style="text-align: right; color: var(--gray);">- $' + extraordinarios.toLocaleString('es-CO') + '</td>' +
-            '</tr>' +
-          '<tr>' +
-            '<td style="padding-left: 30px; color: var(--gray);">(-) Alquileres Salón / Sillas</td>' +
-            '<td style="text-align: right; color: var(--gray);">- $' + alquileres.toLocaleString('es-CO') + '</td>' +
-            '</tr>' +
-          '<tr style="border-bottom: 2px solid var(--danger);">' +
-            '<td style="padding-left: 30px; color: var(--danger); font-weight: 500;">(-) Total Egresos del Edificio</td>' +
-            '<td style="text-align: right; color: var(--danger); font-weight: 500;">- $' + egresos.toLocaleString('es-CO') + '</td>' +
-            '</tr>' +
-          '<tr style="background: linear-gradient(135deg, #00bcd4, #26c6da); color: white; font-weight: bold; font-size: 18px;">' +
-            '<td style="padding-left: 15px;">= DISPONIBLE EDIFICIO</td>' +
-            '<td style="text-align: right;">$' + disponible.toLocaleString('es-CO') + '</td>' +
-            '</tr>';
-          
-        tbodyDisp.innerHTML = filasDisp;        
+        var filasDisp =
+          '<tr style="border-bottom: 2px solid #00838f;"><td style="font-weight: 600; color: var(--text);">Total Dinero Ingresado</td><td style="text-align: right; font-weight: 600;">$' + ingresos.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr><td style="padding-left: 24px; color: var(--text-muted);">(-) Cuotas Extraordinarias</td><td style="text-align: right; color: var(--text-muted);">- $' + extraordinarios.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr><td style="padding-left: 24px; color: var(--text-muted);">(-) Alquileres Salón / Sillas</td><td style="text-align: right; color: var(--text-muted);">- $' + alquileres.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr style="border-bottom: 2px solid var(--danger);"><td style="padding-left: 24px; color: var(--danger); font-weight: 500;">(-) Total Egresos del Edificio</td><td style="text-align: right; color: var(--danger); font-weight: 500;">- $' + egresos.toLocaleString('es-CO') + '</td></tr>' +
+          '<tr style="background: linear-gradient(135deg, #00bcd4, #26c6da); color: white; font-weight: bold; font-size: 16px;"><td style="padding-left: 12px;">= DISPONIBLE EDIFICIO</td><td style="text-align: right;">$' + disponible.toLocaleString('es-CO') + '</td></tr>';
+        tbodyDisp.innerHTML = filasDisp;
         ocultarLoading();
       });
     }
@@ -1979,8 +1913,8 @@
       mostrarLoading('Cargando...');
       llamarGS('obtenerDatosActivos', [], function(data) {
         state.cache.activos = data;
-        const tbody = document.getElementById('tablaActivosBody');
-        tbody.innerHTML = data.length ? data.map(r => `<tr><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${r[5]}</td>${state.esAdmin ? `<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="eliminarActivo('${r[0]}')"><i class="fas fa-trash"></i></button></td>` : ''}</tr>`).join('') : '<tr><td colspan="6" style="text-align:center">Sin datos</td></tr>';
+        var tbody = document.getElementById('tablaActivosBody');
+        tbody.innerHTML = data.length ? data.map(function(r) { return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + r[5] + '</td>' + (state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="eliminarActivo(\'' + r[0] + '\')"><i class="fas fa-trash"></i></button></td>' : '') + '</tr>'; }).join('') : '<tr><td colspan="6" style="text-align:center">Sin datos</td></tr>';
         ocultarLoading();
       });
     }
@@ -1988,15 +1922,15 @@
     function cargarFormatos() {
       mostrarLoading('Cargando...');
       llamarGS('obtenerFormatos', [], function(formatos) {
-        const select = document.getElementById('listaFormatos');
-        select.innerHTML = '<option value="">-- Selecciona --</option>' + formatos.map(f => `<option value="${f[1]}">${f[0]}</option>`).join('');
+        var select = document.getElementById('listaFormatos');
+        select.innerHTML = '<option value="">-- Selecciona --</option>' + formatos.map(function(f) { return '<option value="' + f[1] + '">' + f[0] + '</option>'; }).join('');
         ocultarLoading();
       });
     }
 
     function mostrarFormato() {
-      const url = document.getElementById('listaFormatos').value;
-      const visor = document.getElementById('visorFormato');
+      var url = document.getElementById('listaFormatos').value;
+      var visor = document.getElementById('visorFormato');
       if (url) {
         document.getElementById('iframeFormato').src = url.includes('/edit') ? url.replace('/edit', '/preview') : url;
         visor.style.display = 'block';
@@ -2009,13 +1943,13 @@
       mostrarLoading('Cargando...');
       llamarGS('obtenerSolicitudes', [], function(data) {
         state.cache.solicitudes = data;
-        const tbody = document.getElementById('tablaSolicitudesBody');
-        tbody.innerHTML = data.length ? data.map(r => {
-          const estado = r[6] || 'Pendiente';
-          const badgeClass = estado === 'Aprobado' ? 'badge-success' : estado === 'Rechazado' ? 'badge-danger' : 'badge-warning';
-          const soporte = r[5] ? `<a href="${r[5]}" target="_blank"><i class="fas fa-file-pdf"></i></a>` : '';
-          const acciones = state.esAdmin ? `<td class="table-actions"><button class="btn btn-sm btn-success" onclick="actualizarEstadoSol(${r[7]},'Aprobado')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger" onclick="actualizarEstadoSol(${r[7]},'Rechazado')"><i class="fas fa-times"></i></button></td>` : '';
-          return `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>${r[4]}</td><td>${soporte}</td><td><span class="badge ${badgeClass}">${estado}</span></td>${acciones}</tr>`;
+        var tbody = document.getElementById('tablaSolicitudesBody');
+        tbody.innerHTML = data.length ? data.map(function(r) {
+          var estado = r[6] || 'Pendiente';
+          var badgeClass = estado === 'Aprobado' ? 'badge-success' : estado === 'Rechazado' ? 'badge-danger' : 'badge-warning';
+          var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
+          var acciones = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-success" onclick="actualizarEstadoSol(' + r[7] + ',\'Aprobado\')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger" onclick="actualizarEstadoSol(' + r[7] + ',\'Rechazado\')"><i class="fas fa-times"></i></button></td>' : '';
+          return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + soporte + '</td><td><span class="badge ' + badgeClass + '">' + estado + '</span></td>' + acciones + '</tr>';
         }).join('') : '<tr><td colspan="8" style="text-align:center">Sin datos</td></tr>';
         ocultarLoading();
       });
@@ -2026,27 +1960,27 @@
     // ============================================
     function filtrarPorFecha(datos) {
       if (!state.filtroInicio || !state.filtroFin || !datos) return datos;
-      const inicio = new Date(state.filtroInicio);
-      const fin = new Date(state.filtroFin);
+      var inicio = new Date(state.filtroInicio);
+      var fin = new Date(state.filtroFin);
       fin.setHours(23, 59, 59, 999);
-      return datos.filter(r => { const f = new Date(r[1]); return f >= inicio && f <= fin; });
+      return datos.filter(function(r) { var f = new Date(r[1]); return f >= inicio && f <= fin; });
     }
 
     function renderizarIngresos(data) {
-      const tbody = document.getElementById('tablaIngresosBody');
-      tbody.innerHTML = data?.length ? data.map(r => {
-        const soporte = r[5] ? `<a href="${r[5]}" target="_blank"><i class="fas fa-file-pdf"></i></a>` : '';
-        const acciones = state.esAdmin ? `<td class="table-actions"><button class="btn btn-sm btn-primary" onclick="editarIngreso('${r[0]}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="eliminarIngreso('${r[0]}')"><i class="fas fa-trash"></i></button></td>` : '';
-        return `<tr><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>$${r[4].toLocaleString('es-CO')}</td><td>${soporte}</td>${acciones}</tr>`;
+      var tbody = document.getElementById('tablaIngresosBody');
+      tbody.innerHTML = data && data.length ? data.map(function(r) {
+        var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
+        var acciones = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-primary" onclick="editarIngreso(\'' + r[0] + '\')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="eliminarIngreso(\'' + r[0] + '\')"><i class="fas fa-trash"></i></button></td>' : '';
+        return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>$' + r[4].toLocaleString('es-CO') + '</td><td>' + soporte + '</td>' + acciones + '</tr>';
       }).join('') : '<tr><td colspan="6" style="text-align:center">Sin datos</td></tr>';
     }
 
     function renderizarEgresos(data) {
-      const tbody = document.getElementById('tablaEgresosBody');
-      tbody.innerHTML = data?.length ? data.map(r => {
-        const soporte = r[5] ? `<a href="${r[5]}" target="_blank"><i class="fas fa-file-pdf"></i></a>` : '';
-        const acciones = state.esAdmin ? `<td class="table-actions"><button class="btn btn-sm btn-primary" onclick="editarEgreso('${r[0]}')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="eliminarEgreso('${r[0]}')"><i class="fas fa-trash"></i></button></td>` : '<td></td>';
-        return `<tr><td>${r[1]}</td><td>${r[2]}</td><td>${r[3]}</td><td>$${r[4].toLocaleString('es-CO')}</td><td>${soporte}</td>${acciones}</tr>`;
+      var tbody = document.getElementById('tablaEgresosBody');
+      tbody.innerHTML = data && data.length ? data.map(function(r) {
+        var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
+        var acciones = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-primary" onclick="editarEgreso(\'' + r[0] + '\')"><i class="fas fa-edit"></i></button><button class="btn btn-sm btn-danger" onclick="eliminarEgreso(\'' + r[0] + '\')"><i class="fas fa-trash"></i></button></td>' : '<td></td>';
+        return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>$' + r[4].toLocaleString('es-CO') + '</td><td>' + soporte + '</td>' + acciones + '</tr>';
       }).join('') : '<tr><td colspan="6" style="text-align:center">Sin datos</td></tr>';
     }
 
@@ -2054,17 +1988,17 @@
     // CRUD OPERATIONS
     // ============================================
     function guardarIngreso() {
-      const tipo = document.getElementById('tipoIngreso').value;
-      const desc = document.getElementById('descripcionIngreso').value;
-      const valor = parseInt(document.getElementById('valorIngreso').value.replace(/\D/g, '')) || 0;
-      const fila = document.getElementById('filaIngresoEditando').value;
-      
+      var tipo = document.getElementById('tipoIngreso').value;
+      var desc = document.getElementById('descripcionIngreso').value;
+      var valor = parseInt(document.getElementById('valorIngreso').value.replace(/\D/g, '')) || 0;
+      var fila = document.getElementById('filaIngresoEditando').value;
+
       if (!tipo || !desc || !valor) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-      
+
       mostrarLoading(fila ? 'Actualizando...' : 'Guardando...');
-      
+
       if (fila) {
-        llamarGS('actualizarIngresoGS', [parseInt(fila), { tipo, descripcion: desc, valor }], function(res) {
+        llamarGS('actualizarIngresoGS', [parseInt(fila), { tipo: tipo, descripcion: desc, valor: valor }], function(res) {
           state.cache.ingresos = null;
           cerrarModal('modalIngreso');
           limpiarFormularioIngreso();
@@ -2092,20 +2026,20 @@
     }
 
     function guardarEgreso() {
-      const tipo = document.getElementById('tipoEgreso').value;
-      const desc = document.getElementById('descripcionEgreso').value;
-      const valor = parseInt(document.getElementById('valorEgreso').value.replace(/\D/g, '')) || 0;
-      const esActivo = document.getElementById('esActivoFijo').checked;
-      const categoria = esActivo ? 'Activo Fijo' : 'Gasto';
-      const archivo = document.getElementById('soporteEgreso').files[0];
-      const fila = document.getElementById('filaEgresoEditando').value;
-      
+      var tipo = document.getElementById('tipoEgreso').value;
+      var desc = document.getElementById('descripcionEgreso').value;
+      var valor = parseInt(document.getElementById('valorEgreso').value.replace(/\D/g, '')) || 0;
+      var esActivo = document.getElementById('esActivoFijo').checked;
+      var categoria = esActivo ? 'Activo Fijo' : 'Gasto';
+      var archivo = document.getElementById('soporteEgreso').files[0];
+      var fila = document.getElementById('filaEgresoEditando').value;
+
       if (!tipo || !desc || !valor) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-      
+
       mostrarLoading(fila ? 'Actualizando...' : 'Guardando...');
-      
+
       if (fila) {
-        llamarGS('actualizarEgresoGS', [parseInt(fila), { tipo, descripcion: desc, valor }], function(res) {
+        llamarGS('actualizarEgresoGS', [parseInt(fila), { tipo: tipo, descripcion: desc, valor: valor }], function(res) {
           state.cache.egresos = null;
           cerrarModal('modalEgreso');
           limpiarFormularioEgreso();
@@ -2113,7 +2047,7 @@
           mostrarNotificacion('Éxito', res.mensaje, 'success');
         });
       } else if (archivo) {
-        const reader = new FileReader();
+        var reader = new FileReader();
         reader.onload = function(e) {
           llamarGS('agregarActivoConSoporte', [tipo, desc, valor, categoria, archivo.name, e.target.result.split(',')[1]], function(res) {
             state.cache.egresos = null;
@@ -2146,17 +2080,17 @@
     }
 
     function guardarActivo() {
-      const tipo = document.getElementById('tipoActivo').value;
-      const desc = document.getElementById('descripcionActivo').value;
-      const valor = parseInt(document.getElementById('valorActivo').value.replace(/\D/g, '')) || 0;
-      const archivo = document.getElementById('soporteActivo').files[0];
-      
+      var tipo = document.getElementById('tipoActivo').value;
+      var desc = document.getElementById('descripcionActivo').value;
+      var valor = parseInt(document.getElementById('valorActivo').value.replace(/\D/g, '')) || 0;
+      var archivo = document.getElementById('soporteActivo').files[0];
+
       if (!tipo || !desc || !valor) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-      
+
       mostrarLoading('Guardando...');
-      
+
       if (archivo) {
-        const reader = new FileReader();
+        var reader = new FileReader();
         reader.onload = function(e) {
           llamarGS('agregarActivoConSoporte', [tipo, desc, valor, 'Activo Fijo', archivo.name, e.target.result.split(',')[1]], function(res) {
             state.cache.egresos = null;
@@ -2176,18 +2110,18 @@
     }
 
     function guardarSolicitud() {
-      const tipo = document.getElementById('tipoSolicitud').value;
-      const solicitud = document.getElementById('solicitud').value;
-      const fecha = document.getElementById('fechaSolicitud').value;
-      const horario = document.getElementById('horarioSolicitud').value;
-      const archivo = document.getElementById('soporteSolicitud').files[0];
-      
+      var tipo = document.getElementById('tipoSolicitud').value;
+      var solicitud = document.getElementById('solicitud').value;
+      var fecha = document.getElementById('fechaSolicitud').value;
+      var horario = document.getElementById('horarioSolicitud').value;
+      var archivo = document.getElementById('soporteSolicitud').files[0];
+
       if (!tipo || !solicitud || !fecha || !horario) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-      
+
       mostrarLoading('Procesando...');
-      
+
       function enviar(base64) {
-        llamarGS('agregarSolicitud', [tipo, solicitud, fecha, horario, archivo?.name || '', base64 || ''], function(res) {
+        llamarGS('agregarSolicitud', [tipo, solicitud, fecha, horario, archivo ? archivo.name : '', base64 || ''], function(res) {
           cerrarModal('modalSolicitud');
           document.getElementById('tipoSolicitud').value = '';
           document.getElementById('solicitud').innerHTML = '<option value="">Primero selecciona tipo</option>';
@@ -2198,37 +2132,36 @@
           mostrarNotificacion('Éxito', res.mensaje, 'success');
         });
       }
-      
+
       if (tipo === 'Alquiler') {
         llamarGS('validarDisponibilidadAlquiler', [solicitud, fecha, horario], function(disponible) {
           if (!disponible) { ocultarLoading(); mostrarNotificacion('Error', 'Ya existe una solicitud para esa fecha/horario', 'error'); return; }
-          if (archivo) { const r = new FileReader(); r.onload = e => enviar(e.target.result.split(',')[1]); r.readAsDataURL(archivo); }
+          if (archivo) { var r = new FileReader(); r.onload = function(e) { enviar(e.target.result.split(',')[1]); }; r.readAsDataURL(archivo); }
           else enviar('');
         });
       } else {
-        if (archivo) { const r = new FileReader(); r.onload = e => enviar(e.target.result.split(',')[1]); r.readAsDataURL(archivo); }
+        if (archivo) { var r = new FileReader(); r.onload = function(e) { enviar(e.target.result.split(',')[1]); }; r.readAsDataURL(archivo); }
         else enviar('');
       }
     }
 
     function actualizarOpcionesSolicitud() {
-      const tipo = document.getElementById('tipoSolicitud').value;
-      const sel = document.getElementById('solicitud');
-      const opciones = {
+      var tipo = document.getElementById('tipoSolicitud').value;
+      var sel = document.getElementById('solicitud');
+      var opciones = {
         'Alquiler': ['Salón Social', 'Zona BBQ', 'Terraza'],
         'Solicitud': ['Mudanza', 'Inicio de obra'],
         'Queja': ['Ruido excesivo', 'Mascotas', 'Estacionamiento'],
         'Sugerencia': ['Mejoras áreas comunes', 'Eventos', 'Nuevos servicios']
       };
-        sel.innerHTML = '<option value="">Selecciona</option>' + (opciones[tipo] || []).map(o => `<option value="${o}">${o}</option>`).join('');
-      }
+      sel.innerHTML = '<option value="">Selecciona</option>' + (opciones[tipo] || []).map(function(o) { return '<option value="' + o + '">' + o + '</option>'; }).join('');
+    }
 
     // ============================================
-    // EDITAR/ELIMINAR INGRESOS
+    // EDITAR/ELIMINAR
     // ============================================
     function editarIngreso(fila) {
       if (!state.esAdmin) { mostrarNotificacion('Error', 'Sin permisos', 'error'); return; }
-      
       mostrarLoading('Cargando...');
       llamarGS('obtenerIngresoPorFila', [fila], function(res) {
         ocultarLoading();
@@ -2239,16 +2172,13 @@
           document.getElementById('valorIngreso').value = res.datos.valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
           document.getElementById('tituloModalIngreso').textContent = 'Editar Ingreso';
           abrirModal('modalIngreso');
-        } else {
-          mostrarNotificacion('Error', res.mensaje, 'error');
-        }
+        } else { mostrarNotificacion('Error', res.mensaje, 'error'); }
       });
     }
 
     function eliminarIngreso(fila) {
       if (!state.esAdmin) return;
       if (!confirm('¿Eliminar este ingreso?')) return;
-      
       mostrarLoading('Eliminando...');
       llamarGS('eliminarIngresoGS', [fila], function(res) {
         state.cache.ingresos = null;
@@ -2258,12 +2188,8 @@
       });
     }
 
-    // ============================================
-    // EDITAR/ELIMINAR EGRESOS
-    // ============================================
     function editarEgreso(fila) {
       if (!state.esAdmin) { mostrarNotificacion('Error', 'Sin permisos', 'error'); return; }
-      
       mostrarLoading('Cargando...');
       llamarGS('obtenerEgresoPorFila', [fila], function(res) {
         ocultarLoading();
@@ -2274,16 +2200,13 @@
           document.getElementById('valorEgreso').value = res.datos.valor.toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
           document.getElementById('tituloModalEgreso').textContent = 'Editar Egreso';
           abrirModal('modalEgreso');
-        } else {
-          mostrarNotificacion('Error', res.mensaje, 'error');
-        }
+        } else { mostrarNotificacion('Error', res.mensaje, 'error'); }
       });
     }
 
     function eliminarEgreso(fila) {
       if (!state.esAdmin) return;
       if (!confirm('¿Eliminar este egreso?')) return;
-      
       mostrarLoading('Eliminando...');
       llamarGS('eliminarEgresoGS', [fila], function(res) {
         state.cache.egresos = null;
@@ -2296,7 +2219,6 @@
     function eliminarActivo(fila) {
       if (!state.esAdmin) return;
       if (!confirm('¿Eliminar este activo fijo?')) return;
-      
       mostrarLoading('Eliminando...');
       llamarGS('eliminarActivoGS', [fila], function(res) {
         state.cache.activos = null;
@@ -2307,7 +2229,7 @@
     }
 
     function actualizarEstadoSol(fila, estado) {
-      if (!confirm(`¿Cambiar estado a "${estado}"?`)) return;
+      if (!confirm('¿Cambiar estado a "' + estado + '"?')) return;
       mostrarLoading('Actualizando...');
       llamarGS('actualizarEstadoSolicitud', [fila, estado], function() {
         cargarSolicitudes();
@@ -2319,12 +2241,12 @@
     // CAMBIO DE CONTRASEÑA
     // ============================================
     function validarCredencialesCambio() {
-      const cedula = document.getElementById('cedulaCambio').value;
-      const usuario = document.getElementById('usuarioCambio').value;
-      const clave = document.getElementById('claveActual').value;
-      
+      var cedula = document.getElementById('cedulaCambio').value;
+      var usuario = document.getElementById('usuarioCambio').value;
+      var clave = document.getElementById('claveActual').value;
+
       if (!cedula || !usuario || !clave) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-      
+
       mostrarLoading('Validando...');
       llamarGS('verificarCredencialesCambio', [cedula, usuario, clave], function(res) {
         ocultarLoading();
@@ -2333,21 +2255,19 @@
           document.getElementById('btnValidarCred').classList.add('hidden');
           document.getElementById('btnGuardarClave').classList.remove('hidden');
           mostrarNotificacion('Éxito', 'Credenciales válidas', 'success');
-        } else {
-          mostrarNotificacion('Error', 'Credenciales incorrectas', 'error');
-        }
+        } else { mostrarNotificacion('Error', 'Credenciales incorrectas', 'error'); }
       });
     }
 
     function guardarNuevaClave() {
-      const cedula = document.getElementById('cedulaCambio').value;
-      const nueva = document.getElementById('nuevaClave').value;
-      const confirmar = document.getElementById('confirmarClave').value;
-      
+      var cedula = document.getElementById('cedulaCambio').value;
+      var nueva = document.getElementById('nuevaClave').value;
+      var confirmar = document.getElementById('confirmarClave').value;
+
       if (!nueva || !confirmar) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
       if (nueva !== confirmar) { mostrarNotificacion('Error', 'Las contraseñas no coinciden', 'error'); return; }
       if (nueva.length < 4) { mostrarNotificacion('Error', 'Mínimo 4 caracteres', 'error'); return; }
-      
+
       mostrarLoading('Actualizando...');
       llamarGS('actualizarContrasena', [cedula, nueva], function() {
         cerrarModal('modalCambioClave');
@@ -2367,39 +2287,37 @@
     // FILTROS
     // ============================================
     function aplicarFiltro() {
-      const inicio = document.getElementById('fechaInicio').value;
-      const fin = document.getElementById('fechaFin').value;
-      
+      var inicio = document.getElementById('fechaInicio').value;
+      var fin = document.getElementById('fechaFin').value;
+
       if (!inicio || !fin) { mostrarNotificacion('Error', 'Selecciona ambas fechas', 'error'); return; }
-      
+
       state.filtroInicio = inicio;
       state.filtroFin = fin;
-      
+
       cerrarModal('modalFechas');
       document.getElementById('fechaInicio').value = '';
       document.getElementById('fechaFin').value = '';
-      
-      // Mostrar filtro activo
-      const seccion = state.seccionActual;
-      const filtroInfo = document.getElementById(`filtroInfo${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`);
-      const textoFiltro = document.getElementById(`textoFiltro${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`);
-      
+
+      var seccion = state.seccionActual;
+      var filtroInfo = document.getElementById('filtroInfo' + seccion.charAt(0).toUpperCase() + seccion.slice(1));
+      var textoFiltro = document.getElementById('textoFiltro' + seccion.charAt(0).toUpperCase() + seccion.slice(1));
+
       if (filtroInfo && textoFiltro) {
         filtroInfo.classList.remove('hidden');
-        textoFiltro.textContent = `Del ${inicio} al ${fin}`;
+        textoFiltro.textContent = 'Del ' + inicio + ' al ' + fin;
       }
-      
-      // Recargar sección
-      const cargadores = { resumen: cargarResumen, ingresos: cargarIngresos, egresos: cargarEgresos };
+
+      var cargadores = { resumen: cargarResumen, ingresos: cargarIngresos, egresos: cargarEgresos };
       if (cargadores[seccion]) cargadores[seccion]();
     }
 
     function limpiarFiltro(seccion) {
       state.filtroInicio = null;
       state.filtroFin = null;
-      document.getElementById(`filtroInfo${seccion.charAt(0).toUpperCase() + seccion.slice(1)}`).classList.add('hidden');
-      
-      const cargadores = { resumen: cargarResumen, ingresos: cargarIngresos, egresos: cargarEgresos };
+      document.getElementById('filtroInfo' + seccion.charAt(0).toUpperCase() + seccion.slice(1)).classList.add('hidden');
+
+      var cargadores = { resumen: cargarResumen, ingresos: cargarIngresos, egresos: cargarEgresos };
       if (cargadores[seccion]) cargadores[seccion]();
     }
 
@@ -2409,16 +2327,16 @@
     function abrirModalPago() {
       mostrarLoading('Cargando información...');
       llamarGS('verificarMoraPago', [state.apartamento], function(info) {
-        document.getElementById('paymentValue').textContent = `$${info.valor.toLocaleString('es-CO')}`;
+        document.getElementById('paymentValue').textContent = '$' + info.valor.toLocaleString('es-CO');
         document.getElementById('paymentMonth').textContent = info.mes;
         document.getElementById('paymentApartment').textContent = state.apartamento;
-        
-        const breakdown = document.getElementById('paymentBreakdown');
-        let partes = [`$${info.valorBase.toLocaleString('es-CO')} (admin)`];
-        if (info.cuotaExtraordinaria > 0) partes.push(`$${info.cuotaExtraordinaria.toLocaleString('es-CO')} (extra)`);
-        if (info.valorMora > 0) partes.push(`$${info.valorMora.toLocaleString('es-CO')} (mora)`);
+
+        var breakdown = document.getElementById('paymentBreakdown');
+        var partes = ['$' + info.valorBase.toLocaleString('es-CO') + ' (admin)'];
+        if (info.cuotaExtraordinaria > 0) partes.push('$' + info.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)');
+        if (info.valorMora > 0) partes.push('$' + info.valorMora.toLocaleString('es-CO') + ' (mora)');
         breakdown.textContent = partes.join(' + ');
-        
+
         ocultarLoading();
         abrirModal('modalPago');
       });
@@ -2430,24 +2348,15 @@
     }
 
     function procesarPago() {
-      const archivo = document.getElementById('comprobantePago').files[0];
-      if (!archivo) { 
-        mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); 
-        return; 
-      }
-      
-      // Verificar tamaño del archivo (máximo 5MB)
-      if (archivo.size > 5 * 1024 * 1024) {
-        mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error');
-        return;
-      }
-      
+      var archivo = document.getElementById('comprobantePago').files[0];
+      if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
+      if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error'); return; }
+
       mostrarLoading('Procesando pago... esto puede tomar unos segundos');
-      
-      const reader = new FileReader();
+
+      var reader = new FileReader();
       reader.onload = function(e) {
-        const base64Data = e.target.result.split(',')[1];
-        
+        var base64Data = e.target.result.split(',')[1];
         llamarGS('subirPagoAdministracion', [{
           descripcion: 'Pago de Administración - ' + document.getElementById('paymentMonth').textContent,
           apartamento: state.apartamento,
@@ -2457,21 +2366,10 @@
         }], function(res) {
           ocultarLoading();
           cerrarModalPago();
-          
-          // ✅ CORREGIDO: Verificar si hubo error
-          if (res.ok === false) {
-            mostrarNotificacion('Error', res.mensaje || 'Error al procesar el pago', 'error');
-            console.error('Error en pago:', res);
-            return;
-          }
-          
-          if (res.status === 'error') {
-            mostrarNotificacion('Error', res.message || 'Error de conexión', 'error');
-            console.error('Error de servidor:', res);
-            return;
-          }
-          
-          // Solo si fue exitoso
+
+          if (res.ok === false) { mostrarNotificacion('Error', res.mensaje || 'Error al procesar el pago', 'error'); return; }
+          if (res.status === 'error') { mostrarNotificacion('Error', res.message || 'Error de conexión', 'error'); return; }
+
           state.cache.ingresos = null;
           cargarDatosResidente();
           mostrarNotificacion('Éxito', res.mensaje || 'Pago procesado correctamente', 'success');
@@ -2479,42 +2377,28 @@
       };
       reader.readAsDataURL(archivo);
     }
+
     // ============================================
     // PAGO EFECTIVO
     // ============================================
     function procesarPagoEfectivo() {
-      const desc = document.getElementById('descripcionEfectivo').value;
-      const apt = document.getElementById('apartamentoEfectivo').value;
-      const valor = parseInt(document.getElementById('valorEfectivo').value.replace(/\D/g, '')) || 0;
-      const correo = document.getElementById('correoEfectivo').value;
-      
-      if (!desc || !apt || !valor || !correo) { 
-        mostrarNotificacion('Error', 'Completa todos los campos', 'error'); 
-        return; 
-      }
-      
+      var desc = document.getElementById('descripcionEfectivo').value;
+      var apt = document.getElementById('apartamentoEfectivo').value;
+      var valor = parseInt(document.getElementById('valorEfectivo').value.replace(/\D/g, '')) || 0;
+      var correo = document.getElementById('correoEfectivo').value;
+
+      if (!desc || !apt || !valor || !correo) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
+
       mostrarLoading('Procesando...');
-      llamarGS('subirPagoEfectivo', [{ 
-        descripcion: desc, 
-        apartamento: apt, 
-        valor: valor, 
-        correo: correo 
+      llamarGS('subirPagoEfectivo', [{
+        descripcion: desc, apartamento: apt, valor: valor, correo: correo
       }], function(res) {
         ocultarLoading();
         cerrarModal('modalPagoEfectivo');
-        
-        // ✅ CORREGIDO: Verificar errores
-        if (res.ok === false) {
-          mostrarNotificacion('Error', res.mensaje || 'Error al procesar pago', 'error');
-          return;
-        }
-        
-        if (res.status === 'error') {
-          mostrarNotificacion('Error', res.message || 'Error de conexión', 'error');
-          return;
-        }
-        
-        // Limpiar formulario
+
+        if (res.ok === false) { mostrarNotificacion('Error', res.mensaje || 'Error al procesar pago', 'error'); return; }
+        if (res.status === 'error') { mostrarNotificacion('Error', res.message || 'Error de conexión', 'error'); return; }
+
         document.getElementById('descripcionEfectivo').value = '';
         document.getElementById('apartamentoEfectivo').value = '';
         document.getElementById('valorEfectivo').value = '';
@@ -2523,11 +2407,12 @@
         mostrarNotificacion('Éxito', res.mensaje || 'Pago registrado', 'success');
       });
     }
+
     // ============================================
-    // EXENCIONES CUOTA EXTRAORDINARIA
+    // EXENCIONES
     // ============================================
     function abrirModalGestionExenciones() {
-      const mesActual = new Date().toISOString().slice(0, 7);
+      var mesActual = new Date().toISOString().slice(0, 7);
       document.getElementById('mesExencion').value = mesActual;
       document.getElementById('filtroMesExenciones').value = mesActual;
       mostrarTabExencion('nueva');
@@ -2535,12 +2420,12 @@
     }
 
     function mostrarTabExencion(tab) {
-      const tabNueva = document.getElementById('tabNuevaExencion');
-      const tabExist = document.getElementById('tabExencionesExistentes');
-      const contNueva = document.getElementById('contenidoNuevaExencion');
-      const contExist = document.getElementById('contenidoExencionesExistentes');
-      const btnGuardar = document.getElementById('btnGuardarExencion');
-      
+      var tabNueva = document.getElementById('tabNuevaExencion');
+      var tabExist = document.getElementById('tabExencionesExistentes');
+      var contNueva = document.getElementById('contenidoNuevaExencion');
+      var contExist = document.getElementById('contenidoExencionesExistentes');
+      var btnGuardar = document.getElementById('btnGuardarExencion');
+
       if (tab === 'nueva') {
         tabNueva.className = 'btn btn-sm btn-primary';
         tabExist.className = 'btn btn-sm btn-light';
@@ -2558,15 +2443,15 @@
     }
 
     function guardarNuevaExencion() {
-      const apt = document.getElementById('aptoExencion').value;
-      const mesInput = document.getElementById('mesExencion').value;
-      const motivo = document.getElementById('motivoExencion').value;
-      
+      var apt = document.getElementById('aptoExencion').value;
+      var mesInput = document.getElementById('mesExencion').value;
+      var motivo = document.getElementById('motivoExencion').value;
+
       if (!apt || !mesInput || !motivo) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-      
-      const [year, month] = mesInput.split('-');
-      const mesAnio = `${MESES[parseInt(month) - 1]} de ${year}`;
-      
+
+      var parts = mesInput.split('-');
+      var mesAnio = MESES[parseInt(parts[1]) - 1] + ' de ' + parts[0];
+
       mostrarLoading('Guardando...');
       llamarGS('gestionarAutorizacionExentaCuotaExtraordinaria', [apt, mesAnio, motivo], function(res) {
         ocultarLoading();
@@ -2576,41 +2461,29 @@
           document.getElementById('aptoExencion').value = '';
           document.getElementById('motivoExencion').value = '';
           if (!state.esAdmin && state.apartamento) cargarDatosResidente();
-        } else {
-          mostrarNotificacion('Error', res.mensaje, 'error');
-        }
+        } else { mostrarNotificacion('Error', res.mensaje, 'error'); }
       });
     }
 
     function cargarExenciones() {
-      const mesInput = document.getElementById('filtroMesExenciones').value;
+      var mesInput = document.getElementById('filtroMesExenciones').value;
       if (!mesInput) return;
-      
-      const [year, month] = mesInput.split('-');
-      const mesAnio = `${MESES[parseInt(month) - 1]} de ${year}`;
-      
+
+      var parts = mesInput.split('-');
+      var mesAnio = MESES[parseInt(parts[1]) - 1] + ' de ' + parts[0];
+
       mostrarLoading('Cargando...');
       llamarGS('obtenerExencionesCuotaExtraordinaria', [mesAnio], function(exenciones) {
         ocultarLoading();
-        const tbody = document.getElementById('tablaExencionesBody');
-        tbody.innerHTML = exenciones.length ? exenciones.map(e => `
-          <tr>
-            <td>${e.apartamento}</td>
-            <td>${e.mesAnio}</td>
-            <td>${e.comentario}</td>
-            <td class="table-actions">
-              <button class="btn btn-sm btn-danger" onclick="eliminarExencion('${e.apartamento}', '${e.mesAnio}')">
-                <i class="fas fa-trash"></i>
-              </button>
-            </td>
-          </tr>
-        `).join('') : '<tr><td colspan="4" style="text-align:center">Sin exenciones</td></tr>';
+        var tbody = document.getElementById('tablaExencionesBody');
+        tbody.innerHTML = exenciones.length ? exenciones.map(function(e) {
+          return '<tr><td>' + e.apartamento + '</td><td>' + e.mesAnio + '</td><td>' + e.comentario + '</td><td class="table-actions"><button class="btn btn-sm btn-danger" onclick="eliminarExencion(\'' + e.apartamento + '\', \'' + e.mesAnio + '\')"><i class="fas fa-trash"></i></button></td></tr>';
+        }).join('') : '<tr><td colspan="4" style="text-align:center">Sin exenciones</td></tr>';
       });
     }
 
     function eliminarExencion(apartamento, mesAnio) {
-      if (!confirm(`¿Eliminar exención para Apto ${apartamento} en ${mesAnio}?`)) return;
-      
+      if (!confirm('¿Eliminar exención para Apto ' + apartamento + ' en ' + mesAnio + '?')) return;
       mostrarLoading('Eliminando...');
       llamarGS('eliminarAutorizacionExentaCuotaExtraordinaria', [apartamento, mesAnio], function(res) {
         ocultarLoading();
@@ -2618,9 +2491,7 @@
           mostrarNotificacion('Éxito', res.mensaje, 'success');
           cargarExenciones();
           if (!state.esAdmin && state.apartamento) cargarDatosResidente();
-        } else {
-          mostrarNotificacion('Error', res.mensaje, 'error');
-        }
+        } else { mostrarNotificacion('Error', res.mensaje, 'error'); }
       });
     }
 
@@ -2637,56 +2508,43 @@
       abrirModal('modalAlquilerZonas');
     }
 
-    function cerrarModalAlquiler() {
-      cerrarModal('modalAlquilerZonas');
-    }
+    function cerrarModalAlquiler() { cerrarModal('modalAlquilerZonas'); }
 
     function actualizarValorAlquiler() {
-      const zona = document.getElementById('rentalZone').value;
-      const groupCantidad = document.getElementById('groupCantidadSillas');
-      const cantidadInput = document.getElementById('cantidadSillas');
-      const paymentZone = document.getElementById('paymentZone');
-      const rentalValue = document.getElementById('rentalValue');
-      
-      if (!zona) {
-        paymentZone.textContent = '-';
-        rentalValue.textContent = '$0';
-        groupCantidad.classList.add('hidden');
-        return;
-      }
-      
+      var zona = document.getElementById('rentalZone').value;
+      var groupCantidad = document.getElementById('groupCantidadSillas');
+      var cantidadInput = document.getElementById('cantidadSillas');
+      var paymentZone = document.getElementById('paymentZone');
+      var rentalValue = document.getElementById('rentalValue');
+
+      if (!zona) { paymentZone.textContent = '-'; rentalValue.textContent = '$0'; groupCantidad.classList.add('hidden'); return; }
+
       if (zona === 'Sillas') {
         groupCantidad.classList.remove('hidden');
-        let cantidad = parseInt(cantidadInput.value) || 1;
+        var cantidad = parseInt(cantidadInput.value) || 1;
         if (cantidad > 20) { cantidad = 20; cantidadInput.value = 20; mostrarNotificacion('Info', 'Máximo 20 sillas', 'warning'); }
         if (cantidad < 1) cantidad = 1;
-        
-        paymentZone.textContent = `Sillas (x${cantidad})`;
-        rentalValue.textContent = `$${(cantidad * PRECIOS_ALQUILER.Sillas).toLocaleString('es-CO')}`;
+        paymentZone.textContent = 'Sillas (x' + cantidad + ')';
+        rentalValue.textContent = '$' + (cantidad * PRECIOS_ALQUILER.Sillas).toLocaleString('es-CO');
       } else {
         groupCantidad.classList.add('hidden');
         paymentZone.textContent = zona;
-        rentalValue.textContent = `$${PRECIOS_ALQUILER[zona].toLocaleString('es-CO')}`;
+        rentalValue.textContent = '$' + PRECIOS_ALQUILER[zona].toLocaleString('es-CO');
       }
     }
 
     function procesarAlquiler() {
-      const zona = document.getElementById('rentalZone').value;
-      const archivo = document.getElementById('comprobanteAlquiler').files[0];
-      const cantidad = zona === 'Sillas' ? (parseInt(document.getElementById('cantidadSillas').value) || 1) : 1;
-      
+      var zona = document.getElementById('rentalZone').value;
+      var archivo = document.getElementById('comprobanteAlquiler').files[0];
+      var cantidad = zona === 'Sillas' ? (parseInt(document.getElementById('cantidadSillas').value) || 1) : 1;
+
       if (!zona) { mostrarNotificacion('Error', 'Selecciona una zona', 'error'); return; }
       if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
-      
-      // Verificar tamaño
-      if (archivo.size > 5 * 1024 * 1024) {
-        mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error');
-        return;
-      }
-      
+      if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error'); return; }
+
       mostrarLoading('Procesando alquiler...');
-      
-      const reader = new FileReader();
+
+      var reader = new FileReader();
       reader.onload = function(e) {
         llamarGS('subirAlquilerZona', [{
           descripcion: 'Alquiler de Zona - ' + zona,
@@ -2699,56 +2557,42 @@
         }], function(res) {
           ocultarLoading();
           cerrarModalAlquiler();
-          
-          // ✅ CORREGIDO: Verificar errores
-          if (res.ok === false) {
-            mostrarNotificacion('Error', res.mensaje || 'Error al procesar alquiler', 'error');
-            return;
-          }
-          
-          if (res.status === 'error') {
-            mostrarNotificacion('Error', res.message || 'Error de conexión', 'error');
-            return;
-          }
-          
+
+          if (res.ok === false) { mostrarNotificacion('Error', res.mensaje || 'Error al procesar alquiler', 'error'); return; }
+          if (res.status === 'error') { mostrarNotificacion('Error', res.message || 'Error de conexión', 'error'); return; }
+
           state.cache.ingresos = null;
           mostrarNotificacion('Éxito', res.mensaje || 'Alquiler registrado', 'success');
         });
       };
       reader.readAsDataURL(archivo);
     }
+
     // ============================================
     // INICIALIZACIÓN
     // ============================================
     function inicializar() {
-      // Generar grid de apartamentos
-      const grid = document.getElementById('apartmentGrid');
-      grid.innerHTML = APARTAMENTOS.map(apt => 
-        `<button class="apartment-btn" onclick="seleccionarApartamento('${apt}')">${apt}</button>`
-      ).join('');
-      
-      // Generar selects de apartamentos
-      const optionsAptos = '<option value="">Seleccione</option>' + APARTAMENTOS.map(a => `<option>${a}</option>`).join('');
+      var grid = document.getElementById('apartmentGrid');
+      grid.innerHTML = APARTAMENTOS.map(function(apt) {
+        return '<button class="apartment-btn" onclick="seleccionarApartamento(\'' + apt + '\')">' + apt + '</button>';
+      }).join('');
+
+      var optionsAptos = '<option value="">Seleccione</option>' + APARTAMENTOS.map(function(a) { return '<option>' + a + '</option>'; }).join('');
       document.getElementById('apartamentoEfectivo').innerHTML = optionsAptos;
-      document.getElementById('aptoExencion').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(a => `<option value="${a}">${a}</option>`).join('');
-      
-      // Formato de moneda para inputs
-      document.querySelectorAll('.currency-input').forEach(input => {
+      document.getElementById('aptoExencion').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
+
+      document.querySelectorAll('.currency-input').forEach(function(input) {
         input.addEventListener('input', function(e) {
-          let value = e.target.value.replace(/\D/g, '');
-          if (value) {
-            value = parseInt(value).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 });
-          }
+          var value = e.target.value.replace(/\D/g, '');
+          if (value) { value = parseInt(value).toLocaleString('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }); }
           e.target.value = value;
         });
       });
-      
-      // Fecha mínima para solicitudes
-      const fechaSol = document.getElementById('fechaSolicitud');
+
+      var fechaSol = document.getElementById('fechaSolicitud');
       if (fechaSol) fechaSol.min = new Date().toISOString().split('T')[0];
     }
 
-    // Ejecutar al cargar
     document.addEventListener('DOMContentLoaded', inicializar);
   </script>
 </body>
