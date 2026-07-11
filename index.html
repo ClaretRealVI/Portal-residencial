@@ -1268,6 +1268,7 @@
           // 4. Si todo sale bien, pasamos el resultado a tu función original
           // Nota: Tu código original maneja los {status: "error"} dentro del success, 
           // así que aquí simplemente enviamos los datos.
+          if (!data) { errCb(new Error('Respuesta vacía del servidor')); return; }
           cb(data);
         })
         .catch(error => {
@@ -1410,16 +1411,21 @@
     function cargarDatosResidente() {
       mostrarLoading('Cargando...');
       llamarGS('cargarDatosResidente', [state.apartamento], function(datos) {
-        document.getElementById('currentMonth').textContent = datos.mesActual;
-        document.getElementById('paymentAmount').textContent = `$${datos.valorPago.toLocaleString('es-CO')}`;
+        if (!datos || datos.status === 'error') {
+          ocultarLoading();
+          mostrarNotificacion('Error', datos?.message || 'Error al cargar datos del residente', 'error');
+          return;
+        }
+        document.getElementById('currentMonth').textContent = datos.mesActual || '-';
+        document.getElementById('paymentAmount').textContent = datos.valorPago ? `$${datos.valorPago.toLocaleString('es-CO')}` : '$0';
         document.getElementById('userApartment').textContent = state.apartamento;
-        document.getElementById('paymentMonth').textContent = datos.pagado ? datos.mesSiguiente : datos.mesActual;
+        document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-');
         
         const breakdown = document.getElementById('paymentBreakdown');
         if (datos.cuotaExtraordinaria > 0) {
-          breakdown.textContent = `$${datos.valorBase.toLocaleString('es-CO')} (admin) + $${datos.cuotaExtraordinaria.toLocaleString('es-CO')} (extra)`;
+          breakdown.textContent = `$${(datos.valorBase || 0).toLocaleString('es-CO')} (admin) + $${datos.cuotaExtraordinaria.toLocaleString('es-CO')} (extra)`;
         } else {
-          breakdown.textContent = `$${datos.valorBase.toLocaleString('es-CO')} (admin)`;
+          breakdown.textContent = `$${(datos.valorBase || 0).toLocaleString('es-CO')} (admin)`;
         }
         
         const paymentSection = document.getElementById('paymentSection');
@@ -1443,14 +1449,19 @@
     function actualizarEstadisticas() {
       mostrarLoading('Actualizando...');
       llamarGS('obtenerEstadisticasDashboard', [], function(est) {
-        document.getElementById('paymentsUpToDate').textContent = est.pagosAlDia;
-        document.getElementById('pendingPayments').textContent = est.pendientes.length;
-        document.getElementById('apartmentsInArrears').textContent = est.mora.length;
-        document.getElementById('activeRequests').textContent = est.solicitudesActivas;
+        if (!est || est.status === 'error') {
+          ocultarLoading();
+          mostrarNotificacion('Error', est?.message || 'Error al cargar estadísticas', 'error');
+          return;
+        }
+        document.getElementById('paymentsUpToDate').textContent = est.pagosAlDia || 0;
+        document.getElementById('pendingPayments').textContent = (est.pendientes || []).length;
+        document.getElementById('apartmentsInArrears').textContent = (est.mora || []).length;
+        document.getElementById('activeRequests').textContent = est.solicitudesActivas || 0;
         
-        document.getElementById('apartamentosAlDia').innerHTML = est.alDia.length ? '<strong>Aptos:</strong> ' + est.alDia.join(', ') : '<em>Ninguno</em>';
-        document.getElementById('apartamentosPendientes').innerHTML = est.pendientes.length ? '<strong>Aptos:</strong> ' + est.pendientes.join(', ') : '<em>Ninguno</em>';
-        document.getElementById('apartamentosEnMora').innerHTML = est.mora.length ? '<strong>Aptos:</strong> ' + est.mora.join(', ') : '<em>Ninguno</em>';
+        document.getElementById('apartamentosAlDia').innerHTML = (est.alDia || []).length ? '<strong>Aptos:</strong> ' + est.alDia.join(', ') : '<em>Ninguno</em>';
+        document.getElementById('apartamentosPendientes').innerHTML = (est.pendientes || []).length ? '<strong>Aptos:</strong> ' + est.pendientes.join(', ') : '<em>Ninguno</em>';
+        document.getElementById('apartamentosEnMora').innerHTML = (est.mora || []).length ? '<strong>Aptos:</strong> ' + est.mora.join(', ') : '<em>Ninguno</em>';
         
         ocultarLoading();
       });
