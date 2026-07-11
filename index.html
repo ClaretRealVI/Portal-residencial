@@ -66,6 +66,50 @@
     @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
     @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
     @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    /* ============================================
+       SPLASH SCREEN
+    ============================================ */
+    .splash-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 0.5s ease;
+    }
+    .splash-screen.fade-out { opacity: 0; pointer-events: none; }
+    .splash-logo {
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.15);
+      margin-bottom: 28px; object-fit: cover;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 40px rgba(5,150,105,0.15);
+    }
+    .splash-title {
+      font-family: 'Playfair Display', serif; font-size: 26px;
+      color: white; min-height: 38px; text-align: center;
+      letter-spacing: 1px;
+    }
+    .splash-title .char {
+      display: inline-block; opacity: 0; transform: translateY(8px);
+      animation: charReveal 0.35s ease forwards;
+    }
+    @keyframes charReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .splash-bar {
+      width: 180px; height: 3px; background: rgba(255,255,255,0.08);
+      border-radius: 3px; margin-top: 28px; overflow: hidden;
+    }
+    .splash-bar-fill {
+      height: 100%; width: 0%; border-radius: 3px;
+      background: linear-gradient(90deg, #059669, #10b981, #34d399);
+      transition: width 0.4s ease;
+    }
+    .splash-subtitle {
+      margin-top: 18px; font-size: 11px; color: rgba(255,255,255,0.3);
+      letter-spacing: 3px; text-transform: uppercase; font-weight: 500;
+    }
+
+
 
     .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; }
     .hidden { display: none !important; }
@@ -753,6 +797,14 @@
   </style>
 </head>
 <body>
+  <!-- Splash Screen -->
+  <div id="splashScreen" class="splash-screen">
+    <img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo" class="splash-logo">
+    <div class="splash-title" id="splashTitle"></div>
+    <div class="splash-bar"><div class="splash-bar-fill" id="splashBarFill"></div></div>
+    <div class="splash-subtitle" id="splashSubtitle">Cargando</div>
+  </div>
+
   <!-- Loading -->
   <div id="loadingOverlay" class="loading-overlay">
     <div><div class="loading-spinner"></div><div class="loading-text" id="loadingText">Procesando...</div></div>
@@ -975,9 +1027,7 @@
         <a href="#" onclick="mostrarSeccion('solicitudes'); return false;" data-section="solicitudes">
           <i class="fas fa-clipboard-list"></i> Solicitudes
         </a>
-        <a href="#" onclick="mostrarSeccion('formatos'); return false;" data-section="formatos">
-          <i class="fas fa-file-alt"></i> Formatos
-        </a>
+        
       </nav>
       <div class="sidebar-footer">
         <a href="#" onclick="cerrarSesion(); return false;">
@@ -1443,6 +1493,8 @@
       filtroInicio: null,
       filtroFin: null,
       seccionActual: 'bienvenida',
+      estadisticasCache: null,
+      estadisticasCargando: false,
       cache: { ingresos: null, egresos: null, solicitudes: null, activos: null }
     };
 
@@ -1775,39 +1827,74 @@
       });
     }
 
+    function aplicarEstadisticas(est) {
+      document.getElementById('paymentsUpToDate').textContent = est.pagosAlDia || 0;
+      document.getElementById('pendingPayments').textContent = (est.pendientes || []).length;
+      document.getElementById('apartmentsInArrears').textContent = (est.mora || []).length;
+      document.getElementById('activeRequests').textContent = est.solicitudesActivas || 0;
+      var moraCount = (est.mora || []).length;
+      var pendCount = (est.pendientes || []).length;
+      document.getElementById('badgeMoraText').textContent = moraCount + ' en mora';
+      document.getElementById('badgePendientesText').textContent = pendCount + ' pendientes';
+      if (moraCount > 0) {
+        document.getElementById('badgeMora').className = 'topbar-badge danger';
+      } else {
+        document.getElementById('badgeMora').className = 'topbar-badge success';
+        document.getElementById('badgeMoraText').textContent = 'Sin mora';
+      }
+      document.getElementById('apartamentosAlDia').innerHTML = (est.alDia || []).length ? '<strong>Aptos:</strong> ' + est.alDia.join(', ') : '<em>Ninguno</em>';
+      document.getElementById('apartamentosPendientes').innerHTML = (est.pendientes || []).length ? '<strong>Aptos:</strong> ' + est.pendientes.join(', ') : '<em>Ninguno</em>';
+      document.getElementById('apartamentosEnMora').innerHTML = (est.mora || []).length ? '<strong>Aptos:</strong> ' + est.mora.join(', ') : '<em>Ninguno</em>';
+    }
+
+    function precargarEstadisticas() {
+      if (state.estadisticasCargando || state.estadisticasCache) return;
+      state.estadisticasCargando = true;
+      llamarGS('obtenerEstadisticasDashboard', [], function(est) {
+        state.estadisticasCargando = false;
+        if (est && est.status !== 'error') {
+          state.estadisticasCache = est;
+        }
+        if (state.estadisticasReadyCallback) {
+          state.estadisticasReadyCallback();
+          state.estadisticasReadyCallback = null;
+        }
+      }, function(err) {
+        state.estadisticasCargando = false;
+        if (state.estadisticasReadyCallback) {
+          state.estadisticasReadyCallback();
+          state.estadisticasReadyCallback = null;
+        }
+      });
+    }
+
     function actualizarEstadisticas() {
+      if (state.estadisticasCache) {
+        aplicarEstadisticas(state.estadisticasCache);
+        return;
+      }
+      if (state.estadisticasCargando) {
+        mostrarLoading('Cargando estadísticas...');
+        state.estadisticasReadyCallback = function() {
+          ocultarLoading();
+          if (state.estadisticasCache) {
+            aplicarEstadisticas(state.estadisticasCache);
+          }
+        };
+        return;
+      }
       mostrarLoading('Actualizando...');
       llamarGS('obtenerEstadisticasDashboard', [], function(est) {
+        ocultarLoading();
         if (!est || est.status === 'error') {
-          ocultarLoading();
           mostrarNotificacion('Error', est?.message || 'Error al cargar estadísticas', 'error');
           return;
         }
-        document.getElementById('paymentsUpToDate').textContent = est.pagosAlDia || 0;
-        document.getElementById('pendingPayments').textContent = (est.pendientes || []).length;
-        document.getElementById('apartmentsInArrears').textContent = (est.mora || []).length;
-        document.getElementById('activeRequests').textContent = est.solicitudesActivas || 0;
-
-        // Update topbar badges for admin
-        var moraCount = (est.mora || []).length;
-        var pendCount = (est.pendientes || []).length;
-        document.getElementById('badgeMoraText').textContent = moraCount + ' en mora';
-        document.getElementById('badgePendientesText').textContent = pendCount + ' pendientes';
-
-        if (moraCount > 0) {
-          document.getElementById('badgeMora').className = 'topbar-badge danger';
-        } else {
-          document.getElementById('badgeMora').className = 'topbar-badge success';
-          document.getElementById('badgeMoraText').textContent = 'Sin mora';
-        }
-
-        document.getElementById('apartamentosAlDia').innerHTML = (est.alDia || []).length ? '<strong>Aptos:</strong> ' + est.alDia.join(', ') : '<em>Ninguno</em>';
-        document.getElementById('apartamentosPendientes').innerHTML = (est.pendientes || []).length ? '<strong>Aptos:</strong> ' + est.pendientes.join(', ') : '<em>Ninguno</em>';
-        document.getElementById('apartamentosEnMora').innerHTML = (est.mora || []).length ? '<strong>Aptos:</strong> ' + est.mora.join(', ') : '<em>Ninguno</em>';
-
-        ocultarLoading();
+        state.estadisticasCache = est;
+        aplicarEstadisticas(est);
       });
     }
+
 
     function cargarResumen() {
       mostrarLoading('Cargando resumen...');
@@ -2571,6 +2658,66 @@
     // ============================================
     // INICIALIZACIÓN
     // ============================================
+    function iniciarSplash() {
+      var titleEl = document.getElementById('splashTitle');
+      var barFill = document.getElementById('splashBarFill');
+      var subtitle = document.getElementById('splashSubtitle');
+      var text = 'Bienvenido a Claret Real VI';
+      var chars = text.split('');
+      var totalChars = chars.length;
+      var charIndex = 0;
+      var splashDone = false;
+
+      precargarEstadisticas();
+
+      function typeNext() {
+        if (charIndex < totalChars) {
+          var span = document.createElement('span');
+          span.className = 'char';
+          span.textContent = chars[charIndex] === ' ' ? '\u00A0' : chars[charIndex];
+          span.style.animationDelay = '0s';
+          titleEl.appendChild(span);
+          charIndex++;
+          var progress = Math.round((charIndex / totalChars) * 70);
+          barFill.style.width = progress + '%';
+          setTimeout(typeNext, 55);
+        } else {
+          barFill.style.width = '85%';
+          subtitle.textContent = 'Preparando portal...';
+          setTimeout(function() {
+            if (state.estadisticasCache !== null || !state.estadisticasCargando) {
+              cerrarSplash();
+            } else {
+              subtitle.textContent = 'Cargando datos...';
+              barFill.style.width = '92%';
+              state.estadisticasReadyCallback = function() {
+                cerrarSplash();
+              };
+              setTimeout(function() {
+                if (!splashDone) cerrarSplash();
+              }, 8000);
+            }
+          }, 400);
+        }
+      }
+
+      function cerrarSplash() {
+        if (splashDone) return;
+        splashDone = true;
+        barFill.style.width = '100%';
+        subtitle.textContent = 'Listo';
+        setTimeout(function() {
+          var splash = document.getElementById('splashScreen');
+          splash.classList.add('fade-out');
+          setTimeout(function() {
+            splash.style.display = 'none';
+          }, 500);
+        }, 300);
+      }
+
+      setTimeout(typeNext, 400);
+    }
+
     function inicializar() {
       var grid = document.getElementById('apartmentGrid');
       grid.innerHTML = APARTAMENTOS.map(function(apt) {
@@ -2591,7 +2738,10 @@
 
       var fechaSol = document.getElementById('fechaSolicitud');
       if (fechaSol) fechaSol.min = new Date().toISOString().split('T')[0];
+
+      iniciarSplash();
     }
+
 
     document.addEventListener('DOMContentLoaded', inicializar);
   </script>
