@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <style>
+
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     *{font-family:'Inter',sans-serif;margin:0;padding:0;box-sizing:border-box}
     body{background:linear-gradient(135deg,#0a0e27 0%,#1a1f3a 100%);color:#e5e7eb;min-height:100vh;overflow-x:hidden}
@@ -73,7 +74,41 @@
     @media(max-width:768px){.sidebar-desktop{display:none!important}.mobile-nav{display:flex!important}.mobile-sidebar-overlay{display:block!important}}
     @media(min-width:769px)and(max-width:1024px){.sidebar-desktop{width:72px!important}.sidebar-desktop .sidebar-text{display:none!important}.sidebar-desktop .sidebar-item{justify-content:center;padding:.75rem}}
     @media(min-width:1025px){.mobile-nav{display:none!important}}
-  </style>
+
+    .glow-card{position:relative;overflow:hidden}
+    .glow-card::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:conic-gradient(from 0deg,transparent,rgba(34,211,238,0.1),transparent,rgba(139,92,246,0.1),transparent);animation:glowRotate 6s linear infinite;opacity:0;transition:opacity .5s}
+    .glow-card:hover::before{opacity:1}
+    .glow-card::after{content:'';position:absolute;inset:2px;background:rgba(10,14,39,0.95);border-radius:inherit;z-index:0}
+    .glow-card>*{position:relative;z-index:1}
+    @keyframes glowRotate{to{transform:rotate(360deg)}}
+    .welcome-banner{background:linear-gradient(135deg,rgba(34,211,238,0.08),rgba(139,92,246,0.08));border:1px solid rgba(255,255,255,0.08);border-radius:1rem;padding:1.5rem 2rem;position:relative;overflow:hidden}
+    .welcome-banner::after{content:'';position:absolute;top:-50%;right:-50%;width:100%;height:200%;background:linear-gradient(135deg,transparent,rgba(34,211,238,0.05),transparent);transform:rotate(15deg);pointer-events:none}
+    .neon-line{height:2px;background:linear-gradient(90deg,transparent,#22d3ee,#8b5cf6,transparent);border-radius:1px}
+    .stat-card-future{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:1rem;padding:1.25rem;transition:all .4s cubic-bezier(.4,0,.2,1);position:relative;overflow:hidden}
+    .stat-card-future::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--accent-from,#22d3ee),var(--accent-to,#8b5cf6));opacity:0;transition:opacity .4s}
+    .stat-card-future:hover{transform:translateY(-4px);box-shadow:0 20px 40px rgba(0,0,0,0.3);border-color:rgba(255,255,255,0.12)}
+    .stat-card-future:hover::before{opacity:1}
+    .quick-action{display:flex;flex-direction:column;align-items:center;gap:.5rem;padding:1rem;border-radius:.75rem;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);cursor:pointer;transition:all .3s}
+    .quick-action:hover{background:rgba(255,255,255,0.06);border-color:rgba(34,211,238,0.3);transform:translateY(-2px);box-shadow:0 8px 25px rgba(34,211,238,0.1)}
+    .premium-table{border:1px solid rgba(255,255,255,0.06);border-radius:1rem;overflow:hidden}
+    .premium-table thead{background:linear-gradient(135deg,rgba(34,211,238,0.05),rgba(139,92,246,0.05))}
+    .premium-table th{padding:1rem 1.25rem;font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.08em;color:#9ca3af;border-bottom:1px solid rgba(255,255,255,0.08)}
+    .premium-table td{padding:.875rem 1.25rem;border-bottom:1px solid rgba(255,255,255,0.04);font-size:.875rem;transition:background .2s}
+    .premium-table tr:hover td{background:rgba(255,255,255,0.02)}
+    .premium-table tbody tr:last-child td{border-bottom:none}
+    .section-header{margin-bottom:1.5rem}
+    .section-header h2{font-size:1.75rem;font-weight:800;margin-bottom:.25rem}
+    .section-header p{color:#6b7280;font-size:.9rem}
+    .form-section{background:rgba(255,255,255,0.03);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.06);border-radius:1rem;padding:1.5rem}
+    .form-section h3{font-size:1rem;font-weight:700;color:#e5e7eb;margin-bottom:1rem;display:flex;align-items:center;gap:.5rem}
+    .form-section h3 i{color:#22d3ee}
+    .empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;text-align:center}
+    .empty-state i{font-size:3rem;color:rgba(255,255,255,0.08);margin-bottom:1rem}
+    .empty-state p{color:#6b7280;font-size:.95rem}
+
+
+  
+</style>
 </head>
 <body>
   <div class="grid-bg"></div>
@@ -458,13 +493,13 @@ function showView(view) {
     document.getElementById('btnLogout').classList.remove('hidden');
     document.getElementById('btnLogout').style.display = 'inline-flex';
     document.getElementById('headerUser').classList.remove('hidden');
-    document.getElementById('headerUser').textContent = session?.user?.nombre || 'Admin';
+    document.getElementById('headerUser').textContent = session?.user?.nombre || session?.name || 'Admin';
   } else if (view === 'resident') {
     document.getElementById('residentDash').classList.remove('hidden');
     document.getElementById('btnLogout').classList.remove('hidden');
     document.getElementById('btnLogout').style.display = 'inline-flex';
     document.getElementById('headerUser').classList.remove('hidden');
-    document.getElementById('headerUser').textContent = session?.user?.nombre || 'Residente';
+    document.getElementById('headerUser').textContent = session?.user?.nombre || session?.name || 'Residente';
   }
 }
 
@@ -497,16 +532,15 @@ async function doLogin(e) {
     data = { type: 'admin', username: u, password: p };
   }
   const res = await api('login', data);
-  if (res && res.success) {
-    saveSession(res);
-    closeLoginModal();
-    toast('¡Bienvenido!', 'success');
-    if (res.user.type === 'admin') { showView('admin'); document.getElementById('adminUserName').textContent = res.user.nombre; loadAdminDashboard(); }
-    else { showView('resident'); document.getElementById('residentName').textContent = res.user.nombre; document.getElementById('residentApto').textContent = 'Apto ' + res.user.apto; document.getElementById('residentAvatar').textContent = res.user.apto; loadResidentDashboard(); }
-  } else {
-    errEl.textContent = (res && res.error) || 'Error al iniciar sesión';
-    errEl.classList.remove('hidden');
-  }
+  if (!res || !res.success) { errEl.textContent = (res && res.error) || 'Error al iniciar sesión'; errEl.classList.remove('hidden'); return; }
+  // Normalize: backend may return flat (role, name, apartment) or nested (user: {type, nombre, apto})
+  const user = res.user || { type: res.role || res.type, nombre: res.name || res.nombre || '', username: res.username || '', apto: res.apartment || res.apto || '', adminRole: res.adminRole || '' };
+  const sessionData = { success: true, token: res.token, user };
+  saveSession(sessionData);
+  closeLoginModal();
+  toast('¡Bienvenido!', 'success');
+  if (user.type === 'admin') { showView('admin'); document.getElementById('adminUserName').textContent = user.nombre || user.username || 'Admin'; loadAdminDashboard(); }
+  else { showView('resident'); document.getElementById('residentName').textContent = user.nombre || 'Residente'; document.getElementById('residentApto').textContent = 'Apto ' + (user.apto || ''); document.getElementById('residentAvatar').textContent = user.apto || 'R'; loadResidentDashboard(); }
 }
 
 function doLogout() { clearSession(); toast('Sesión cerrada', 'info'); goPublic(); }
@@ -574,8 +608,9 @@ function filterRules(cat) {
 
 // ========== MOBILE SIDEBAR ==========
 function toggleMobileSidebar() {
-  const sb = session?.user?.type === 'admin' ? document.getElementById('adminSidebar') : document.getElementById('residentSidebar');
-  const ov = session?.user?.type === 'admin' ? document.getElementById('adminSidebarOverlay') : document.getElementById('residentSidebarOverlay');
+  const isAdmin = session?.user?.type === 'admin' || session?.role === 'admin';
+  const sb = isAdmin ? document.getElementById('adminSidebar') : document.getElementById('residentSidebar');
+  const ov = isAdmin ? document.getElementById('adminSidebarOverlay') : document.getElementById('residentSidebarOverlay');
   const open = sb.style.transform === 'translateX(0px)';
   sb.style.transform = open ? 'translateX(-100%)' : 'translateX(0px)';
   ov.style.display = open ? 'none' : 'block';
@@ -620,7 +655,7 @@ async function submitPayment(tipo, refId) {
   if (!comp) { toast('Ingrese el comprobante de pago', 'warning'); return; }
   let action = tipo === 'cuota' ? 'payCuota' : tipo === 'multa' ? 'payFine' : 'payAlquiler';
   const res = await api(action, { id: refId, comprobante: comp, metodoPago: config['metodo_pago_' + (tipo === 'cuota' ? 'admin' : tipo === 'multa' ? 'multa' : 'alquiler')] || 'Nequi' }, true);
-  if (res && !res.error) { toast('Pago registrado exitosamente. En espera de verificación.', 'success'); closePaymentModal(); if (session?.user?.type === 'resident') { if (tipo === 'multa') showResidentSection('mismultas'); else if (tipo === 'alquiler') showResidentSection('misalquileres'); else showResidentSection('miadmin'); } }
+  if (res && !res.error) { toast('Pago registrado exitosamente. En espera de verificación.', 'success'); closePaymentModal(); const isRes = session?.user?.type === 'resident' || session?.role === 'resident'; if (isRes) { if (tipo === 'multa') showResidentSection('mismultas'); else if (tipo === 'alquiler') showResidentSection('misalquileres'); else showResidentSection('miadmin'); } }
   else { toast(res?.error || 'Error al registrar pago', 'error'); }
 }
 
@@ -639,7 +674,6 @@ function showAdminSection(section) {
   c.innerHTML = '<div class="flex items-center justify-center py-20"><i class="fa-solid fa-spinner fa-spin text-2xl text-cyan-400"></i></div>';
   const loaders = { panel: loadAdminPanel, finanzas: loadAdminFinanzas, zonas: loadAdminZonas, alquileres: loadAdminAlquileres, alarmas: loadAdminAlarmas, multas: loadAdminMultas, residentes: loadAdminResidentes, visitantes: loadAdminVisitantes, pqrs: loadAdminPQRS, config: loadAdminConfig };
   if (loaders[section]) loaders[section]();
-  // close mobile sidebar
   const sb = document.getElementById('adminSidebar'); sb.style.transform = 'translateX(-100%)';
   document.getElementById('adminSidebarOverlay').style.display = 'none';
 }
@@ -650,19 +684,54 @@ async function loadAdminPanel() {
   const raw = await api('getDashboard', {}, true);
   const c = document.getElementById('adminContent');
   const d = raw?.dashboard || raw || {};
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   const cards = [
-    { icon: 'fa-users', label: 'Residentes', value: d.residents?.total || 0, color: 'cyan' },
-    { icon: 'fa-bell', label: 'Alarmas/Mes', value: d.alarms?.monthTotal || 0, color: 'amber' },
-    { icon: 'fa-file-invoice-dollar', label: 'Multas Pendientes', value: d.fines?.pending || 0, color: 'rose' },
-    { icon: 'fa-check-circle', label: 'Multas Pagadas', value: d.fines?.paid || 0, color: 'emerald' },
-    { icon: 'fa-clipboard-list', label: 'PQRS Abiertas', value: d.pqrs?.open || 0, color: 'amber' },
-    { icon: 'fa-door-open', label: 'Visitantes/Mes', value: d.visitors?.monthTotal || 0, color: 'cyan' },
-    { icon: 'fa-calendar-check', label: 'Alquileres Activos', value: (d.alquileres?.solicitados || 0) + (d.alquileres?.aprobados || 0), color: 'violet' },
-    { icon: 'fa-coins', label: 'Balance Financiero', value: formatCOP(d.finanzas?.balance || 0), color: 'emerald' }
+    { icon: 'fa-users', label: 'Residentes', value: d.residents?.total || 0, color: 'cyan', accentFrom: '#22d3ee', accentTo: '#06b6d4' },
+    { icon: 'fa-bell', label: 'Alarmas/Mes', value: d.alarms?.monthTotal || 0, color: 'amber', accentFrom: '#fbbf24', accentTo: '#f59e0b' },
+    { icon: 'fa-file-invoice-dollar', label: 'Multas Pendientes', value: d.fines?.pending || 0, color: 'rose', accentFrom: '#fb7185', accentTo: '#f43f5e' },
+    { icon: 'fa-check-circle', label: 'Multas Pagadas', value: d.fines?.paid || 0, color: 'emerald', accentFrom: '#34d399', accentTo: '#10b981' },
+    { icon: 'fa-clipboard-list', label: 'PQRS Abiertas', value: d.pqrs?.open || 0, color: 'amber', accentFrom: '#fbbf24', accentTo: '#f59e0b' },
+    { icon: 'fa-door-open', label: 'Visitantes/Mes', value: d.visitors?.monthTotal || 0, color: 'cyan', accentFrom: '#22d3ee', accentTo: '#06b6d4' },
+    { icon: 'fa-calendar-check', label: 'Alquileres Activos', value: (d.alquileres?.solicitados || 0) + (d.alquileres?.aprobados || 0), color: 'violet', accentFrom: '#a78bfa', accentTo: '#8b5cf6' },
+    { icon: 'fa-coins', label: 'Balance', value: formatCOP(d.finanzas?.balance || 0), color: 'emerald', accentFrom: '#34d399', accentTo: '#22d3ee' }
   ];
-  c.innerHTML = `<h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Panel General</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fadeInUp" style="animation-delay:.1s">
-      ${cards.map(s => `<div class="glass card-hover p-5"><div class="flex items-center gap-4"><div class="stat-icon bg-${s.color}-500/15 text-${s.color}-400"><i class="fa-solid ${s.icon}"></i></div><div><div class="text-2xl font-bold text-white">${s.value}</div><div class="text-sm text-gray-400">${s.label}</div></div></div></div>`).join('')}
+  c.innerHTML = `
+    <div class="animate-fadeInUp">
+      <div class="welcome-banner mb-6">
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-extrabold text-white mb-1">Panel General</h2>
+            <p class="text-sm text-gray-400"><i class="fa-regular fa-calendar mr-1"></i>${dateStr} &middot; <i class="fa-regular fa-clock mr-1 ml-1"></i>${timeStr}</p>
+          </div>
+          <div class="text-right hidden sm:block">
+            <div class="text-xs text-gray-500 uppercase tracking-wider">Administración</div>
+            <div class="text-sm font-semibold gradient-text">${config.nombre_edificio || 'Edificio'}</div>
+          </div>
+        </div>
+      </div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        ${cards.map((s, i) => `
+          <div class="stat-card-future" style="--accent-from:${s.accentFrom};--accent-to:${s.accentTo};animation-delay:${i * .05}s">
+            <div class="flex items-center gap-3 mb-3">
+              <div class="w-10 h-10 rounded-xl flex items-center justify-center text-lg" style="background:${s.accentFrom}15;color:${s.accentFrom}"><i class="fa-solid ${s.icon}"></i></div>
+              <span class="text-xs text-gray-500 font-medium uppercase tracking-wide">${s.label}</span>
+            </div>
+            <div class="text-2xl font-extrabold text-white">${s.value}</div>
+          </div>
+        `).join('')}
+      </div>
+      <div class="neon-line mb-6"></div>
+      <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-bolt text-cyan-400 mr-2"></i>Acciones Rápidas</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+        <div class="quick-action" onclick="showAdminSection('alarmas')"><div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><span class="text-xs text-gray-300 font-medium">Registrar Alarma</span></div>
+        <div class="quick-action" onclick="showAdminSection('multas');setTimeout(()=>openCreateFineForm(),300)"><div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-file-invoice-dollar"></i></div><span class="text-xs text-gray-300 font-medium">Nueva Multa</span></div>
+        <div class="quick-action" onclick="showAdminSection('zonas');setTimeout(()=>openAddZonaForm(),300)"><div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-plus"></i></div><span class="text-xs text-gray-300 font-medium">Agregar Zona</span></div>
+        <div class="quick-action" onclick="showAdminSection('finanzas')"><div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-coins"></i></div><span class="text-xs text-gray-300 font-medium">Finanzas</span></div>
+        <div class="quick-action" onclick="showAdminSection('residentes');setTimeout(()=>openAddResidentForm(),300)"><div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center"><i class="fa-solid fa-user-plus"></i></div><span class="text-xs text-gray-300 font-medium">Nuevo Residente</span></div>
+      </div>
     </div>`;
 }
 
@@ -674,28 +743,37 @@ async function loadAdminFinanzas() {
   const cats = ['Cuota Admin','Alquiler','Multa','Mantenimiento','Servicios','Nómina','Impuestos','Otro'];
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Finanzas</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6 animate-fadeInUp" style="animation-delay:.1s">
-      <div class="glass card-hover p-5 text-center"><div class="text-sm text-gray-400 mb-1">Total Ingresos</div><div class="text-2xl font-bold text-emerald-400">${formatCOP(ingresos)}</div></div>
-      <div class="glass card-hover p-5 text-center"><div class="text-sm text-gray-400 mb-1">Total Egresos</div><div class="text-2xl font-bold text-rose-400">${formatCOP(egresos)}</div></div>
-      <div class="glass card-hover p-5 text-center"><div class="text-sm text-gray-400 mb-1">Balance</div><div class="text-2xl font-bold ${balance >= 0 ? 'text-emerald-400' : 'text-rose-400'}">${formatCOP(balance)}</div></div>
-    </div>
-    <div class="glass p-5 mb-6 animate-fadeInUp" style="animation-delay:.15s">
-      <h3 class="font-semibold text-white mb-4">Agregar Movimiento</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <div><label class="text-sm text-gray-400 mb-1 block">Tipo</label><select id="finTipo" class="input-field"><option value="Ingreso">Ingreso</option><option value="Egreso">Egreso</option></select></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Categoría</label><select id="finCat" class="input-field">${cats.map(c => `<option>${c}</option>`).join('')}</select></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Descripción</label><input id="finDesc" class="input-field" placeholder="Descripción"></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Valor</label><input id="finVal" type="number" class="input-field" placeholder="0"></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Referencia</label><input id="finRef" class="input-field" placeholder="Referencia"></div>
-        <div class="flex items-end"><button onclick="addFinMov()" class="btn-primary w-full justify-center"><i class="fa-solid fa-plus"></i> Agregar</button></div>
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Finanzas</h2><p>Resumen financiero y gestión de movimientos</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
+        <div class="stat-card-future" style="--accent-from:#34d399;--accent-to:#10b981">
+          <div class="flex items-center gap-2 mb-3"><div class="w-8 h-8 rounded-lg bg-emerald-500/10 flex items-center justify-center text-emerald-400"><i class="fa-solid fa-arrow-trend-up"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Ingresos</span></div>
+          <div class="text-3xl font-extrabold text-emerald-400">${formatCOP(ingresos)}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fb7185;--accent-to:#f43f5e">
+          <div class="flex items-center gap-2 mb-3"><div class="w-8 h-8 rounded-lg bg-rose-500/10 flex items-center justify-center text-rose-400"><i class="fa-solid fa-arrow-trend-down"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Egresos</span></div>
+          <div class="text-3xl font-extrabold text-rose-400">${formatCOP(egresos)}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:${balance >= 0 ? '#34d399' : '#fb7185'};--accent-to:${balance >= 0 ? '#22d3ee' : '#f43f5e'}">
+          <div class="flex items-center gap-2 mb-3"><div class="w-8 h-8 rounded-lg ${balance >= 0 ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'} flex items-center justify-center"><i class="fa-solid fa-scale-balanced"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Balance</span></div>
+          <div class="text-3xl font-extrabold ${balance >= 0 ? 'gradient-text-emerald' : 'text-rose-400'}">${formatCOP(balance)}</div>
+        </div>
       </div>
-    </div>
-    <div class="glass animate-fadeInUp" style="animation-delay:.2s">
-      <h3 class="font-semibold text-white p-5 pb-3">Movimientos</h3>
-      <div class="table-container" style="border:none;border-radius:0">
+      <div class="form-section mb-6">
+        <h3><i class="fa-solid fa-plus-circle"></i> Agregar Movimiento</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Tipo</label><select id="finTipo" class="input-field"><option value="Ingreso">Ingreso</option><option value="Egreso">Egreso</option></select></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Categoría</label><select id="finCat" class="input-field">${cats.map(c => `<option>${c}</option>`).join('')}</select></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Descripción</label><input id="finDesc" class="input-field" placeholder="Descripción del movimiento"></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Valor</label><input id="finVal" type="number" class="input-field" placeholder="0"></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Referencia</label><input id="finRef" class="input-field" placeholder="Referencia"></div>
+          <div class="flex items-end"><button onclick="addFinMov()" class="btn-primary w-full justify-center"><i class="fa-solid fa-plus"></i> Agregar</button></div>
+        </div>
+      </div>
+      <div class="premium-table">
         <table><thead><tr><th>Fecha</th><th>Tipo</th><th>Categoría</th><th>Descripción</th><th>Valor</th><th>Ref.</th><th></th></tr></thead>
-        <tbody>${movs.length ? movs.map(m => `<tr><td>${m.fecha || '—'}</td><td><span class="badge ${m.tipo === 'Ingreso' ? 'badge-emerald' : 'badge-rose'}">${m.tipo}</span></td><td>${m.categoria || ''}</td><td>${m.descripcion || ''}</td><td class="${m.tipo === 'Ingreso' ? 'text-emerald-400' : 'text-rose-400'}">${formatCOP(m.valor)}</td><td>${m.referencia || ''}</td><td><button onclick="deleteFinMov('${m.id || ''}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('') : '<tr><td colspan="7" class="text-center text-gray-500 py-8">Sin movimientos</td></tr>'}</tbody></table>
+        <tbody>${movs.length ? movs.map(m => `<tr><td>${m.fecha || '—'}</td><td><span class="badge ${m.tipo === 'Ingreso' ? 'badge-emerald' : 'badge-rose'}">${m.tipo}</span></td><td>${m.categoria || ''}</td><td>${m.descripcion || ''}</td><td class="${m.tipo === 'Ingreso' ? 'text-emerald-400 font-semibold' : 'text-rose-400 font-semibold'}">${formatCOP(m.valor)}</td><td>${m.referencia || ''}</td><td><button onclick="deleteFinMov('${m.id || ''}')" class="text-rose-400 hover:text-rose-300 transition-colors"><i class="fa-solid fa-trash"></i></button></td></tr>`).join('') : '<tr><td colspan="7" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Sin movimientos registrados</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -710,17 +788,30 @@ async function deleteFinMov(id) { await api('deleteIngresoEgreso', { id }, true)
 async function loadAdminZonas() {
   const d = await api('getAllZonas', {}, true);
   const zonas = d?.zonas || d || [];
+  const icons = ['fa-champagne-glasses','fa-sun','fa-fire','fa-water-ladder','fa-dumbbell','fa-gamepad','fa-laptop','fa-couch'];
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <div class="flex items-center justify-between mb-6 animate-fadeInUp"><h2 class="text-2xl font-bold gradient-text">Zonas Comunes</h2><button onclick="openAddZonaForm()" class="btn-primary"><i class="fa-solid fa-plus"></i> Agregar Zona</button></div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fadeInUp" style="animation-delay:.1s">
-      ${zonas.length ? zonas.map(z => `
-        <div class="glass card-hover p-5">
-          <div class="flex justify-between items-start mb-3"><h3 class="font-semibold text-white">${z.nombre}</h3><div class="flex gap-2"><button onclick="editZona('${z.nombre}')" class="text-cyan-400 hover:text-cyan-300 text-sm"><i class="fa-solid fa-edit"></i></button><button onclick="deleteZona('${z.nombre}')" class="text-rose-400 hover:text-rose-300 text-sm"><i class="fa-solid fa-trash"></i></button></div></div>
-          <p class="text-sm text-gray-400 mb-3">${z.descripcion || ''}</p>
-          <div class="space-y-1 text-xs text-gray-500"><div><i class="fa-solid fa-users mr-1"></i>Capacidad: ${z.capacidad || '—'}</div><div><i class="fa-regular fa-clock mr-1"></i>${z.horario || '—'}</div><div><i class="fa-solid fa-tag mr-1"></i>${z.valorAlquiler > 0 ? formatCOP(z.valorAlquiler) : 'Gratis'}</div><div>Estado: <span class="badge ${z.estado === 'Activa' ? 'badge-emerald' : 'badge-gray'}">${z.estado || 'Activa'}</span></div></div>
-        </div>
-      `).join('') : '<p class="text-gray-500 col-span-full text-center py-8">No hay zonas registradas</p>'}
+    <div class="animate-fadeInUp">
+      <div class="flex items-center justify-between mb-2"><div class="section-header mb-0"><h2 class="gradient-text">Zonas Comunes</h2><p>Gestión de zonas del edificio</p></div><button onclick="openAddZonaForm()" class="btn-primary"><i class="fa-solid fa-plus"></i> Agregar Zona</button></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        ${zonas.length ? zonas.map((z, i) => `
+          <div class="glow-card glass card-hover p-5" style="animation-delay:${i * .05}s">
+            <div class="flex justify-between items-start mb-4">
+              <div class="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center text-xl"><i class="fa-solid ${icons[i % icons.length]}"></i></div>
+              <div class="flex gap-2"><button onclick="editZona('${z.nombre}')" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/10 transition-all"><i class="fa-solid fa-pen text-xs"></i></button><button onclick="deleteZona('${z.nombre}')" class="w-8 h-8 rounded-lg bg-white/5 flex items-center justify-center text-rose-400 hover:bg-rose-500/10 transition-all"><i class="fa-solid fa-trash text-xs"></i></button></div>
+            </div>
+            <h3 class="font-bold text-white text-lg mb-1">${z.nombre}</h3>
+            <p class="text-sm text-gray-400 mb-4">${z.descripcion || ''}</p>
+            <div class="space-y-2 text-sm">
+              <div class="flex items-center justify-between"><span class="text-gray-500"><i class="fa-solid fa-users mr-2 text-xs"></i>Capacidad</span><span class="text-gray-300 font-medium">${z.capacidad || '—'} personas</span></div>
+              <div class="flex items-center justify-between"><span class="text-gray-500"><i class="fa-regular fa-clock mr-2 text-xs"></i>Horario</span><span class="text-gray-300">${z.horario || '—'}</span></div>
+              <div class="flex items-center justify-between"><span class="text-gray-500"><i class="fa-solid fa-tag mr-2 text-xs"></i>Valor</span><span class="font-semibold ${z.valorAlquiler > 0 ? 'text-emerald-400' : 'text-cyan-400'}">${z.valorAlquiler > 0 ? formatCOP(z.valorAlquiler) : 'Gratis'}</span></div>
+            </div>
+            <div class="mt-4 pt-3 border-t border-white/5"><span class="badge ${z.estado === 'Activa' ? 'badge-emerald' : 'badge-gray'}"><i class="fa-solid fa-circle text-[6px] mr-1"></i>${z.estado || 'Activa'}</span></div>
+          </div>
+        `).join('') : '<div class="col-span-full"><div class="empty-state"><i class="fa-solid fa-building"></i><p>No hay zonas registradas</p></div></div>'}
+      </div>
     </div>`;
 }
 
@@ -766,21 +857,38 @@ async function loadAdminAlquileres() {
   (Array.isArray(alquileres) ? alquileres : []).forEach(a => { if (stats[a.estado] !== undefined) stats[a.estado]++; });
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Alquileres</h2>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 animate-fadeInUp" style="animation-delay:.1s">
-      <div class="glass card-hover p-4 text-center"><div class="text-2xl font-bold text-amber-400">${stats.Solicitada}</div><div class="text-xs text-gray-400">Solicitadas</div></div>
-      <div class="glass card-hover p-4 text-center"><div class="text-2xl font-bold text-cyan-400">${stats.Aprobada}</div><div class="text-xs text-gray-400">Aprobadas</div></div>
-      <div class="glass card-hover p-4 text-center"><div class="text-2xl font-bold text-emerald-400">${stats.Pagada}</div><div class="text-xs text-gray-400">Pagadas</div></div>
-      <div class="glass card-hover p-4 text-center"><div class="text-2xl font-bold text-rose-400">${stats.Rechazada}</div><div class="text-xs text-gray-400">Rechazadas</div></div>
-    </div>
-    <div class="glass animate-fadeInUp" style="animation-delay:.15s">
-      <div class="table-container" style="border:none;border-radius:0">
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Alquileres</h2><p>Solicitudes y reservas de zonas comunes</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="stat-card-future" style="--accent-from:#fbbf24;--accent-to:#f59e0b">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Solicitadas</div>
+          <div class="text-3xl font-extrabold text-amber-400">${stats.Solicitada}</div>
+          <div class="mt-2 h-1 rounded bg-amber-400/20"><div class="h-full rounded bg-amber-400" style="width:${alquileres.length ? (stats.Solicitada/alquileres.length)*100 : 0}%"></div></div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#22d3ee;--accent-to:#06b6d4">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Aprobadas</div>
+          <div class="text-3xl font-extrabold text-cyan-400">${stats.Aprobada}</div>
+          <div class="mt-2 h-1 rounded bg-cyan-400/20"><div class="h-full rounded bg-cyan-400" style="width:${alquileres.length ? (stats.Aprobada/alquileres.length)*100 : 0}%"></div></div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#34d399;--accent-to:#10b981">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Pagadas</div>
+          <div class="text-3xl font-extrabold text-emerald-400">${stats.Pagada}</div>
+          <div class="mt-2 h-1 rounded bg-emerald-400/20"><div class="h-full rounded bg-emerald-400" style="width:${alquileres.length ? (stats.Pagada/alquileres.length)*100 : 0}%"></div></div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fb7185;--accent-to:#f43f5e">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Rechazadas</div>
+          <div class="text-3xl font-extrabold text-rose-400">${stats.Rechazada}</div>
+          <div class="mt-2 h-1 rounded bg-rose-400/20"><div class="h-full rounded bg-rose-400" style="width:${alquileres.length ? (stats.Rechazada/alquileres.length)*100 : 0}%"></div></div>
+        </div>
+      </div>
+      <div class="premium-table">
         <table><thead><tr><th>Zona</th><th>Fecha</th><th>Horario</th><th>Apto</th><th>Valor</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${alquileres.length ? alquileres.map(a => `<tr>
-          <td class="font-medium text-white">${a.zonaComun || a.zona || '—'}</td><td>${a.fecha || '—'}</td><td>${a.horaInicio || ''} - ${a.horaFin || ''}</td><td>${a.apartamento || '—'}</td><td class="text-emerald-400">${formatCOP(a.valorAlquiler || a.valor)}</td>
+          <td class="font-semibold text-white">${a.zonaComun || a.zona || '—'}</td><td>${a.fecha || '—'}</td><td class="text-gray-400">${a.horaInicio || ''} - ${a.horaFin || ''}</td><td><span class="text-cyan-400 font-medium">${a.apartamento || '—'}</span></td><td class="text-emerald-400 font-semibold">${formatCOP(a.valorAlquiler || a.valor)}</td>
           <td><span class="badge ${badgeClass(a.estado)}">${a.estado}</span></td>
-          <td>${a.estado === 'Solicitada' ? `<button onclick="approveAlquiler('${a.id}')" class="btn-success btn-sm mr-1"><i class="fa-solid fa-check"></i></button><button onclick="rejectAlquiler('${a.id}')" class="btn-danger btn-sm"><i class="fa-solid fa-times-circle"></i></button>` : '—'}</td>
-        </tr>`).join('') : '<tr><td colspan="7" class="text-center text-gray-500 py-8">Sin solicitudes</td></tr>'}</tbody></table>
+          <td>${a.estado === 'Solicitada' ? `<div class="flex gap-1"><button onclick="approveAlquiler('${a.id}')" class="btn-success btn-sm"><i class="fa-solid fa-check"></i></button><button onclick="rejectAlquiler('${a.id}')" class="btn-danger btn-sm"><i class="fa-solid fa-times"></i></button></div>` : '<span class="text-gray-600">—</span>'}</td>
+        </tr>`).join('') : '<tr><td colspan="7" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>Sin solicitudes de alquiler</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -793,24 +901,28 @@ async function loadAdminAlarmas() {
   const alarms = d?.alarmas || d || [];
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Alarmas</h2>
-    <div class="glass p-5 mb-6 animate-fadeInUp" style="animation-delay:.1s">
-      <h3 class="font-semibold text-white mb-4">Registrar Alarma</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div><label class="text-sm text-gray-400 mb-1 block">Apartamento</label><input id="alApto" class="input-field" placeholder="101"></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Motivo</label><input id="alMotivo" class="input-field" placeholder="Ruido excesivo"></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Observaciones</label><input id="alObs" class="input-field" placeholder="Observaciones"></div>
-        <div class="flex items-end"><button onclick="recordAlarm()" class="btn-primary w-full justify-center"><i class="fa-solid fa-bell"></i> Registrar</button></div>
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Alarmas</h2><p>Registro y control de alarmas por ruido</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="form-section mb-6">
+        <h3><i class="fa-solid fa-bell"></i> Registrar Nueva Alarma</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Apartamento</label><input id="alApto" class="input-field" placeholder="Ej: 101"></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Motivo</label><input id="alMotivo" class="input-field" placeholder="Ruido excesivo"></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Observaciones</label><input id="alObs" class="input-field" placeholder="Detalles adicionales"></div>
+          <div class="flex items-end"><button onclick="recordAlarm()" class="btn-primary w-full justify-center"><i class="fa-solid fa-bell"></i> Registrar</button></div>
+        </div>
+        <div class="mt-4 flex items-center gap-2 p-3 rounded-lg bg-amber-500/5 border border-amber-500/10">
+          <i class="fa-solid fa-triangle-exclamation text-amber-400"></i>
+          <p class="text-xs text-amber-400/80">Se generará multa automática si el apartamento alcanza el límite de <strong>${config.max_alarmas_multa || 3}</strong> alarmas por período <strong>${config.periodo_alarmas || 'mensual'}</strong>.</p>
+        </div>
       </div>
-      <p class="text-xs text-amber-400 mt-3"><i class="fa-solid fa-exclamation-triangle mr-1"></i>Se generará multa automática si el apartamento alcanza el límite de alarmas.</p>
-    </div>
-    <div class="glass animate-fadeInUp" style="animation-delay:.15s">
-      <div class="table-container" style="border:none;border-radius:0">
+      <div class="premium-table">
         <table><thead><tr><th>Fecha</th><th>Apartamento</th><th>Motivo</th><th>Observaciones</th><th></th></tr></thead>
         <tbody>${alarms.length ? alarms.map(a => {
           const warns = a.alarmasApto >= (config.max_alarmas_multa || 3) - 1;
-          return `<tr class="${warns ? 'bg-amber-500/5' : ''}"><td>${a.fecha || '—'}</td><td class="font-medium text-white">${a.apartamento || '—'} ${warns ? '<i class="fa-solid fa-exclamation-triangle text-amber-400 ml-1" title="Próximo a multa automática"></i>' : ''}</td><td>${a.motivo || ''}</td><td class="text-gray-400">${a.observaciones || '—'}</td><td><button onclick="deleteAlarm('${a.id}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button></td></tr>`;
-        }).join('') : '<tr><td colspan="5" class="text-center text-gray-500 py-8">Sin alarmas registradas</td></tr>'}</tbody></table>
+          return `<tr class="${warns ? 'bg-amber-500/5' : ''}"><td class="text-gray-400">${a.fecha || '—'}</td><td class="font-semibold text-white">${a.apartamento || '—'} ${warns ? '<span class="inline-flex items-center ml-2 px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 text-xs font-medium"><i class="fa-solid fa-exclamation-triangle mr-1"></i>Límite próximo</span>' : ''}</td><td>${a.motivo || ''}</td><td class="text-gray-500">${a.observaciones || '—'}</td><td><button onclick="deleteAlarm('${a.id}')" class="w-8 h-8 rounded-lg bg-rose-500/5 flex items-center justify-center text-rose-400 hover:bg-rose-500/15 transition-all"><i class="fa-solid fa-trash text-xs"></i></button></td></tr>`;
+        }).join('') : '<tr><td colspan="5" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-bell-slash"></i><p>Sin alarmas registradas</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -832,22 +944,35 @@ async function loadAdminMultas() {
   fines.forEach(f => { if (f.estado === 'Pendiente') { stats.pendientes++; stats.valorPendiente += Number(f.valor) || 0; } if (f.estado === 'Pagada') { stats.pagadas++; stats.valorPagado += Number(f.valor) || 0; } });
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <div class="flex items-center justify-between mb-6 animate-fadeInUp"><h2 class="text-2xl font-bold gradient-text">Multas</h2><button onclick="openCreateFineForm()" class="btn-primary"><i class="fa-solid fa-plus"></i> Crear Multa</button></div>
-    <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6 animate-fadeInUp" style="animation-delay:.1s">
-      <div class="glass card-hover p-4 text-center"><div class="text-2xl font-bold text-white">${stats.total}</div><div class="text-xs text-gray-400">Total</div></div>
-      <div class="glass card-hover p-4 text-center"><div class="text-2xl font-bold text-amber-400">${stats.pendientes}</div><div class="text-xs text-gray-400">Pendientes</div></div>
-      <div class="glass card-hover p-4 text-center"><div class="text-2xl font-bold text-emerald-400">${stats.pagadas}</div><div class="text-xs text-gray-400">Pagadas</div></div>
-      <div class="glass card-hover p-4 text-center"><div class="text-lg font-bold text-amber-400">${formatCOP(stats.valorPendiente)}</div><div class="text-xs text-gray-400">Pendiente $</div></div>
-    </div>
-    <div class="glass animate-fadeInUp" style="animation-delay:.15s">
-      <div class="table-container" style="border:none;border-radius:0">
-        <table><thead><tr><th>Fecha</th><th>Apto</th><th>Motivo</th><th>Valor</th><th>Estado</th><th>Comprobante</th><th>Acciones</th></tr></thead>
+    <div class="animate-fadeInUp">
+      <div class="flex items-center justify-between mb-2"><div class="section-header mb-0"><h2 class="gradient-text">Multas</h2><p>Seguimiento de multas y sanciones</p></div><button onclick="openCreateFineForm()" class="btn-primary"><i class="fa-solid fa-plus"></i> Crear Multa</button></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
+        <div class="stat-card-future" style="--accent-from:#e5e7eb;--accent-to:#9ca3af">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Total Multas</div>
+          <div class="text-3xl font-extrabold text-white">${stats.total}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fbbf24;--accent-to:#f59e0b">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Pendientes</div>
+          <div class="text-3xl font-extrabold text-amber-400">${stats.pendientes}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#34d399;--accent-to:#10b981">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Pagadas</div>
+          <div class="text-3xl font-extrabold text-emerald-400">${stats.pagadas}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fb7185;--accent-to:#f43f5e">
+          <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Valor Pendiente</div>
+          <div class="text-2xl font-extrabold text-rose-400">${formatCOP(stats.valorPendiente)}</div>
+        </div>
+      </div>
+      <div class="premium-table">
+        <table><thead><tr><th>Fecha</th><th>Apto</th><th>Motivo</th><th>Valor</th><th>Estado</th><th>Comp.</th><th>Acciones</th></tr></thead>
         <tbody>${fines.length ? fines.map(f => `<tr>
-          <td>${f.fecha || '—'}</td><td class="font-medium text-white">${f.apartamento || '—'}</td><td>${f.motivo || ''}</td><td class="text-rose-400">${formatCOP(f.valor)}</td>
+          <td class="text-gray-400">${f.fecha || '—'}</td><td class="font-semibold text-white">${f.apartamento || '—'}</td><td>${f.motivo || ''}</td><td class="text-rose-400 font-semibold">${formatCOP(f.valor)}</td>
           <td><span class="badge ${badgeClass(f.estado)}">${f.estado}</span></td>
-          <td>${f.comprobante ? '<i class="fa-solid fa-check-circle text-emerald-400" title="Con comprobante"></i>' : '<i class="fa-solid fa-times-circle text-gray-500" title="Sin comprobante"></i>'}</td>
+          <td>${f.comprobante ? '<i class="fa-solid fa-check-circle text-emerald-400" title="Con comprobante"></i>' : '<i class="fa-solid fa-minus-circle text-gray-600" title="Sin comprobante"></i>'}</td>
           <td><select onchange="updateFineStatus('${f.id}',this.value)" class="input-field py-1 px-2 text-xs" style="width:auto"><option ${f.estado === 'Pendiente' ? 'selected' : ''}>Pendiente</option><option ${f.estado === 'Pagada' ? 'selected' : ''}>Pagada</option><option ${f.estado === 'Cancelada' ? 'selected' : ''}>Cancelada</option></select></td>
-        </tr>`).join('') : '<tr><td colspan="7" class="text-center text-gray-500 py-8">Sin multas</td></tr>'}</tbody></table>
+        </tr>`).join('') : '<tr><td colspan="7" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-face-smile"></i><p>Sin multas registradas</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -873,15 +998,21 @@ async function loadAdminResidentes() {
   const residents = d?.residentes || d || [];
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <div class="flex items-center justify-between mb-6 animate-fadeInUp"><h2 class="text-2xl font-bold gradient-text">Residentes</h2><button onclick="openAddResidentForm()" class="btn-primary"><i class="fa-solid fa-plus"></i> Agregar Residente</button></div>
-    <div class="glass animate-fadeInUp" style="animation-delay:.1s">
-      <div class="table-container" style="border:none;border-radius:0">
-        <table><thead><tr><th>Apto</th><th>Nombre</th><th>Apellido</th><th>Teléfono</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
-        <tbody>${residents.length ? residents.map(r => `<tr>
-          <td class="font-medium text-white">${r.apto || '—'}</td><td>${r.nombre || ''}</td><td>${r.apellido || ''}</td><td>${r.telefono || '—'}</td><td>${r.email || '—'}</td>
+    <div class="animate-fadeInUp">
+      <div class="flex items-center justify-between mb-2"><div class="section-header mb-0"><h2 class="gradient-text">Residentes</h2><p>Directorio de residentes del edificio</p></div><button onclick="openAddResidentForm()" class="btn-primary"><i class="fa-solid fa-plus"></i> Agregar Residente</button></div>
+      <div class="neon-line mb-6"></div>
+      <div class="premium-table">
+        <table><thead><tr><th></th><th>Apto</th><th>Nombre</th><th>Apellido</th><th>Teléfono</th><th>Email</th><th>Estado</th><th>Acciones</th></tr></thead>
+        <tbody>${residents.length ? residents.map(r => {
+          const initials = ((r.nombre || '')[0] || '') + ((r.apellido || '')[0] || '');
+          const colors = ['from-cyan-400 to-violet-500','from-emerald-400 to-cyan-400','from-amber-400 to-rose-400','from-violet-400 to-pink-400','from-rose-400 to-orange-400'];
+          const colorClass = colors[(r.apto || '').charCodeAt(0) % colors.length];
+          return `<tr>
+          <td><div class="w-9 h-9 rounded-full bg-gradient-to-br ${colorClass} flex items-center justify-center text-white text-xs font-bold">${initials.toUpperCase()}</div></td>
+          <td class="font-semibold text-white">${r.apto || '—'}</td><td>${r.nombre || ''}</td><td>${r.apellido || ''}</td><td class="text-gray-400">${r.telefono || '—'}</td><td class="text-gray-400">${r.email || '—'}</td>
           <td><span class="badge ${r.estado === 'Activo' ? 'badge-emerald' : 'badge-gray'}">${r.estado || 'Activo'}</span></td>
-          <td class="flex gap-2"><button onclick="editResident('${r.apto}')" class="text-cyan-400 hover:text-cyan-300"><i class="fa-solid fa-edit"></i></button><button onclick="deleteResident('${r.apto}')" class="text-rose-400 hover:text-rose-300"><i class="fa-solid fa-trash"></i></button></td>
-        </tr>`).join('') : '<tr><td colspan="7" class="text-center text-gray-500 py-8">Sin residentes</td></tr>'}</tbody></table>
+          <td><div class="flex gap-1"><button onclick="editResident('${r.apto}')" class="w-8 h-8 rounded-lg bg-cyan-500/5 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/15 transition-all"><i class="fa-solid fa-pen text-xs"></i></button><button onclick="deleteResident('${r.apto}')" class="w-8 h-8 rounded-lg bg-rose-500/5 flex items-center justify-center text-rose-400 hover:bg-rose-500/15 transition-all"><i class="fa-solid fa-trash text-xs"></i></button></div></td>
+        </tr>`}).join('') : '<tr><td colspan="8" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-users-slash"></i><p>Sin residentes registrados</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -921,11 +1052,12 @@ async function loadAdminVisitantes() {
   const visitors = d?.visitantes || d || [];
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Visitantes</h2>
-    <div class="glass animate-fadeInUp" style="animation-delay:.1s">
-      <div class="table-container" style="border:none;border-radius:0">
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Visitantes</h2><p>Registro de visitantes al edificio</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="premium-table">
         <table><thead><tr><th>Fecha</th><th>Visitante</th><th>Documento</th><th>Apto Visitado</th><th>Observaciones</th></tr></thead>
-        <tbody>${visitors.length ? visitors.map(v => `<tr><td>${v.fecha || '—'}</td><td class="font-medium text-white">${v.nombreVisitante || v.nombre || '—'}</td><td>${v.documento || '—'}</td><td>${v.apartamento || v.apto || '—'}</td><td class="text-gray-400">${v.observaciones || '—'}</td></tr>`).join('') : '<tr><td colspan="5" class="text-center text-gray-500 py-8">Sin visitantes registrados</td></tr>'}</tbody></table>
+        <tbody>${visitors.length ? visitors.map(v => `<tr><td class="text-gray-400">${v.fecha || '—'}</td><td class="font-semibold text-white">${v.nombreVisitante || v.nombre || '—'}</td><td class="text-gray-400 font-mono text-sm">${v.documento || '—'}</td><td><span class="text-cyan-400 font-medium">${v.apartamento || v.apto || '—'}</span></td><td class="text-gray-500">${v.observaciones || '—'}</td></tr>`).join('') : '<tr><td colspan="5" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-person-walking-arrow-right"></i><p>No hay visitantes registrados</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -935,15 +1067,16 @@ async function loadAdminPQRS() {
   const pqrs = d?.pqrs || d || [];
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">PQRS</h2>
-    <div class="glass animate-fadeInUp" style="animation-delay:.1s">
-      <div class="table-container" style="border:none;border-radius:0">
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">PQRS</h2><p>Peticiones, Quejas, Reclamos y Sugerencias</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="premium-table">
         <table><thead><tr><th>Fecha</th><th>Apto</th><th>Tipo</th><th>Asunto</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${pqrs.length ? pqrs.map(p => `<tr>
-          <td>${p.fecha || '—'}</td><td class="font-medium text-white">${p.apartamento || '—'}</td><td>${p.tipo || '—'}</td><td>${p.asunto || '—'}</td>
+          <td class="text-gray-400">${p.fecha || '—'}</td><td class="font-semibold text-white">${p.apartamento || '—'}</td><td><span class="badge badge-cyan">${p.tipo || '—'}</span></td><td>${p.asunto || '—'}</td>
           <td><span class="badge ${badgeClass(p.estado)}">${p.estado}</span></td>
           <td><button onclick="openPQRSResponse('${p.id}','${(p.asunto || '').replace(/'/g, "\\'")}')" class="btn-ghost btn-sm"><i class="fa-solid fa-reply mr-1"></i>Responder</button></td>
-        </tr>`).join('') : '<tr><td colspan="6" class="text-center text-gray-500 py-8">Sin PQRS</td></tr>'}</tbody></table>
+        </tr>`).join('') : '<tr><td colspan="6" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-clipboard-check"></i><p>Sin PQRS registradas</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -968,14 +1101,26 @@ async function loadAdminConfig() {
   const configs = d?.configuraciones || d || [];
   const c = document.getElementById('adminContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Configuración</h2>
-    <div class="glass animate-fadeInUp" style="animation-delay:.1s">
-      <div class="table-container" style="border:none;border-radius:0">
-        <table><thead><tr><th>Clave</th><th>Valor</th><th>Acciones</th></tr></thead>
-        <tbody>${Array.isArray(configs) && configs.length ? configs.map(cfg => {
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Configuración</h2><p>Parámetros generales del edificio</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid gap-3">
+        ${Array.isArray(configs) && configs.length ? configs.map((cfg, i) => {
           const val = typeof cfg.valor === 'string' ? cfg.valor : JSON.stringify(cfg.valor);
-          return `<tr><td class="font-medium text-white font-mono text-sm">${cfg.clave || cfg.key || '—'}</td><td class="text-gray-300 text-sm max-w-xs truncate">${val}</td><td><button onclick="editConfig('${cfg.clave || cfg.key}','${(val || '').replace(/'/g, "\\'")}')" class="text-cyan-400 hover:text-cyan-300"><i class="fa-solid fa-edit"></i></button></td></tr>`;
-        }).join('') : '<tr><td colspan="3" class="text-center text-gray-500 py-8">Sin configuración</td></tr>'}</tbody></table>
+          const key = cfg.clave || cfg.key || '—';
+          const icons = { nombre_edificio:'fa-building', valor_multa_alarma:'fa-gavel', max_alarmas_multa:'fa-bell', periodo_alarmas:'fa-clock', direccion:'fa-location-dot', telefono_admin:'fa-phone', email_admin:'fa-envelope', valor_cuota:'fa-coins', metodo_pago_admin:'fa-credit-card', clave_pago_admin:'fa-qrcode', metodo_pago_multa:'fa-credit-card', clave_pago_multa:'fa-qrcode', metodo_pago_alquiler:'fa-credit-card', clave_pago_alquiler:'fa-qrcode' };
+          const icon = icons[key] || 'fa-sliders';
+          return `<div class="stat-card-future flex items-center justify-between gap-4" style="--accent-from:#22d3ee;--accent-to:#8b5cf6">
+            <div class="flex items-center gap-3 min-w-0">
+              <div class="w-9 h-9 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center flex-shrink-0"><i class="fa-solid ${icon}"></i></div>
+              <div class="min-w-0"><div class="text-xs text-gray-500 uppercase tracking-wide font-medium truncate">${key.replace(/_/g,' ')}</div></div>
+            </div>
+            <div class="flex items-center gap-3 flex-shrink-0">
+              <span class="text-sm text-gray-300 font-mono max-w-xs truncate">${val}</span>
+              <button onclick="editConfig('${key}','${(val || '').replace(/'/g, "\\'")}')" class="w-8 h-8 rounded-lg bg-cyan-500/5 flex items-center justify-center text-cyan-400 hover:bg-cyan-500/15 transition-all"><i class="fa-solid fa-pen text-xs"></i></button>
+            </div>
+          </div>`;
+        }).join('') : '<div class="empty-state"><i class="fa-solid fa-sliders"></i><p>Sin configuración disponible</p></div>'}
       </div>
     </div>`;
 }
@@ -1010,43 +1155,94 @@ async function loadResPanel() {
   const raw = await api('getResidentDashboard', {}, true);
   const s = raw?.dashboard || raw || {};
   const c = document.getElementById('residentContent');
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit' });
+  const dateStr = now.toLocaleDateString('es-CO', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Mi Panel</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 animate-fadeInUp" style="animation-delay:.1s">
-      <div class="glass card-hover p-5"><div class="flex items-center gap-4"><div class="stat-icon bg-amber-500/15 text-amber-400"><i class="fa-solid fa-bell"></i></div><div><div class="text-2xl font-bold text-white">${s.alarmasMes || 0}</div><div class="text-sm text-gray-400">Alarmas/Mes</div></div></div></div>
-      <div class="glass card-hover p-5"><div class="flex items-center gap-4"><div class="stat-icon bg-rose-500/15 text-rose-400"><i class="fa-solid fa-file-invoice-dollar"></i></div><div><div class="text-2xl font-bold text-white">${s.multasPendientes || 0}</div><div class="text-sm text-gray-400">Multas Pendientes</div></div></div></div>
-      <div class="glass card-hover p-5"><div class="flex items-center gap-4"><div class="stat-icon bg-rose-500/15 text-rose-400"><i class="fa-solid fa-coins"></i></div><div><div class="text-2xl font-bold text-rose-400">${formatCOP(s.totalMultas || s.multasPendientesValor || 0)}</div><div class="text-sm text-gray-400">Multas $</div></div></div></div>
-      <div class="glass card-hover p-5"><div class="flex items-center gap-4"><div class="stat-icon bg-cyan-500/15 text-cyan-400"><i class="fa-solid fa-calendar-check"></i></div><div><div class="text-2xl font-bold text-white">${s.alquileresActivos || 0}</div><div class="text-sm text-gray-400">Alquileres Activos</div></div></div></div>
+    <div class="animate-fadeInUp">
+      <div class="welcome-banner mb-6">
+        <div class="relative z-10 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <h2 class="text-2xl font-extrabold text-white mb-1">Mi Panel</h2>
+            <p class="text-sm text-gray-400"><i class="fa-regular fa-calendar mr-1"></i>${dateStr} &middot; <i class="fa-regular fa-clock mr-1 ml-1"></i>${timeStr}</p>
+          </div>
+          <div class="text-right hidden sm:block">
+            <div class="text-xs text-gray-500 uppercase tracking-wider">Apartamento</div>
+            <div class="text-sm font-semibold gradient-text-emerald">${session?.user?.apto || session?.apartment || ''}</div>
+          </div>
+        </div>
+      </div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="stat-card-future" style="--accent-from:#fbbf24;--accent-to:#f59e0b">
+          <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-bell"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Alarmas/Mes</span></div>
+          <div class="text-3xl font-extrabold text-white">${s.alarmasMes || 0}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fb7185;--accent-to:#f43f5e">
+          <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-file-invoice-dollar"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Multas Pend.</span></div>
+          <div class="text-3xl font-extrabold text-white">${s.multasPendientes || 0}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fb7185;--accent-to:#f43f5e">
+          <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center"><i class="fa-solid fa-coins"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Multas $</span></div>
+          <div class="text-2xl font-extrabold text-rose-400">${formatCOP(s.totalMultas || s.multasPendientesValor || 0)}</div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#22d3ee;--accent-to:#8b5cf6">
+          <div class="flex items-center gap-3 mb-3"><div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-calendar-check"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Alquileres</span></div>
+          <div class="text-3xl font-extrabold text-white">${s.alquileresActivos || 0}</div>
+        </div>
+      </div>
+      <div class="neon-line mt-6 mb-6"></div>
+      <h3 class="text-sm font-semibold text-gray-400 uppercase tracking-wider mb-4"><i class="fa-solid fa-bolt text-cyan-400 mr-2"></i>Acciones Rápidas</h3>
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+        <div class="quick-action" onclick="showResidentSection('alquilar')"><div class="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-building"></i></div><span class="text-xs text-gray-300 font-medium">Alquilar Zona</span></div>
+        <div class="quick-action" onclick="showResidentSection('regvisitante')"><div class="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center"><i class="fa-solid fa-user-plus"></i></div><span class="text-xs text-gray-300 font-medium">Registrar Visitante</span></div>
+        <div class="quick-action" onclick="showResidentSection('miadmin')"><div class="w-10 h-10 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center"><i class="fa-solid fa-building-columns"></i></div><span class="text-xs text-gray-300 font-medium">Mi Administración</span></div>
+        <div class="quick-action" onclick="showResidentSection('mispqrs');setTimeout(()=>openCreatePQRS(),300)"><div class="w-10 h-10 rounded-xl bg-violet-500/10 text-violet-400 flex items-center justify-center"><i class="fa-solid fa-paper-plane"></i></div><span class="text-xs text-gray-300 font-medium">Nueva PQRS</span></div>
+      </div>
     </div>`;
 }
 
 async function loadResAlquilar() {
   const d = await api('getZonasComunes');
   const zonas = d?.zonas || [];
-  const icons = ['fa-champagne-glasses','fa-sun','fa-fire','fa-water-ladder','fa-dumbbell','fa-gamepad','fa-laptop'];
+  const icons = ['fa-champagne-glasses','fa-sun','fa-fire','fa-water-ladder','fa-dumbbell','fa-gamepad','fa-laptop','fa-couch'];
+  const gradients = ['from-cyan-500/10 to-violet-500/5','from-amber-500/10 to-rose-500/5','from-emerald-500/10 to-cyan-500/5','from-rose-500/10 to-amber-500/5','from-violet-500/10 to-pink-500/5','from-cyan-500/10 to-emerald-500/5','from-amber-500/10 to-cyan-500/5','from-emerald-500/10 to-violet-500/5'];
   const c = document.getElementById('residentContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Alquilar Zona Común</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 animate-fadeInUp" style="animation-delay:.1s">
-      ${zonas.length ? zonas.map((z, i) => `
-        <div class="glass card-hover p-5">
-          <div class="flex items-start justify-between mb-3">
-            <div class="stat-icon bg-cyan-500/10 text-cyan-400"><i class="fa-solid ${icons[i % icons.length]}"></i></div>
-            ${z.valorAlquiler > 0 ? `<span class="text-sm font-semibold text-emerald-400">${formatCOP(z.valorAlquiler)}</span>` : '<span class="badge badge-emerald">Gratis</span>'}
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Alquilar Zona Común</h2><p>Selecciona una zona y solicita tu reserva</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+        ${zonas.length ? zonas.map((z, i) => `
+          <div class="glow-card glass card-hover p-0 overflow-hidden">
+            <div class="p-5">
+              <div class="flex items-start justify-between mb-4">
+                <div class="w-12 h-12 rounded-xl bg-gradient-to-br ${gradients[i % gradients.length]} flex items-center justify-center text-xl text-cyan-400"><i class="fa-solid ${icons[i % icons.length]}"></i></div>
+                ${z.valorAlquiler > 0 ? `<div class="text-right"><div class="text-xs text-gray-500">Desde</div><div class="text-lg font-bold gradient-text-emerald">${formatCOP(z.valorAlquiler)}</div></div>` : '<span class="badge badge-emerald">Gratis</span>'}
+              </div>
+              <h3 class="font-bold text-white text-lg mb-1">${z.nombre}</h3>
+              <p class="text-sm text-gray-400 mb-4">${z.descripcion || ''}</p>
+              <div class="space-y-2 text-sm mb-4">
+                <div class="flex items-center gap-2 text-gray-500"><i class="fa-solid fa-users text-xs text-cyan-400/60"></i><span>${z.capacidad || '—'} personas</span></div>
+                <div class="flex items-center gap-2 text-gray-500"><i class="fa-regular fa-clock text-xs text-cyan-400/60"></i><span>${z.horario || '—'}</span></div>
+              </div>
+            </div>
+            <div class="px-5 py-3 border-t border-white/5 bg-white/[0.02]">
+              <button onclick="openRentalRequest('${z.nombre}',${z.valorAlquiler || 0})" class="btn-primary w-full justify-center text-sm"><i class="fa-solid fa-calendar-plus"></i> Solicitar Alquiler</button>
+            </div>
           </div>
-          <h3 class="font-semibold text-white mb-1">${z.nombre}</h3>
-          <p class="text-sm text-gray-400 mb-2">${z.descripcion || ''}</p>
-          <div class="text-xs text-gray-500 mb-4"><i class="fa-solid fa-users mr-1"></i>${z.capacidad || '—'} personas · <i class="fa-regular fa-clock mr-1"></i>${z.horario || '—'}</div>
-          <button onclick="openRentalRequest('${z.nombre}',${z.valorAlquiler || 0})" class="btn-primary w-full justify-center btn-sm"><i class="fa-solid fa-calendar-plus"></i> Solicitar Alquiler</button>
-        </div>
-      `).join('') : '<p class="text-gray-500 col-span-full text-center py-8">No hay zonas disponibles</p>'}
+        `).join('') : '<div class="col-span-full"><div class="empty-state"><i class="fa-solid fa-building"></i><p>No hay zonas disponibles</p></div></div>'}
+      </div>
     </div>`;
 }
 
 function openRentalRequest(zona, valor) {
   openFormModal('Solicitar Alquiler - ' + zona, `
     <div class="space-y-4">
-      <div class="glass-sm p-3 text-center"><p class="text-sm text-gray-400">Zona: <span class="text-white font-semibold">${zona}</span></p><p class="text-lg font-bold gradient-text">${valor > 0 ? formatCOP(valor) : 'Gratis'}</p></div>
+      <div class="glass-sm p-4 text-center rounded-xl">
+        <p class="text-sm text-gray-400 mb-1">Zona: <span class="text-white font-semibold">${zona}</span></p>
+        <p class="text-2xl font-bold gradient-text">${valor > 0 ? formatCOP(valor) : 'Gratis'}</p>
+      </div>
       <div><label class="text-sm text-gray-400 mb-1 block">Fecha</label><input type="date" id="rqFecha" class="input-field" required></div>
       <div class="grid grid-cols-2 gap-4">
         <div><label class="text-sm text-gray-400 mb-1 block">Hora Inicio</label><input type="time" id="rqHoraI" class="input-field" required></div>
@@ -1069,15 +1265,16 @@ async function loadResMisAlquileres() {
   const alquileres = d?.alquileres || d || [];
   const c = document.getElementById('residentContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Mis Alquileres</h2>
-    <div class="glass animate-fadeInUp" style="animation-delay:.1s">
-      <div class="table-container" style="border:none;border-radius:0">
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Mis Alquileres</h2><p>Historial de reservas de zonas comunes</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="premium-table">
         <table><thead><tr><th>Zona</th><th>Fecha</th><th>Horario</th><th>Valor</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${alquileres.length ? alquileres.map(a => `<tr>
-          <td class="font-medium text-white">${a.zonaComun || '—'}</td><td>${a.fecha || '—'}</td><td>${a.horaInicio || ''} - ${a.horaFin || ''}</td><td class="text-emerald-400">${formatCOP(a.valorAlquiler || a.valor)}</td>
+          <td class="font-semibold text-white"><i class="fa-solid fa-building text-cyan-400/40 mr-2"></i>${a.zonaComun || '—'}</td><td class="text-gray-400">${a.fecha || '—'}</td><td class="text-gray-400">${a.horaInicio || ''} - ${a.horaFin || ''}</td><td class="text-emerald-400 font-semibold">${formatCOP(a.valorAlquiler || a.valor)}</td>
           <td><span class="badge ${badgeClass(a.estado)}">${a.estado}</span></td>
-          <td>${a.estado === 'Aprobada' ? `<button onclick='showPaymentModal({title:"Pagar Alquiler",descripcion:"Alquiler ${a.zonaComun} - ${a.fecha}",valor:${a.valorAlquiler || a.valor},tipo:"alquiler",referenceId:"${a.id}"})' class="btn-success btn-sm"><i class="fa-solid fa-credit-card mr-1"></i>Pagar</button>` : '—'}</td>
-        </tr>`).join('') : '<tr><td colspan="6" class="text-center text-gray-500 py-8">Sin alquileres</td></tr>'}</tbody></table>
+          <td>${a.estado === 'Aprobada' ? `<button onclick='showPaymentModal({title:"Pagar Alquiler",descripcion:"Alquiler ${a.zonaComun} - ${a.fecha}",valor:${a.valorAlquiler || a.valor},tipo:"alquiler",referenceId:"${a.id}"})' class="btn-success btn-sm"><i class="fa-solid fa-credit-card mr-1"></i>Pagar</button>` : '<span class="text-gray-600">—</span>'}</td>
+        </tr>`).join('') : '<tr><td colspan="6" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-calendar-xmark"></i><p>Aún no tienes alquileres</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -1089,18 +1286,36 @@ async function loadResMisMultas() {
   fines.forEach(f => { if (f.estado === 'Pendiente') totalPend += Number(f.valor) || 0; });
   const c = document.getElementById('residentContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Mis Multas</h2>
-    <div class="glass card-hover p-5 mb-6 animate-fadeInUp" style="animation-delay:.05s">
-      <div class="flex items-center justify-between"><div><p class="text-sm text-gray-400">Total Pendiente</p><p class="text-3xl font-bold text-rose-400">${formatCOP(totalPend)}</p></div><div class="stat-icon bg-rose-500/15 text-rose-400"><i class="fa-solid fa-file-invoice-dollar"></i></div></div>
-    </div>
-    <div class="glass animate-fadeInUp" style="animation-delay:.1s">
-      <div class="table-container" style="border:none;border-radius:0">
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Mis Multas</h2><p>Consulta y paga tus multas pendientes</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <div class="stat-card-future" style="--accent-from:#fb7185;--accent-to:#f43f5e">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Total Pendiente</div>
+              <div class="text-3xl font-extrabold text-rose-400">${formatCOP(totalPend)}</div>
+            </div>
+            <div class="w-14 h-14 rounded-2xl bg-rose-500/10 text-rose-400 flex items-center justify-center text-2xl"><i class="fa-solid fa-file-invoice-dollar"></i></div>
+          </div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fbbf24;--accent-to:#f59e0b">
+          <div class="flex items-center justify-between">
+            <div>
+              <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Multas Registradas</div>
+              <div class="text-3xl font-extrabold text-white">${fines.length}</div>
+            </div>
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl"><i class="fa-solid fa-list-check"></i></div>
+          </div>
+        </div>
+      </div>
+      <div class="premium-table">
         <table><thead><tr><th>Fecha</th><th>Motivo</th><th>Valor</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${fines.length ? fines.map(f => `<tr>
-          <td>${f.fecha || '—'}</td><td>${f.motivo || '—'}</td><td class="text-rose-400">${formatCOP(f.valor)}</td>
+          <td class="text-gray-400">${f.fecha || '—'}</td><td>${f.motivo || '—'}</td><td class="text-rose-400 font-semibold">${formatCOP(f.valor)}</td>
           <td><span class="badge ${badgeClass(f.estado)}">${f.estado}</span></td>
-          <td>${f.estado === 'Pendiente' ? `<button onclick='showPaymentModal({title:"Pagar Multa",descripcion:"Multa: ${f.motivo || ''}",valor:${f.valor},tipo:"multa",referenceId:"${f.id}"})' class="btn-success btn-sm"><i class="fa-solid fa-credit-card mr-1"></i>Pagar</button>` : f.comprobante ? '<span class="text-xs text-gray-400">Comprobante enviado</span>' : '—'}</td>
-        </tr>`).join('') : '<tr><td colspan="5" class="text-center text-gray-500 py-8">Sin multas 🎉</td></tr>'}</tbody></table>
+          <td>${f.estado === 'Pendiente' ? `<button onclick='showPaymentModal({title:"Pagar Multa",descripcion:"Multa: ${f.motivo || ''}",valor:${f.valor},tipo:"multa",referenceId:"${f.id}"})' class="btn-success btn-sm"><i class="fa-solid fa-credit-card mr-1"></i>Pagar</button>` : f.comprobante ? '<span class="text-xs text-gray-500"><i class="fa-solid fa-check-circle text-emerald-400 mr-1"></i>Comprobante enviado</span>' : '<span class="text-gray-600">—</span>'}</td>
+        </tr>`).join('') : '<tr><td colspan="5" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-face-smile-beam"></i><p>¡Sin multas! Sigue así 🎉</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -1114,26 +1329,35 @@ async function loadResMiAdmin() {
   const clave = config.clave_pago_admin || 'N/A';
   const c = document.getElementById('residentContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Mi Administración</h2>
-    <div class="glass card-hover p-5 mb-6 animate-fadeInUp" style="animation-delay:.05s">
-      <h3 class="font-semibold text-white mb-3"><i class="fa-solid fa-qrcode text-cyan-400 mr-2"></i>Información de Pago</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-        <div><span class="text-gray-400">Método:</span> <span class="text-white font-medium">${metodo}</span></div>
-        <div><span class="text-gray-400">Clave/QR:</span> <span class="text-cyan-400 font-mono font-medium">${clave}</span></div>
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Mi Administración</h2><p>Cuotas y pagos de administración</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
+        <div class="stat-card-future" style="--accent-from:#22d3ee;--accent-to:#8b5cf6">
+          <div class="flex items-center gap-2 mb-3"><div class="w-9 h-9 rounded-lg bg-cyan-500/10 text-cyan-400 flex items-center justify-center"><i class="fa-solid fa-qrcode"></i></div><span class="text-xs text-gray-500 uppercase tracking-wide font-medium">Método de Pago</span></div>
+          <div class="text-lg font-bold text-white mb-2">${metodo}</div>
+          <div class="flex items-center gap-2 px-3 py-2 rounded-lg bg-white/[0.03] border border-white/[0.06]">
+            <i class="fa-solid fa-copy text-gray-500 text-xs"></i>
+            <code class="text-sm text-cyan-400 font-mono flex-1">${clave}</code>
+          </div>
+        </div>
+        <div class="stat-card-future" style="--accent-from:#fbbf24;--accent-to:#f59e0b">
+          <div class="flex items-center justify-between h-full">
+            <div>
+              <div class="text-xs text-gray-500 uppercase tracking-wide mb-2">Cuotas Pendientes</div>
+              <div class="text-3xl font-extrabold text-amber-400">${formatCOP(totalPend)}</div>
+            </div>
+            <div class="w-14 h-14 rounded-2xl bg-amber-500/10 text-amber-400 flex items-center justify-center text-2xl"><i class="fa-solid fa-building-columns"></i></div>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="glass card-hover p-5 mb-6 animate-fadeInUp" style="animation-delay:.1s">
-      <div class="flex items-center justify-between"><div><p class="text-sm text-gray-400">Cuotas Pendientes</p><p class="text-3xl font-bold text-amber-400">${formatCOP(totalPend)}</p></div><div class="stat-icon bg-amber-500/15 text-amber-400"><i class="fa-solid fa-building-columns"></i></div></div>
-    </div>
-    <div class="glass animate-fadeInUp" style="animation-delay:.15s">
-      <h3 class="font-semibold text-white p-5 pb-3">Historial de Cuotas</h3>
-      <div class="table-container" style="border:none;border-radius:0">
+      <div class="premium-table">
         <table><thead><tr><th>Período</th><th>Valor</th><th>Estado</th><th>Acciones</th></tr></thead>
         <tbody>${cuotas.length ? cuotas.map(cu => `<tr>
-          <td class="font-medium text-white">${cu.periodo || cu.mes + '/' + cu.anio || '—'}</td><td class="text-emerald-400">${formatCOP(cu.valor)}</td>
+          <td class="font-semibold text-white">${cu.periodo || cu.mes + '/' + cu.anio || '—'}</td><td class="text-emerald-400 font-semibold">${formatCOP(cu.valor)}</td>
           <td><span class="badge ${badgeClass(cu.estado)}">${cu.estado}</span></td>
-          <td>${cu.estado === 'Pendiente' ? `<button onclick='showPaymentModal({title:"Pagar Cuota",descripcion:"Cuota ${cu.periodo || ''}",valor:${cu.valor},tipo:"cuota",referenceId:"${cu.id}"})' class="btn-success btn-sm"><i class="fa-solid fa-credit-card mr-1"></i>Pagar</button>` : cu.comprobante ? '<span class="text-xs text-gray-400">Comprobante enviado</span>' : '—'}</td>
-        </tr>`).join('') : '<tr><td colspan="4" class="text-center text-gray-500 py-8">Sin cuotas</td></tr>'}</tbody></table>
+          <td>${cu.estado === 'Pendiente' ? `<button onclick='showPaymentModal({title:"Pagar Cuota",descripcion:"Cuota ${cu.periodo || ''}",valor:${cu.valor},tipo:"cuota",referenceId:"${cu.id}"})' class="btn-success btn-sm"><i class="fa-solid fa-credit-card mr-1"></i>Pagar</button>` : cu.comprobante ? '<span class="text-xs text-gray-500"><i class="fa-solid fa-check-circle text-emerald-400 mr-1"></i>Comprobante enviado</span>' : '<span class="text-gray-600">—</span>'}</td>
+        </tr>`).join('') : '<tr><td colspan="4" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Sin cuotas registradas</p></div></td></tr>'}</tbody></table>
       </div>
     </div>`;
 }
@@ -1141,18 +1365,21 @@ async function loadResMiAdmin() {
 async function loadResRegVisitante() {
   const c = document.getElementById('residentContent');
   c.innerHTML = `
-    <h2 class="text-2xl font-bold gradient-text mb-6 animate-fadeInUp">Registrar Visitante</h2>
-    <div class="glass p-5 mb-6 animate-fadeInUp" style="animation-delay:.1s">
-      <h3 class="font-semibold text-white mb-4">Nuevo Visitante</h3>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div><label class="text-sm text-gray-400 mb-1 block">Nombre</label><input id="visNom" class="input-field" placeholder="Nombre del visitante"></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Documento</label><input id="visDoc" class="input-field" placeholder="CC/CE/TI"></div>
-        <div><label class="text-sm text-gray-400 mb-1 block">Observaciones</label><input id="visObs" class="input-field" placeholder="Motivo de visita"></div>
+    <div class="animate-fadeInUp">
+      <div class="section-header"><h2 class="gradient-text">Registrar Visitante</h2><p>Registra la entrada de tus visitantes</p></div>
+      <div class="neon-line mb-6"></div>
+      <div class="form-section mb-6">
+        <h3><i class="fa-solid fa-user-plus"></i> Nuevo Visitante</h3>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Nombre Completo</label><input id="visNom" class="input-field" placeholder="Nombre del visitante"></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Documento</label><input id="visDoc" class="input-field" placeholder="CC/CE/TI"></div>
+          <div><label class="text-xs text-gray-500 mb-1 block uppercase tracking-wide">Observaciones</label><input id="visObs" class="input-field" placeholder="Motivo de visita"></div>
+        </div>
+        <button onclick="submitVisitor()" class="btn-primary mt-5"><i class="fa-solid fa-plus"></i> Registrar Visitante</button>
       </div>
-      <button onclick="submitVisitor()" class="btn-primary mt-4"><i class="fa-solid fa-plus"></i> Registrar</button>
-    </div>
-    <div id="myVisitorsTable" class="glass animate-fadeInUp" style="animation-delay:.15s">
-      <div class="p-5 text-center text-gray-500">Cargando visitantes...</div>
+      <div id="myVisitorsTable" class="premium-table">
+        <div class="p-8 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-cyan-400 mb-2"></i><p>Cargando visitantes...</p></div>
+      </div>
     </div>`;
   loadMyVisitors();
 }
@@ -1169,23 +1396,24 @@ async function submitVisitor() {
 async function loadMyVisitors() {
   const d = await api('getAllVisitors', {}, true);
   const visitors = d?.visitantes || d || [];
-  const myApto = session?.user?.apto || '';
+  const myApto = session?.user?.apto || session?.apartment || '';
   const myVisitors = myApto ? visitors.filter(v => (v.apartamento || v.apto) === myApto) : visitors;
   const el = document.getElementById('myVisitorsTable');
   if (!el) return;
   el.innerHTML = `
-    <div class="table-container" style="border:none;border-radius:0">
-      <table><thead><tr><th>Fecha</th><th>Visitante</th><th>Documento</th><th>Observaciones</th></tr></thead>
-      <tbody>${myVisitors.length ? myVisitors.map(v => `<tr><td>${v.fecha || '—'}</td><td class="font-medium text-white">${v.nombreVisitante || v.nombre || '—'}</td><td>${v.documento || '—'}</td><td class="text-gray-400">${v.observaciones || '—'}</td></tr>`).join('') : '<tr><td colspan="4" class="text-center text-gray-500 py-8">Sin visitantes registrados</td></tr>'}</tbody></table>
-    </div>`;
+    <table><thead><tr><th>Fecha</th><th>Visitante</th><th>Documento</th><th>Observaciones</th></tr></thead>
+    <tbody>${myVisitors.length ? myVisitors.map(v => `<tr><td class="text-gray-400">${v.fecha || '—'}</td><td class="font-semibold text-white"><i class="fa-solid fa-user text-cyan-400/40 mr-2 text-xs"></i>${v.nombreVisitante || v.nombre || '—'}</td><td class="text-gray-400 font-mono text-sm">${v.documento || '—'}</td><td class="text-gray-500">${v.observaciones || '—'}</td></tr>`).join('') : '<tr><td colspan="4" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-person-walking-arrow-right"></i><p>No has registrado visitantes aún</p></div></td></tr>'}</tbody></table>`;
 }
 
 async function loadResMisPQRS() {
   const c = document.getElementById('residentContent');
   c.innerHTML = `
-    <div class="flex items-center justify-between mb-6 animate-fadeInUp"><h2 class="text-2xl font-bold gradient-text">Mis PQRS</h2><button onclick="openCreatePQRS()" class="btn-primary"><i class="fa-solid fa-plus"></i> Nueva PQRS</button></div>
-    <div id="myPQRSTable" class="glass animate-fadeInUp" style="animation-delay:.1s">
-      <div class="p-5 text-center text-gray-500">Cargando...</div>
+    <div class="animate-fadeInUp">
+      <div class="flex items-center justify-between mb-2"><div class="section-header mb-0"><h2 class="gradient-text">Mis PQRS</h2><p>Peticiones, Quejas, Reclamos y Sugerencias</p></div><button onclick="openCreatePQRS()" class="btn-primary"><i class="fa-solid fa-plus"></i> Nueva PQRS</button></div>
+      <div class="neon-line mb-6"></div>
+      <div id="myPQRSTable" class="premium-table">
+        <div class="p-8 text-center text-gray-500"><i class="fa-solid fa-spinner fa-spin text-cyan-400 mb-2"></i><p>Cargando...</p></div>
+      </div>
     </div>`;
   loadMyPQRS();
 }
@@ -1212,15 +1440,14 @@ async function loadMyPQRS() {
   const el = document.getElementById('myPQRSTable');
   if (!el) return;
   el.innerHTML = `
-    <div class="table-container" style="border:none;border-radius:0">
-      <table><thead><tr><th>Fecha</th><th>Tipo</th><th>Asunto</th><th>Estado</th><th>Respuesta</th></tr></thead>
-      <tbody>${pqrs.length ? pqrs.map(p => `<tr>
-        <td>${p.fecha || '—'}</td><td>${p.tipo || '—'}</td><td class="font-medium text-white">${p.asunto || '—'}</td>
-        <td><span class="badge ${badgeClass(p.estado)}">${p.estado}</span></td>
-        <td class="text-gray-400 text-sm max-w-xs truncate">${p.respuesta || 'Sin respuesta'}</td>
-      </tr>`).join('') : '<tr><td colspan="5" class="text-center text-gray-500 py-8">Sin PQRS</td></tr>'}</tbody></table>
-    </div>`;
+    <table><thead><tr><th>Fecha</th><th>Tipo</th><th>Asunto</th><th>Estado</th><th>Respuesta</th></tr></thead>
+    <tbody>${pqrs.length ? pqrs.map(p => `<tr>
+      <td class="text-gray-400">${p.fecha || '—'}</td><td><span class="badge badge-cyan">${p.tipo || '—'}</span></td><td class="font-semibold text-white">${p.asunto || '—'}</td>
+      <td><span class="badge ${badgeClass(p.estado)}">${p.estado}</span></td>
+      <td class="text-gray-400 text-sm max-w-xs">${p.respuesta ? '<span class="text-emerald-400"><i class="fa-solid fa-reply mr-1"></i></span>' + p.respuesta : '<span class="text-gray-600 italic">Sin respuesta</span>'}</td>
+    </tr>`).join('') : '<tr><td colspan="5" class="text-center py-12"><div class="empty-state"><i class="fa-solid fa-clipboard-check"></i><p>Aún no has enviado PQRS</p></div></td></tr>'}</tbody></table>`;
 }
+
 
 // ========== PARTICLES ==========
 function createParticles() {
