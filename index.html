@@ -1733,14 +1733,15 @@
 
       // Hide payment banner for residents if not needed (we keep it)
       closeSidebar();
-      mostrarSeccion('bienvenida');
       cargarDatosResidente();
       if (state.estadisticasCargando && !state.estadisticasCache) {
         mostrarLoading('Cargando datos...');
         state.estadisticasReadyCallback = function() {
           ocultarLoading();
-          if (state.estadisticasCache) aplicarEstadisticas(state.estadisticasCache);
+          mostrarSeccion('bienvenida');
         };
+      } else {
+        mostrarSeccion('bienvenida');
       }
     }
 
