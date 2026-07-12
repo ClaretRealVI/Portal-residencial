@@ -805,6 +805,90 @@
       .payment-banner-stat { text-align: left; }
       .stats-grid, .stats-grid-3 { grid-template-columns: 1fr 1fr; }
     }
+.balance-container {
+      margin-top: 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      background: var(--bg-card);
+    }
+    .balance-mes {
+      text-align: center;
+      padding: 12px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-primary);
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .balance-seccion { border-bottom: 1px solid var(--border); }
+    .balance-seccion-header {
+      padding: 10px 16px;
+      font-weight: 700;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+    }
+    .balance-seccion-header.ingresos { color: var(--success); }
+    .balance-seccion-header.egresos { color: var(--danger); }
+    .balance-seccion-header.saldo { color: var(--primary-light); }
+    .balance-table { width: 100%; border-collapse: collapse; }
+    .balance-table td {
+      padding: 8px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+    .balance-table tr:last-child td { border-bottom: none; }
+    .balance-table .balance-label {
+      color: var(--text-secondary);
+      padding-left: 32px;
+    }
+    .balance-table .balance-valor {
+      text-align: right;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+    .balance-table tr.balance-total td {
+      font-weight: 700;
+      padding-top: 10px;
+      padding-bottom: 10px;
+      border-top: 2px solid var(--border);
+      border-bottom: none;
+      background: var(--bg-secondary);
+    }
+    .balance-table tr.balance-total .balance-label {
+      color: var(--text-primary);
+      padding-left: 16px;
+    }
+    .balance-saldo-row td {
+      padding: 14px 16px;
+      font-size: 15px;
+      font-weight: 700;
+      border-bottom: 1px solid var(--border);
+    }
+    .balance-saldo-row .balance-valor { font-size: 15px; }
+    .balance-saldo-row.positive .balance-valor { color: var(--success); }
+    .balance-saldo-row.negative .balance-valor { color: var(--danger); }
+    .balance-disponible { border-top: 2px solid var(--border); }
+    .balance-disponible td { padding: 8px 16px; font-size: 13px; }
+    .balance-disponible .balance-label {
+      color: var(--text-secondary);
+      font-weight: 600;
+    }
+    .balance-disponible .balance-valor {
+      text-align: right;
+      font-weight: 700;
+    }
+    @media (max-width: 480px) {
+      .balance-table td { padding: 6px 10px; font-size: 12px; }
+      .balance-table .balance-label { padding-left: 20px; }
+      .balance-saldo-row td { font-size: 13px; padding: 10px; }
+      .balance-saldo-row .balance-valor { font-size: 13px; }
+    }
   </style>
 </head>
 <body>
@@ -1192,6 +1276,8 @@
             <div class="stat-change" id="balanceChange"><i class="fas fa-minus"></i><span>Estable</span></div>
           </div>
         </div>
+
+        <div id="balanceContainer" class="hidden"></div>
 
       </div>
 
@@ -2000,7 +2086,97 @@
           balanceChange.innerHTML = '<i class="fas fa-arrow-down"></i><span>Negativo</span>';
         }
         ocultarLoading();
+        renderizarBalance(data);
       });
+    }
+
+    function renderizarBalance(data) {
+      var container = document.getElementById('balanceContainer');
+      if (!container) return;
+
+      var meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+      var nombreMes = 'MES ACTUAL';
+      if (state.filtroInicio) {
+        var d = new Date(state.filtroInicio + 'T00:00:00');
+        nombreMes = meses[d.getMonth()];
+      } else {
+        nombreMes = meses[new Date().getMonth()];
+      }
+
+      var totalIngresos = data.filtroIngresos || 0;
+      var totalEgresos = data.filtroEgresos || 0;
+      var extraordinarios = data.filtroExtraordinarios || 0;
+      var alquileres = data.filtroAlquileres || 0;
+      var multas = data.filtroMultas || 0;
+      var pago = totalIngresos - extraordinarios - alquileres - multas;
+
+      // Group egresos by tipo
+      var egresosPorTipo = {};
+      (data.detalleEgresos || []).forEach(function(r) {
+        var tipo = (r[1] || '').toUpperCase();
+        if (!egresosPorTipo[tipo]) egresosPorTipo[tipo] = 0;
+        egresosPorTipo[tipo] += r[3] || 0;
+      });
+
+      var saldoEdificio = pago + multas - totalEgresos;
+
+      function fmt(v) {
+        return 'COP ' + Math.abs(v).toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+      }
+
+      function fila(tipo, valor) {
+        if (valor === 0) return '';
+        return '<tr><td class="balance-label">' + tipo + '</td><td class="balance-valor">' + fmt(valor) + '</td></tr>';
+      }
+
+      var h = '<div class="balance-container">';
+      h += '<div class="balance-mes">' + nombreMes + '</div>';
+
+      // INGRESOS
+      h += '<div class="balance-seccion">';
+      h += '<div class="balance-seccion-header ingresos">INGRESOS</div>';
+      h += '<table class="balance-table">';
+      h += fila('PAGO', pago);
+      h += fila('EXTRAORDINARIO', extraordinarios);
+      h += fila('MULTAS', multas);
+      h += fila('ALQUILERES', alquileres);
+      h += '<tr class="balance-total"><td class="balance-label">TOTAL INGRESOS</td><td class="balance-valor">' + fmt(totalIngresos) + '</td></tr>';
+      h += '</table></div>';
+
+      // EGRESOS
+      h += '<div class="balance-seccion">';
+      h += '<div class="balance-seccion-header egresos">EGRESOS</div>';
+      h += '<table class="balance-table">';
+      var tiposOrden = ['SEGURIDAD', 'ASEO', 'INTERNET', 'SERVICIO AGUA', 'SERVICIO LUZ', 'INSUMOS ASEO', 'NOMINA', 'IMPUESTO GMF', 'OTROS'];
+      tiposOrden.forEach(function(tipo) {
+        h += fila(tipo, egresosPorTipo[tipo] || 0);
+      });
+      Object.keys(egresosPorTipo).forEach(function(tipo) {
+        if (tiposOrden.indexOf(tipo) === -1) {
+          h += fila(tipo, egresosPorTipo[tipo]);
+        }
+      });
+      h += '<tr class="balance-total"><td class="balance-label">TOTAL EGRESOS</td><td class="balance-valor">' + fmt(totalEgresos) + '</td></tr>';
+      h += '</table></div>';
+
+      // SALDO
+      h += '<div class="balance-seccion">';
+      h += '<div class="balance-seccion-header saldo">SALDO</div>';
+      h += '<table class="balance-table">';
+      h += '<tr class="balance-saldo-row ' + (saldoEdificio >= 0 ? 'positive' : 'negative') + '"><td class="balance-label">SALDO A MES DE ' + nombreMes + ' EDIFICIO</td><td class="balance-valor">' + fmt(saldoEdificio) + '</td></tr>';
+      h += '</table></div>';
+
+      // DISPONIBLE POR FONDO
+      h += '<div class="balance-seccion balance-disponible">';
+      h += '<table class="balance-table">';
+      h += '<tr><td class="balance-label">EXTRAORDINARIO</td><td class="balance-valor" style="color: var(--primary-light);">' + fmt(extraordinarios) + '</td></tr>';
+      h += '<tr><td class="balance-label">SALON SOCIAL</td><td class="balance-valor" style="color: #e91e63;">' + fmt(alquileres) + '</td></tr>';
+      h += '<tr><td class="balance-label" style="color: var(--text-primary); font-weight: 700;">EDIFICIO</td><td class="balance-valor" style="color: ' + (saldoEdificio >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + fmt(saldoEdificio) + '</td></tr>';
+      h += '</table></div>';
+
+      h += '</div>';
+      container.innerHTML = h;
+      container.classList.remove('hidden');
     }
 
     function cargarIngresos() {
