@@ -1525,11 +1525,11 @@
       <!-- Multas y Llamados -->
       <div id="multasSection" class="card hidden">
         <div class="card-header">
-          <h2 class="card-title"><i class="fas fa-gavel"></i> Multas <span class="admin-only">y Llamados</span></h2>
+          <h2 class="card-title"><i class="fas fa-gavel"></i> Multas y Llamados</h2>
           <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalLlamado')"><i class="fas fa-plus"></i> Registrar Llamado</button>
         </div>
 
-        <div class="section-tabs admin-only">
+        <div class="section-tabs">
           <button class="section-tab active" id="tabBtnMultasList" onclick="mostrarTabMultas('multas')"><i class="fas fa-gavel"></i> Multas</button>
           <button class="section-tab" id="tabBtnLlamadosList" onclick="mostrarTabMultas('llamados')"><i class="fas fa-bell"></i> Llamados</button>
         </div>
@@ -1557,10 +1557,10 @@
           </div>
         </div>
 
-        <div id="llamadosTabContent" class="hidden admin-only">
+        <div id="llamadosTabContent" class="hidden">
           <div class="table-container">
             <table class="table">
-              <thead><tr><th>Fecha</th><th>Apartamento</th><th>Descripción</th><th>Acciones</th></tr></thead>
+              <thead><tr><th>Fecha</th><th>Apartamento</th><th>Descripción</th><th class="admin-only">Acciones</th></tr></thead>
               <tbody id="tablaLlamadosBody"><tr><td colspan="4" style="text-align:center">Sin datos</td></tr></tbody>
             </table>
           </div>
@@ -3314,7 +3314,7 @@
           return;
         }
         tbody.innerHTML = data.map(function(r) {
-          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td><td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td></tr>';
+          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td><td class="table-actions admin-only"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td></tr>';
         }).join("");
       });
     }
