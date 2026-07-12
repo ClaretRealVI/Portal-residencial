@@ -620,24 +620,6 @@
     /* ============================================
        MULTAS Y LLAMADOS
     ============================================
-    .multas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 16px; }
-    .multa-card {
-      background: var(--surface); border: 1px solid var(--border);
-      border-radius: var(--radius-lg); overflow: hidden;
-      transition: var(--transition); border-left: 4px solid transparent;
-    }
-    .multa-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
-    .multa-card.danger { border-left-color: var(--danger); }
-    .multa-card.success { border-left-color: var(--success); }
-    .multa-card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
-    .multa-card-apt { font-weight: 700; font-size: 14px; color: var(--text); }
-    .multa-card-body { padding: 0 16px 10px; }
-    .multa-card-motivo { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
-    .multa-card-footer { display: flex; align-items: center; justify-content: space-between; }
-    .multa-card-valor { font-size: 18px; font-weight: 700; color: var(--danger); }
-    .multa-card.success .multa-card-valor { color: var(--success); }
-    .multa-card-fecha { font-size: 11.5px; color: var(--text-muted); }
-    .multa-card-actions { padding: 10px 16px 14px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; }
     .llamado-counter {
       display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
       border-radius: 12px; font-size: 11px; font-weight: 600;
@@ -810,9 +792,7 @@
       .landing-info-card { padding: 20px 14px; }
       .topbar-brand h1 { font-size: 15px; }
     }
-    @media (max-width: 768px) {
-      .multas-grid { grid-template-columns: 1fr; }
-    }
+
     @media (max-width: 480px) {
       .auth-choice-grid { grid-template-columns: 1fr; }
       .apartment-grid { grid-template-columns: repeat(2, 1fr); }
@@ -1318,20 +1298,18 @@
        ============================================= -->
 
 
-      <!-- Multas y Llamados -->
+            <!-- Multas y Llamados -->
       <div id="multasSection" class="card hidden">
         <div class="card-header">
-          <h2 class="card-title"><i class="fas fa-gavel"></i> Multas y Llamados de Alarma</h2>
-          <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalLlamado')"><i class="fas fa-bell"></i> Registrar Llamado</button>
+          <h2 class="card-title"><i class="fas fa-gavel"></i> Multas y Llamados</h2>
+          <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalLlamado')"><i class="fas fa-plus"></i> Registrar Llamado</button>
         </div>
 
-        <!-- Tabs (admin only) -->
         <div class="section-tabs admin-only">
           <button class="section-tab active" id="tabBtnMultasList" onclick="mostrarTabMultas('multas')"><i class="fas fa-gavel"></i> Multas</button>
           <button class="section-tab" id="tabBtnLlamadosList" onclick="mostrarTabMultas('llamados')"><i class="fas fa-bell"></i> Llamados</button>
         </div>
 
-        <!-- Multas content -->
         <div id="multasTabContent">
           <div class="stats-grid-3 admin-only" style="margin-bottom: 16px;">
             <div class="stat-card danger">
@@ -1347,10 +1325,14 @@
               </div>
             </div>
           </div>
-          <div id="multasCardsContainer" class="multas-grid"></div>
+          <div class="table-container">
+            <table class="table">
+              <thead><tr><th>Fecha</th><th class="admin-only">Apartamento</th><th>Motivo</th><th>Valor</th><th>Estado</th><th>Acciones</th></tr></thead>
+              <tbody id="tablaMultasBody"><tr><td colspan="6" style="text-align:center">Sin datos</td></tr></tbody>
+            </table>
+          </div>
         </div>
 
-        <!-- Llamados content (admin only) -->
         <div id="llamadosTabContent" class="hidden admin-only">
           <div class="table-container">
             <table class="table">
@@ -2803,9 +2785,11 @@
     }
 
     function renderizarMultas(multas) {
-      var container = document.getElementById("multasCardsContainer");
+      var tbody = document.getElementById("tablaMultasBody");
+      var adminOnly = state.esAdmin ? "" : " hidden";
+
       if (!multas || !multas.length) {
-        container.innerHTML = '<div style="text-align:center; padding:40px 20px; color:var(--text-muted);"><i class="fas fa-check-circle" style="font-size:40px; color:var(--success); margin-bottom:12px; display:block;"></i>No hay multas registradas</div>';
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin multas registradas</td></tr>';
         if (document.getElementById("totalMultasPendientesCard")) document.getElementById("totalMultasPendientesCard").textContent = "0";
         if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$0";
         return;
@@ -2818,36 +2802,25 @@
       if (document.getElementById("totalMultasPendientesCard")) document.getElementById("totalMultasPendientesCard").textContent = pendientes.length;
       if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$" + totalValor.toLocaleString("es-CO");
 
-      var html = "";
-      multas.forEach(function(m) {
+      tbody.innerHTML = multas.map(function(m) {
         var isPendiente = m.estado === "Pendiente";
-        var cardClass = isPendiente ? "danger" : "success";
         var badgeClass = isPendiente ? "badge-danger" : "badge-success";
         var acciones = "";
-
         if (isPendiente) {
-          acciones = '<button class="btn btn-sm btn-success" onclick="ejecutarPagoMulta(' + m.fila + ')"><i class="fas fa-credit-card"></i> Pagar</button>';
+          acciones = '<button class="btn btn-sm btn-success" onclick="ejecutarPagoMulta(' + m.fila + ')"><i class="fas fa-check"></i> Pagar</button>';
           if (state.esAdmin) {
             acciones += ' <button class="btn btn-sm btn-danger" onclick="ejecutarEliminarMulta(' + m.fila + ')"><i class="fas fa-trash"></i></button>';
           }
         }
-
-        html += '<div class="multa-card ' + cardClass + '">' +
-          '<div class="multa-card-header">' +
-            '<span class="multa-card-apt">' + (state.esAdmin ? "Apto " : "") + m.apartamento + '</span>' +
-            '<span class="badge ' + badgeClass + '">' + m.estado + '</span>' +
-          '</div>' +
-          '<div class="multa-card-body">' +
-            '<div class="multa-card-motivo">' + m.motivo + '</div>' +
-            '<div class="multa-card-footer">' +
-              '<span class="multa-card-valor">$' + m.valor.toLocaleString("es-CO") + '</span>' +
-              '<span class="multa-card-fecha">' + m.fecha + '</span>' +
-            '</div>' +
-          '</div>' +
-          (acciones ? '<div class="multa-card-actions">' + acciones + '</div>' : "") +
-        '</div>';
-      });
-      container.innerHTML = html;
+        return '<tr>' +
+          '<td>' + m.fecha + '</td>' +
+          '<td class="admin-only">' + m.apartamento + '</td>' +
+          '<td>' + m.motivo + '</td>' +
+          '<td style="font-weight:600; color:var(--danger);">$' + m.valor.toLocaleString("es-CO") + '</td>' +
+          '<td><span class="badge ' + badgeClass + '">' + m.estado + '</span></td>' +
+          '<td class="table-actions">' + acciones + '</td>' +
+        '</tr>';
+      }).join("");
     }
 
     function ejecutarPagoMulta(fila) {
