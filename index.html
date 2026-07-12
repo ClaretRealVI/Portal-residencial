@@ -1525,7 +1525,7 @@
       <!-- Multas y Llamados -->
       <div id="multasSection" class="card hidden">
         <div class="card-header">
-          <h2 class="card-title"><i class="fas fa-gavel"></i> Multas y Llamados</h2>
+          <h2 class="card-title"><i class="fas fa-gavel"></i> Multas <span class="admin-only">y Llamados</span></h2>
           <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalLlamado')"><i class="fas fa-plus"></i> Registrar Llamado</button>
         </div>
 
@@ -2152,7 +2152,7 @@
         var badgePagoText = document.getElementById('badgePagoText');
 
         if (datos.pagado) {
-          document.getElementById('paymentState').innerHTML = '<span class="badge badge-success">Pagado</span>';
+          document.getElementById('paymentState').innerHTML = '<span class="badge" style="background:#059669;color:white;">Pagado</span>';
           paymentSection.classList.add('payment-banner-paid');
           badgePagoText.textContent = 'Pago al día';
           document.getElementById('badgePagoResidente').className = 'topbar-badge success';
