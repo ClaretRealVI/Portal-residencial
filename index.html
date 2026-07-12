@@ -3310,11 +3310,12 @@
         ocultarLoading();
         var tbody = document.getElementById("tablaLlamadosBody");
         if (!data || !data.length) {
-          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">Sin llamados registrados</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="' + (state.esAdmin ? 4 : 3) + '" style="text-align:center">Sin llamados registrados</td></tr>';
           return;
         }
         tbody.innerHTML = data.map(function(r) {
-          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td><td class="table-actions admin-only"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td></tr>';
+          var acc = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td>' : '';
+          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td>' + acc + '</tr>';
         }).join("");
       });
     }
