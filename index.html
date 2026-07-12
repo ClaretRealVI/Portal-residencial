@@ -2114,12 +2114,13 @@
         var tipo = (r[1] || '').toLowerCase();
         var desc = r[2] || '';
         var descLower = desc.toLowerCase();
+        var descSin = descLower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         totalIngresos += valor;
 
         if (tipo.indexOf('multa') !== -1) {
           // MULTAS
           totalMultas += valor;
-        } else if (tipo.indexOf('alquiler') !== -1 && (descLower.indexOf('salon') !== -1 || descLower.indexOf('silla') !== -1) && descLower.indexOf('bbq') === -1) {
+        } else if (tipo.indexOf('alquiler') !== -1 && (descSin.indexOf('salon') !== -1 || descSin.indexOf('silla') !== -1) && descSin.indexOf('bbq') === -1) {
           // ALQUILERES (salon social / sillas, NO bbq)
           totalAlquileres += valor;
         } else {
