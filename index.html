@@ -2103,22 +2103,41 @@
         nombreMes = meses[new Date().getMonth()];
       }
 
-      var totalIngresos = data.filtroIngresos || 0;
-      var totalEgresos = data.filtroEgresos || 0;
-      var extraordinarios = data.filtroExtraordinarios || 0;
-      var alquileres = data.filtroAlquileres || 0;
-      var multas = data.filtroMultas || 0;
-      var pago = totalIngresos - extraordinarios - alquileres - multas;
-
-      // Group egresos by tipo
+      // Calcular todo desde los arreglos detalle (ya filtrados por fecha en el backend)
+      var totalIngresos = 0, totalEgresos = 0;
+      var totalPago = 0, totalExtraordinario = 0, totalMultas = 0, totalAlquileres = 0;
       var egresosPorTipo = {};
-      (data.detalleEgresos || []).forEach(function(r) {
-        var tipo = (r[1] || '').toUpperCase();
-        if (!egresosPorTipo[tipo]) egresosPorTipo[tipo] = 0;
-        egresosPorTipo[tipo] += r[3] || 0;
+
+      // Procesar ingresos filtrados
+      (data.detalleIngresos || []).forEach(function(r) {
+        var valor = r[3] || 0;
+        var tipo = (r[1] || '').toLowerCase();
+        var desc = (r[2] || '').toLowerCase();
+        totalIngresos += valor;
+
+        if (tipo.indexOf('multa') !== -1) {
+          totalMultas += valor;
+        } else if (tipo.indexOf('alquiler') !== -1 && (desc.indexOf('salon') !== -1 || desc.indexOf('silla') !== -1) && desc.indexOf('bbq') === -1) {
+          totalAlquileres += valor;
+        } else if (desc.indexOf('extraordinaria') !== -1) {
+          var match = r[2].match(/\$(\d+(?:\.\d+)?)\s*de\s*cuota\s*extraordinaria/i);
+          totalExtraordinario += match ? parseFloat(match[1].replace(/\./g, '')) : valor;
+        } else {
+          totalPago += valor;
+        }
       });
 
-      var saldoEdificio = pago + multas - totalEgresos;
+      // Procesar egresos filtrados
+      (data.detalleEgresos || []).forEach(function(r) {
+        var valor = r[3] || 0;
+        var tipo = (r[1] || '').toUpperCase();
+        totalEgresos += valor;
+        if (!egresosPorTipo[tipo]) egresosPorTipo[tipo] = 0;
+        egresosPorTipo[tipo] += valor;
+      });
+
+      // SALDO EDIFICIO = PAGO + MULTAS - TOTAL EGRESOS
+      var saldoEdificio = totalPago + totalMultas - totalEgresos;
 
       function fmt(v) {
         return 'COP ' + Math.abs(v).toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2});
@@ -2136,10 +2155,10 @@
       h += '<div class="balance-seccion">';
       h += '<div class="balance-seccion-header ingresos">INGRESOS</div>';
       h += '<table class="balance-table">';
-      h += fila('PAGO', pago);
-      h += fila('EXTRAORDINARIO', extraordinarios);
-      h += fila('MULTAS', multas);
-      h += fila('ALQUILERES', alquileres);
+      h += fila('PAGO', totalPago);
+      h += fila('EXTRAORDINARIO', totalExtraordinario);
+      h += fila('MULTAS', totalMultas);
+      h += fila('ALQUILERES', totalAlquileres);
       h += '<tr class="balance-total"><td class="balance-label">TOTAL INGRESOS</td><td class="balance-valor">' + fmt(totalIngresos) + '</td></tr>';
       h += '</table></div>';
 
@@ -2169,8 +2188,8 @@
       // DISPONIBLE POR FONDO
       h += '<div class="balance-seccion balance-disponible">';
       h += '<table class="balance-table">';
-      h += '<tr><td class="balance-label">EXTRAORDINARIO</td><td class="balance-valor" style="color: var(--primary-light);">' + fmt(extraordinarios) + '</td></tr>';
-      h += '<tr><td class="balance-label">SALON SOCIAL</td><td class="balance-valor" style="color: #e91e63;">' + fmt(alquileres) + '</td></tr>';
+      h += '<tr><td class="balance-label">EXTRAORDINARIO</td><td class="balance-valor" style="color: var(--primary-light);">' + fmt(totalExtraordinario) + '</td></tr>';
+      h += '<tr><td class="balance-label">SALON SOCIAL</td><td class="balance-valor" style="color: #e91e63;">' + fmt(totalAlquileres) + '</td></tr>';
       h += '<tr><td class="balance-label" style="color: var(--text-primary); font-weight: 700;">EDIFICIO</td><td class="balance-valor" style="color: ' + (saldoEdificio >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + fmt(saldoEdificio) + '</td></tr>';
       h += '</table></div>';
 
@@ -2179,7 +2198,7 @@
       container.classList.remove('hidden');
     }
 
-    function cargarIngresos() {
+        function cargarIngresos() {
       mostrarLoading('Cargando...');
       llamarGS('obtenerDatosingresos', [], function(data) {
         state.cache.ingresos = data;
