@@ -617,6 +617,34 @@
       aspect-ratio: 1/1; object-fit: contain;
     }
     .qr-code:hover { transform: scale(1.02); box-shadow: var(--shadow-md); }
+    /* ============================================
+       MULTAS Y LLAMADOS
+    ============================================
+    .multas-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 14px; margin-top: 16px; }
+    .multa-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: var(--radius-lg); overflow: hidden;
+      transition: var(--transition); border-left: 4px solid transparent;
+    }
+    .multa-card:hover { box-shadow: var(--shadow-md); transform: translateY(-1px); }
+    .multa-card.danger { border-left-color: var(--danger); }
+    .multa-card.success { border-left-color: var(--success); }
+    .multa-card-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px 8px; }
+    .multa-card-apt { font-weight: 700; font-size: 14px; color: var(--text); }
+    .multa-card-body { padding: 0 16px 10px; }
+    .multa-card-motivo { font-size: 13px; color: var(--text-secondary); margin-bottom: 8px; line-height: 1.5; }
+    .multa-card-footer { display: flex; align-items: center; justify-content: space-between; }
+    .multa-card-valor { font-size: 18px; font-weight: 700; color: var(--danger); }
+    .multa-card.success .multa-card-valor { color: var(--success); }
+    .multa-card-fecha { font-size: 11.5px; color: var(--text-muted); }
+    .multa-card-actions { padding: 10px 16px 14px; border-top: 1px solid var(--border-light); display: flex; gap: 8px; }
+    .llamado-counter {
+      display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px;
+      border-radius: 12px; font-size: 11px; font-weight: 600;
+    }
+    .llamado-counter.warning { background: rgba(217,119,6,0.1); color: var(--warning); }
+    .llamado-counter.danger { background: rgba(220,38,38,0.1); color: var(--danger); animation: pulse 1.5s infinite; }
+
 
     /* ============================================
        DASHBOARD
@@ -781,6 +809,9 @@
       .rules-title { font-size: 20px; }
       .landing-info-card { padding: 20px 14px; }
       .topbar-brand h1 { font-size: 15px; }
+    }
+    @media (max-width: 768px) {
+      .multas-grid { grid-template-columns: 1fr; }
     }
     @media (max-width: 480px) {
       .auth-choice-grid { grid-template-columns: 1fr; }
@@ -962,6 +993,10 @@
         </div>
       </div>
       <div class="topbar-center" id="topbarBadges">
+        <div class="topbar-badge danger" id="badgeMultas" style="display:none;">
+          <i class="fas fa-gavel"></i>
+          <span id="badgeMultasText">0 multas</span>
+        </div>
         <div class="topbar-badge warning" id="badgeMora" style="display:none;">
           <i class="fas fa-exclamation-triangle"></i>
           <span id="badgeMoraText">0 en mora</span>
@@ -1029,6 +1064,10 @@
         </a>
         
       </nav>
+        <div class="sidebar-divider admin-only"></div>
+        <a href="#" onclick="mostrarSeccion('multas'); return false;" data-section="multas">
+          <i class="fas fa-gavel"></i> Multas
+        </a>
       <div class="sidebar-footer">
         <a href="#" onclick="cerrarSesion(); return false;">
           <i class="fas fa-sign-out-alt"></i> Cerrar Sesión
@@ -1107,6 +1146,12 @@
             <div class="stat-header">
               <div><div class="stat-title">Solicitudes</div><div class="stat-value" id="activeRequests">0</div></div>
               <div class="stat-icon" style="background: linear-gradient(135deg, #7c3aed, #8b5cf6);"><i class="fas fa-clipboard-list"></i></div>
+            </div>
+          </div>
+          <div class="stat-card danger">
+            <div class="stat-header">
+              <div><div class="stat-title">Multas</div><div class="stat-value" id="multasPendientesCount">0</div></div>
+              <div class="stat-icon danger"><i class="fas fa-gavel"></i></div>
             </div>
           </div>
         </div>
@@ -1272,6 +1317,64 @@
        MODALES
        ============================================= -->
 
+
+      <!-- Multas y Llamados -->
+      <div id="multasSection" class="card hidden">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-gavel"></i> Multas y Llamados de Alarma</h2>
+          <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalLlamado')"><i class="fas fa-bell"></i> Registrar Llamado</button>
+        </div>
+
+        <!-- Tabs (admin only) -->
+        <div class="section-tabs admin-only">
+          <button class="section-tab active" id="tabBtnMultasList" onclick="mostrarTabMultas('multas')"><i class="fas fa-gavel"></i> Multas</button>
+          <button class="section-tab" id="tabBtnLlamadosList" onclick="mostrarTabMultas('llamados')"><i class="fas fa-bell"></i> Llamados</button>
+        </div>
+
+        <!-- Multas content -->
+        <div id="multasTabContent">
+          <div class="stats-grid-3 admin-only" style="margin-bottom: 16px;">
+            <div class="stat-card danger">
+              <div class="stat-header">
+                <div><div class="stat-title">Multas Pendientes</div><div class="stat-value" id="totalMultasPendientesCard">0</div></div>
+                <div class="stat-icon danger"><i class="fas fa-gavel"></i></div>
+              </div>
+            </div>
+            <div class="stat-card warning">
+              <div class="stat-header">
+                <div><div class="stat-title">Valor Total Pendiente</div><div class="stat-value" id="totalValorMultasCard">$0</div></div>
+                <div class="stat-icon warning"><i class="fas fa-coins"></i></div>
+              </div>
+            </div>
+          </div>
+          <div id="multasCardsContainer" class="multas-grid"></div>
+        </div>
+
+        <!-- Llamados content (admin only) -->
+        <div id="llamadosTabContent" class="hidden admin-only">
+          <div class="table-container">
+            <table class="table">
+              <thead><tr><th>Fecha</th><th>Apartamento</th><th>Descripción</th><th>Acciones</th></tr></thead>
+              <tbody id="tablaLlamadosBody"><tr><td colspan="4" style="text-align:center">Sin datos</td></tr></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+  <!-- Modal Registrar Llamado -->
+  <div id="modalLlamado" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">Registrar Llamado de Alarma</h3><button class="modal-close" onclick="cerrarModal('modalLlamado')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">Apartamento</label><select id="llamadoApto" class="form-control"></select></div>
+        <div class="form-group"><label class="form-label">Descripción</label><textarea id="llamadoDesc" class="form-control" rows="3" placeholder="Ej: Alarma activada sin motivo aparente"></textarea></div>
+        <div id="llamadoCounterInfo" style="display:none; margin-bottom:14px;" class="filtro-activo"></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="procesarLlamado()"><i class="fas fa-bell"></i> Registrar</button>
+        <button class="btn btn-light" onclick="cerrarModal('modalLlamado')">Cancelar</button>
+      </div>
+    </div>
+  </div>
   <!-- Modal Cambio Clave -->
   <div id="modalCambioClave" class="modal">
     <div class="modal-content">
@@ -1652,6 +1755,13 @@
       closeSidebar();
       mostrarSeccion('bienvenida');
       cargarDatosResidente();
+      if (state.estadisticasCargando && !state.estadisticasCache) {
+        mostrarLoading('Cargando datos...');
+        state.estadisticasReadyCallback = function() {
+          ocultarLoading();
+          if (state.estadisticasCache) aplicarEstadisticas(state.estadisticasCache);
+        };
+      }
     }
 
     function validarLogin() {
@@ -1685,6 +1795,7 @@
           // Show/hide badges
           document.getElementById('badgeMora').style.display = 'flex';
           document.getElementById('badgePendientes').style.display = 'flex';
+          document.getElementById('badgeMultas').style.display = 'flex';
           document.getElementById('badgePagoResidente').style.display = 'none';
 
           // Hide payment banner for admin
@@ -1692,9 +1803,19 @@
 
           document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = ''; });
 
-          mostrarNotificacion('Éxito', 'Bienvenido', 'success');
-          closeSidebar();
-          mostrarSeccion('bienvenida');
+          if (state.estadisticasCargando && !state.estadisticasCache) {
+            mostrarLoading('Cargando datos...');
+            state.estadisticasReadyCallback = function() {
+              ocultarLoading();
+              mostrarNotificacion('Éxito', 'Bienvenido', 'success');
+              closeSidebar();
+              mostrarSeccion('bienvenida');
+            };
+          } else {
+            mostrarNotificacion('Éxito', 'Bienvenido', 'success');
+            closeSidebar();
+            mostrarSeccion('bienvenida');
+          }
         } else {
           mostrarNotificacion('Error', res.message, 'error');
         }
@@ -1740,33 +1861,25 @@
     // ============================================
     function mostrarSeccion(seccion) {
       state.seccionActual = seccion;
-      var secciones = ['bienvenidaSection', 'resumenSection', 'ingresosSection', 'egresosSection', 'activosSection', 'solicitudesFormatosSection'];
-      secciones.forEach(function(id) { document.getElementById(id).classList.add('hidden'); });
+      var secciones = ["bienvenidaSection", "resumenSection", "ingresosSection", "egresosSection", "activosSection", "solicitudesFormatosSection", "multasSection"];
+      secciones.forEach(function(id) { document.getElementById(id).classList.add("hidden"); });
 
-      // Map section names to section IDs
-      if (seccion === 'solicitudes' || seccion === 'formatos') {
-        document.getElementById('solicitudesFormatosSection').classList.remove('hidden');
-        if (seccion === 'formatos') {
-          mostrarTabSF('formatos');
-        } else {
-          mostrarTabSF('solicitudes');
-        }
+      if (seccion === "solicitudes" || seccion === "formatos") {
+        document.getElementById("solicitudesFormatosSection").classList.remove("hidden");
+        if (seccion === "formatos") { mostrarTabSF("formatos"); }
+        else { mostrarTabSF("solicitudes"); }
       } else {
-        document.getElementById(seccion + 'Section').classList.remove('hidden');
+        document.getElementById(seccion + "Section").classList.remove("hidden");
       }
 
-      // Update sidebar active state
-      document.querySelectorAll('.sidebar-nav a').forEach(function(link) {
-        link.classList.remove('active');
-        var s = link.getAttribute('data-section');
-        if (s === seccion) {
-          link.classList.add('active');
-        }
+      document.querySelectorAll(".sidebar-nav a").forEach(function(link) {
+        link.classList.remove("active");
+        var s = link.getAttribute("data-section");
+        if (s === seccion) { link.classList.add("active"); }
       });
 
       closeSidebar();
 
-      // Load data for section
       var cargadores = {
         bienvenida: actualizarEstadisticas,
         resumen: cargarResumen,
@@ -1774,7 +1887,8 @@
         egresos: cargarEgresos,
         activos: cargarActivos,
         solicitudes: cargarSolicitudes,
-        formatos: cargarFormatos
+        formatos: cargarFormatos,
+        multas: cargarMultas
       };
 
       if (cargadores[seccion]) cargadores[seccion]();
@@ -1828,23 +1942,34 @@
     }
 
     function aplicarEstadisticas(est) {
-      document.getElementById('paymentsUpToDate').textContent = est.pagosAlDia || 0;
-      document.getElementById('pendingPayments').textContent = (est.pendientes || []).length;
-      document.getElementById('apartmentsInArrears').textContent = (est.mora || []).length;
-      document.getElementById('activeRequests').textContent = est.solicitudesActivas || 0;
+      document.getElementById("paymentsUpToDate").textContent = est.pagosAlDia || 0;
+      document.getElementById("pendingPayments").textContent = (est.pendientes || []).length;
+      document.getElementById("apartmentsInArrears").textContent = (est.mora || []).length;
+      document.getElementById("activeRequests").textContent = est.solicitudesActivas || 0;
+      var multasPend = est.multasPendientes || [];
+      var multasToShow = state.esAdmin ? multasPend : multasPend.filter(function(m) { return m.apartamento === state.apartamento; });
+      document.getElementById("multasPendientesCount").textContent = multasToShow.length;
       var moraCount = (est.mora || []).length;
       var pendCount = (est.pendientes || []).length;
-      document.getElementById('badgeMoraText').textContent = moraCount + ' en mora';
-      document.getElementById('badgePendientesText').textContent = pendCount + ' pendientes';
-      if (moraCount > 0) {
-        document.getElementById('badgeMora').className = 'topbar-badge danger';
+      document.getElementById("badgeMoraText").textContent = moraCount + " en mora";
+      document.getElementById("badgePendientesText").textContent = pendCount + " pendientes";
+      if (state.esAdmin) {
+        document.getElementById("badgeMultasText").textContent = multasPend.length + " multas";
+        document.getElementById("badgeMultas").style.display = multasPend.length > 0 ? "flex" : "none";
       } else {
-        document.getElementById('badgeMora').className = 'topbar-badge success';
-        document.getElementById('badgeMoraText').textContent = 'Sin mora';
+        var misMultas = multasPend.filter(function(m) { return m.apartamento === state.apartamento; });
+        document.getElementById("badgeMultasText").textContent = misMultas.length > 0 ? "Tienes multa" : "";
+        document.getElementById("badgeMultas").style.display = misMultas.length > 0 ? "flex" : "none";
       }
-      document.getElementById('apartamentosAlDia').innerHTML = (est.alDia || []).length ? '<strong>Aptos:</strong> ' + est.alDia.join(', ') : '<em>Ninguno</em>';
-      document.getElementById('apartamentosPendientes').innerHTML = (est.pendientes || []).length ? '<strong>Aptos:</strong> ' + est.pendientes.join(', ') : '<em>Ninguno</em>';
-      document.getElementById('apartamentosEnMora').innerHTML = (est.mora || []).length ? '<strong>Aptos:</strong> ' + est.mora.join(', ') : '<em>Ninguno</em>';
+      if (moraCount > 0) {
+        document.getElementById("badgeMora").className = "topbar-badge danger";
+      } else {
+        document.getElementById("badgeMora").className = "topbar-badge success";
+        document.getElementById("badgeMoraText").textContent = "Sin mora";
+      }
+      document.getElementById("apartamentosAlDia").innerHTML = (est.alDia || []).length ? "<strong>Aptos:</strong> " + est.alDia.join(", ") : "<em>Ninguno</em>";
+      document.getElementById("apartamentosPendientes").innerHTML = (est.pendientes || []).length ? "<strong>Aptos:</strong> " + est.pendientes.join(", ") : "<em>Ninguno</em>";
+      document.getElementById("apartamentosEnMora").innerHTML = (est.mora || []).length ? "<strong>Aptos:</strong> " + est.mora.join(", ") : "<em>Ninguno</em>";
     }
 
     function precargarEstadisticas() {
@@ -2656,65 +2781,224 @@
     }
 
     // ============================================
+    // MULTAS Y LLAMADOS
+    // ============================================
+    function mostrarTabMultas(tab) {
+      document.getElementById("multasTabContent").classList.toggle("hidden", tab !== "multas");
+      document.getElementById("llamadosTabContent").classList.toggle("hidden", tab !== "llamados");
+      document.getElementById("tabBtnMultasList").classList.toggle("active", tab === "multas");
+      document.getElementById("tabBtnLlamadosList").classList.toggle("active", tab === "llamados");
+      if (tab === "llamados") { cargarLlamados(); }
+      if (tab === "multas") { cargarMultas(); }
+    }
+
+    function cargarMultas() {
+      mostrarLoading("Cargando multas...");
+      var funcion = state.esAdmin ? "obtenerMultas" : "obtenerMultasApartamento";
+      var params = state.esAdmin ? [] : [state.apartamento];
+      llamarGS(funcion, params, function(data) {
+        ocultarLoading();
+        renderizarMultas(data);
+      });
+    }
+
+    function renderizarMultas(multas) {
+      var container = document.getElementById("multasCardsContainer");
+      if (!multas || !multas.length) {
+        container.innerHTML = '<div style="text-align:center; padding:40px 20px; color:var(--text-muted);"><i class="fas fa-check-circle" style="font-size:40px; color:var(--success); margin-bottom:12px; display:block;"></i>No hay multas registradas</div>';
+        if (document.getElementById("totalMultasPendientesCard")) document.getElementById("totalMultasPendientesCard").textContent = "0";
+        if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$0";
+        return;
+      }
+
+      var pendientes = multas.filter(function(m) { return m.estado === "Pendiente"; });
+      var totalValor = 0;
+      pendientes.forEach(function(m) { totalValor += m.valor; });
+
+      if (document.getElementById("totalMultasPendientesCard")) document.getElementById("totalMultasPendientesCard").textContent = pendientes.length;
+      if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$" + totalValor.toLocaleString("es-CO");
+
+      var html = "";
+      multas.forEach(function(m) {
+        var isPendiente = m.estado === "Pendiente";
+        var cardClass = isPendiente ? "danger" : "success";
+        var badgeClass = isPendiente ? "badge-danger" : "badge-success";
+        var acciones = "";
+
+        if (isPendiente) {
+          acciones = '<button class="btn btn-sm btn-success" onclick="ejecutarPagoMulta(' + m.fila + ')"><i class="fas fa-credit-card"></i> Pagar</button>';
+          if (state.esAdmin) {
+            acciones += ' <button class="btn btn-sm btn-danger" onclick="ejecutarEliminarMulta(' + m.fila + ')"><i class="fas fa-trash"></i></button>';
+          }
+        }
+
+        html += '<div class="multa-card ' + cardClass + '">' +
+          '<div class="multa-card-header">' +
+            '<span class="multa-card-apt">' + (state.esAdmin ? "Apto " : "") + m.apartamento + '</span>' +
+            '<span class="badge ' + badgeClass + '">' + m.estado + '</span>' +
+          '</div>' +
+          '<div class="multa-card-body">' +
+            '<div class="multa-card-motivo">' + m.motivo + '</div>' +
+            '<div class="multa-card-footer">' +
+              '<span class="multa-card-valor">$' + m.valor.toLocaleString("es-CO") + '</span>' +
+              '<span class="multa-card-fecha">' + m.fecha + '</span>' +
+            '</div>' +
+          '</div>' +
+          (acciones ? '<div class="multa-card-actions">' + acciones + '</div>' : "") +
+        '</div>';
+      });
+      container.innerHTML = html;
+    }
+
+    function ejecutarPagoMulta(fila) {
+      if (!confirm("¿Confirmar pago de esta multa?")) return;
+      mostrarLoading("Procesando pago...");
+      llamarGS("pagarMulta", [fila], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          mostrarNotificacion("Éxito", res.mensaje, "success");
+          state.estadisticasCache = null;
+          cargarMultas();
+          if (state.seccionActual === "bienvenida") actualizarEstadisticas();
+        } else {
+          mostrarNotificacion("Error", res.mensaje, "error");
+        }
+      });
+    }
+
+    function ejecutarEliminarMulta(fila) {
+      if (!confirm("¿Eliminar esta multa?")) return;
+      mostrarLoading("Eliminando...");
+      llamarGS("eliminarMulta", [fila], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          mostrarNotificacion("Éxito", res.mensaje, "success");
+          state.estadisticasCache = null;
+          cargarMultas();
+        } else {
+          mostrarNotificacion("Error", res.mensaje, "error");
+        }
+      });
+    }
+
+    function cargarLlamados() {
+      mostrarLoading("Cargando llamados...");
+      llamarGS("obtenerLlamados", [], function(data) {
+        ocultarLoading();
+        var tbody = document.getElementById("tablaLlamadosBody");
+        if (!data || !data.length) {
+          tbody.innerHTML = '<tr><td colspan="4" style="text-align:center">Sin llamados registrados</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(function(r) {
+          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td><td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td></tr>';
+        }).join("");
+      });
+    }
+
+    function ejecutarEliminarLlamado(fila) {
+      if (!confirm("¿Eliminar este llamado?")) return;
+      mostrarLoading("Eliminando...");
+      llamarGS("eliminarLlamado", [fila], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          mostrarNotificacion("Éxito", res.mensaje, "success");
+          cargarLlamados();
+        } else {
+          mostrarNotificacion("Error", res.mensaje, "error");
+        }
+      });
+    }
+
+    function procesarLlamado() {
+      var apt = document.getElementById("llamadoApto").value;
+      var desc = document.getElementById("llamadoDesc").value.trim();
+      if (!apt) { mostrarNotificacion("Error", "Selecciona un apartamento", "error"); return; }
+      mostrarLoading("Registrando llamado...");
+      llamarGS("registrarLlamado", [apt, desc], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          mostrarNotificacion("Éxito", res.mensaje, res.multaGenerada ? "warning" : "success");
+          cerrarModal("modalLlamado");
+          document.getElementById("llamadoDesc").value = "";
+          document.getElementById("llamadoCounterInfo").style.display = "none";
+          state.estadisticasCache = null;
+          if (state.seccionActual === "multas") cargarMultas();
+          if (state.seccionActual === "bienvenida") actualizarEstadisticas();
+        } else {
+          mostrarNotificacion("Error", res.mensaje, "error");
+        }
+      });
+    }
+
+    function actualizarContadorLlamados() {
+      var apt = document.getElementById("llamadoApto").value;
+      var info = document.getElementById("llamadoCounterInfo");
+      if (!apt) { info.style.display = "none"; return; }
+      llamarGS("obtenerContadorLlamadosMes", [], function(conteo) {
+        var count = conteo[apt] || 0;
+        if (count > 0) {
+          var color = count >= 3 ? "danger" : "warning";
+          info.className = "llamado-counter " + color;
+          info.style.display = "inline-flex";
+          info.innerHTML = '<i class="fas fa-bell"></i> ' + count + '/3 llamados este mes' + (count >= 3 ? ' - <strong>MULTA GENERADA</strong>' : "");
+        } else {
+          info.style.display = "none";
+        }
+      });
+    }
+
+    // ============================================
     // INICIALIZACIÓN
     // ============================================
     function iniciarSplash() {
-      var titleEl = document.getElementById('splashTitle');
-      var barFill = document.getElementById('splashBarFill');
-      var subtitle = document.getElementById('splashSubtitle');
-      var text = 'Bienvenido a Claret Real VI';
-      var chars = text.split('');
+      var titleEl = document.getElementById("splashTitle");
+      var barFill = document.getElementById("splashBarFill");
+      var subtitle = document.getElementById("splashSubtitle");
+      var text = "Bienvenido a Claret Real VI";
+      var chars = text.split("");
       var totalChars = chars.length;
       var charIndex = 0;
       var splashDone = false;
 
+      // Iniciar precarga en background inmediatamente
       precargarEstadisticas();
 
       function typeNext() {
         if (charIndex < totalChars) {
-          var span = document.createElement('span');
-          span.className = 'char';
-          span.textContent = chars[charIndex] === ' ' ? '\u00A0' : chars[charIndex];
-          span.style.animationDelay = '0s';
+          var span = document.createElement("span");
+          span.className = "char";
+          span.textContent = chars[charIndex] === " " ? "\u00A0" : chars[charIndex];
           titleEl.appendChild(span);
           charIndex++;
-          var progress = Math.round((charIndex / totalChars) * 70);
-          barFill.style.width = progress + '%';
-          setTimeout(typeNext, 55);
+          var progress = Math.round((charIndex / totalChars) * 60);
+          barFill.style.width = progress + "%";
+          setTimeout(typeNext, 80);
         } else {
-          barFill.style.width = '85%';
-          subtitle.textContent = 'Preparando portal...';
+          // Texto terminado, esperar hasta completar ~5s total
+          barFill.style.width = "80%";
+          subtitle.textContent = "Preparando portal...";
           setTimeout(function() {
-            if (state.estadisticasCache !== null || !state.estadisticasCargando) {
-              cerrarSplash();
-            } else {
-              subtitle.textContent = 'Cargando datos...';
-              barFill.style.width = '92%';
-              state.estadisticasReadyCallback = function() {
-                cerrarSplash();
-              };
-              setTimeout(function() {
-                if (!splashDone) cerrarSplash();
-              }, 8000);
-            }
-          }, 400);
+            cerrarSplash();
+          }, 3000);
         }
       }
 
       function cerrarSplash() {
         if (splashDone) return;
         splashDone = true;
-        barFill.style.width = '100%';
-        subtitle.textContent = 'Listo';
+        barFill.style.width = "100%";
+        subtitle.textContent = "Listo";
         setTimeout(function() {
-          var splash = document.getElementById('splashScreen');
-          splash.classList.add('fade-out');
+          var splash = document.getElementById("splashScreen");
+          splash.classList.add("fade-out");
           setTimeout(function() {
-            splash.style.display = 'none';
+            splash.style.display = "none";
           }, 500);
         }, 300);
       }
 
+      // Iniciar después de una breve pausa
       setTimeout(typeNext, 400);
     }
 
@@ -2739,6 +3023,8 @@
       var fechaSol = document.getElementById('fechaSolicitud');
       if (fechaSol) fechaSol.min = new Date().toISOString().split('T')[0];
 
+      document.getElementById('llamadoApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
+      document.getElementById('llamadoApto').addEventListener('change', actualizarContadorLlamados);
       iniciarSplash();
     }
 
