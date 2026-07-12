@@ -1193,35 +1193,6 @@
           </div>
         </div>
 
-        <div style="margin-top: 28px;">
-          <h3 style="margin-bottom: 14px; color: #00838f; font-size: 15px;"><i class="fas fa-landmark"></i> Detalle Disponible Edificio</h3>
-          <div class="table-container">
-            <table class="table">
-              <thead><tr><th>Concepto</th><th style="text-align: right;">Valor</th></tr></thead>
-              <tbody id="tablaDisponibleBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div style="margin-top: 28px;">
-          <h3 style="margin-bottom: 14px; color: var(--primary-light); font-size: 15px;"><i class="fas fa-star"></i> Detalle Cuotas Extraordinarias</h3>
-          <div class="table-container">
-            <table class="table">
-              <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Valor Extraordinario</th></tr></thead>
-              <tbody id="tablaExtraordinariosBody"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div style="margin-top: 28px;">
-          <h3 style="margin-bottom: 14px; color: #e91e63; font-size: 15px;"><i class="fas fa-building"></i> Detalle Alquileres Salón Comunal</h3>
-          <div class="table-container">
-            <table class="table">
-              <thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Apartamento</th><th>Valor</th></tr></thead>
-              <tbody id="tablaAlquileresBody"></tbody>
-            </table>
-          </div>
-        </div>
       </div>
 
       <!-- Ingresos -->
@@ -1234,7 +1205,7 @@
           </div>
         </div>
         <div id="filtroInfoIngresos" class="filtro-activo hidden"><i class="fas fa-filter"></i><span id="textoFiltroIngresos"></span><button class="btn btn-sm btn-light" onclick="limpiarFiltro('ingresos')" style="margin-left: 10px;"><i class="fas fa-times"></i></button></div>
-        <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Descripción</th><th>Valor</th><th>Soporte</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaIngresosBody"></tbody></table></div>
+        <div class="table-container"><table class="table"><thead><tr><th>Fecha Ingreso</th><th>Tipo</th><th>Descripción</th><th>Valor</th><th>Soporte</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaIngresosBody"></tbody></table></div>
       </div>
 
       <!-- Egresos -->
@@ -2028,55 +1999,6 @@
           balanceChange.className = 'stat-change negative';
           balanceChange.innerHTML = '<i class="fas fa-arrow-down"></i><span>Negativo</span>';
         }
-
-        function obtenerMesSeguro(fechaStr) {
-          if (!fechaStr || typeof fechaStr !== 'string') return '';
-          var partes = fechaStr.split('/');
-          if (partes.length !== 3) return '';
-          var dia = parseInt(partes[0], 10);
-          var mes = parseInt(partes[1], 10);
-          var anio = parseInt(partes[2], 10);
-          if (isNaN(dia) || isNaN(mes) || isNaN(anio)) return '';
-          if (mes < 1 || mes > 12) return '';
-          if (anio < 2020 || anio > 2100) return '';
-          return dia + '/' + mes + '/' + anio;
-        }
-
-        var tbodyAlq = document.getElementById('tablaAlquileresBody');
-        var filasAlq = '';
-        (data.detalleAlquileres || []).forEach(function(item) {
-          if (!item || item.length < 4) return;
-          var descAlquiler = String(item[2] || '').replace(/Alquiler\s+de\s+/i, 'Alquiler ');
-          filasAlq += '<tr><td>' + obtenerMesSeguro(item[0]) + '</td><td>' + item[1] + '</td><td>' + descAlquiler + '</td><td><span class="badge badge-info">Apto ' + (item[4] || '-') + '</span></td><td style="color: #e91e63; font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td></tr>';
-        });
-        if (filasAlq) {
-          filasAlq += '<tr style="background: linear-gradient(135deg, #e91e63, #f06292); color: white; font-weight: bold;"><td colspan="4">TOTAL ALQUILERES</td><td>$' + alquileres.toLocaleString('es-CO') + '</td></tr>';
-          tbodyAlq.innerHTML = filasAlq;
-        } else {
-          tbodyAlq.innerHTML = '<tr><td colspan="5" style="text-align:center">Sin alquileres registrados</td></tr>';
-        }
-
-        var tbodyExt = document.getElementById('tablaExtraordinariosBody');
-        var filasExt = '';
-        (data.detalleExtraordinarios || []).forEach(function(item) {
-          if (!item || item.length < 4) return;
-          filasExt += '<tr><td>' + obtenerMesSeguro(item[0]) + '</td><td>' + item[1] + '</td><td>' + item[2] + '</td><td style="color: var(--primary-light); font-weight: 600;">$' + item[3].toLocaleString('es-CO') + '</td></tr>';
-        });
-        if (filasExt) {
-          filasExt += '<tr style="background: linear-gradient(135deg, var(--primary), var(--primary-mid)); color: white; font-weight: bold;"><td colspan="3">TOTAL EXTRAORDINARIOS</td><td>$' + extraordinarios.toLocaleString('es-CO') + '</td></tr>';
-          tbodyExt.innerHTML = filasExt;
-        } else {
-          tbodyExt.innerHTML = '<tr><td colspan="4" style="text-align:center">Sin cuotas extraordinarias registradas</td></tr>';
-        }
-
-        var tbodyDisp = document.getElementById('tablaDisponibleBody');
-        var filasDisp =
-          '<tr style="border-bottom: 2px solid #00838f;"><td style="font-weight: 600; color: var(--text);">Total Dinero Ingresado</td><td style="text-align: right; font-weight: 600;">$' + ingresos.toLocaleString('es-CO') + '</td></tr>' +
-          '<tr><td style="padding-left: 24px; color: var(--text-muted);">(-) Cuotas Extraordinarias</td><td style="text-align: right; color: var(--text-muted);">- $' + extraordinarios.toLocaleString('es-CO') + '</td></tr>' +
-          '<tr><td style="padding-left: 24px; color: var(--text-muted);">(-) Alquileres Salón / Sillas</td><td style="text-align: right; color: var(--text-muted);">- $' + alquileres.toLocaleString('es-CO') + '</td></tr>' +
-          '<tr style="border-bottom: 2px solid var(--danger);"><td style="padding-left: 24px; color: var(--danger); font-weight: 500;">(-) Total Egresos del Edificio</td><td style="text-align: right; color: var(--danger); font-weight: 500;">- $' + egresos.toLocaleString('es-CO') + '</td></tr>' +
-          '<tr style="background: linear-gradient(135deg, #00bcd4, #26c6da); color: white; font-weight: bold; font-size: 16px;"><td style="padding-left: 12px;">= DISPONIBLE EDIFICIO</td><td style="text-align: right;">$' + disponible.toLocaleString('es-CO') + '</td></tr>';
-        tbodyDisp.innerHTML = filasDisp;
         ocultarLoading();
       });
     }
@@ -2949,7 +2871,7 @@
           subtitle.textContent = "Preparando portal...";
           setTimeout(function() {
             cerrarSplash();
-          }, 8000);
+          }, 3000);
         }
       }
 
