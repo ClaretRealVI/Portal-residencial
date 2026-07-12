@@ -1879,10 +1879,8 @@
     // CARGA DE DATOS
     // ============================================
     function cargarDatosResidente() {
-      mostrarLoading('Cargando...');
       llamarGS('cargarDatosResidente', [state.apartamento], function(datos) {
         if (!datos || datos.status === 'error') {
-          ocultarLoading();
           mostrarNotificacion('Error', datos?.message || 'Error al cargar datos del residente', 'error');
           return;
         }
@@ -1918,7 +1916,6 @@
           document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
         }
 
-        ocultarLoading();
       });
     }
 
