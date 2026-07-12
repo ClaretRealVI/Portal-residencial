@@ -805,93 +805,8 @@
       .payment-banner-stat { text-align: left; }
       .stats-grid, .stats-grid-3 { grid-template-columns: 1fr 1fr; }
     }
-.balance-container {
-      margin-top: 20px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      overflow: hidden;
-      background: var(--bg-card);
-    }
-    .balance-mes {
-      text-align: center;
-      padding: 12px;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-primary);
-      background: var(--bg-secondary);
-      border-bottom: 1px solid var(--border);
-      text-transform: uppercase;
-      letter-spacing: 1px;
-    }
-    .balance-seccion { border-bottom: 1px solid var(--border); }
-    .balance-seccion-header {
-      padding: 10px 16px;
-      font-weight: 700;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      background: var(--bg-secondary);
-      color: var(--text-secondary);
-    }
-    .balance-seccion-header.ingresos { color: var(--success); }
-    .balance-seccion-header.egresos { color: var(--danger); }
-    .balance-seccion-header.saldo { color: var(--primary-light); }
-    .balance-table { width: 100%; border-collapse: collapse; }
-    .balance-table td {
-      padding: 8px 16px;
-      font-size: 13px;
-      border-bottom: 1px solid var(--border);
-    }
-    .balance-table tr:last-child td { border-bottom: none; }
-    .balance-table .balance-label {
-      color: var(--text-secondary);
-      padding-left: 32px;
-    }
-    .balance-table .balance-valor {
-      text-align: right;
-      font-weight: 600;
-      color: var(--text-primary);
-    }
-    .balance-table tr.balance-total td {
-      font-weight: 700;
-      padding-top: 10px;
-      padding-bottom: 10px;
-      border-top: 2px solid var(--border);
-      border-bottom: none;
-      background: var(--bg-secondary);
-    }
-    .balance-table tr.balance-total .balance-label {
-      color: var(--text-primary);
-      padding-left: 16px;
-    }
-    .balance-saldo-row td {
-      padding: 14px 16px;
-      font-size: 15px;
-      font-weight: 700;
-      border-bottom: 1px solid var(--border);
-    }
-    .balance-saldo-row .balance-valor { font-size: 15px; }
-    .balance-saldo-row.positive .balance-valor { color: var(--success); }
-    .balance-saldo-row.negative .balance-valor { color: var(--danger); }
-    .balance-disponible { border-top: 2px solid var(--border); }
-    .balance-disponible td { padding: 8px 16px; font-size: 13px; }
-    .balance-disponible .balance-label {
-      color: var(--text-secondary);
-      font-weight: 600;
-    }
-    .balance-disponible .balance-valor {
-      text-align: right;
-      font-weight: 700;
-    }
-    @media (max-width: 480px) {
-      .balance-table td { padding: 6px 10px; font-size: 12px; }
-      .balance-table .balance-label { padding-left: 20px; }
-      .balance-saldo-row td { font-size: 13px; padding: 10px; }
-      .balance-saldo-row .balance-valor { font-size: 13px; }
-    }
-
-    /* ============================================
-       YEAR OVERVIEW - BALANCE POR AÑOS
+        /* ============================================
+       YEAR OVERVIEW - CARDS DE AÑOS
        ============================================ */
     .year-cards-grid {
       display: grid;
@@ -938,52 +853,19 @@
       opacity: 0.7;
       font-weight: 500;
     }
-    .year-card.active {
-      outline: 3px solid var(--secondary);
-      outline-offset: 2px;
-    }
 
-    /* Annual Table */
-    .annual-container {
-      margin-top: 20px;
-      border: 1px solid var(--border);
-      border-radius: var(--radius-lg);
-      overflow: hidden;
-      background: var(--surface);
-      animation: fadeIn 0.3s ease;
-    }
-    .annual-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px 20px;
-      background: var(--bg);
-      border-bottom: 1px solid var(--border);
-    }
-    .annual-header-title {
-      font-size: 18px;
-      font-weight: 700;
-      color: var(--text);
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    .annual-header-title i {
-      color: var(--secondary);
-    }
-    .annual-header-year {
-      font-size: 14px;
-      color: var(--text-secondary);
-      font-weight: 500;
-    }
+    /* ============================================
+       MODAL BALANCE ANUAL
+       ============================================ */
+    #modalBalanceAnual .modal-content { max-width: 640px; }
     .annual-table {
       width: 100%;
       border-collapse: collapse;
     }
     .annual-table thead th {
-      padding: 12px 16px;
+      padding: 11px 16px;
       text-align: right;
-      font-size: 11px;
+      font-size: 10.5px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
@@ -991,22 +873,16 @@
       background: var(--bg);
       border-bottom: 2px solid var(--border);
     }
-    .annual-table thead th:first-child {
-      text-align: left;
-    }
+    .annual-table thead th:first-child { text-align: left; }
     .annual-month-row {
       cursor: pointer;
       transition: var(--transition);
       border-bottom: 1px solid var(--border-light);
     }
-    .annual-month-row:hover {
-      background: var(--bg);
-    }
-    .annual-month-row:active {
-      background: var(--border-light);
-    }
+    .annual-month-row:hover { background: var(--bg); }
+    .annual-month-row:active { background: var(--border-light); }
     .annual-month-row td {
-      padding: 14px 16px;
+      padding: 13px 16px;
       font-size: 13px;
       color: var(--text-secondary);
       text-align: right;
@@ -1017,27 +893,25 @@
       font-weight: 600;
       color: var(--text);
     }
-    .annual-month-row .month-value {
+    .annual-month-row .mv {
       font-weight: 600;
       font-family: 'Inter', monospace;
     }
-    .annual-month-row .month-value.positive { color: var(--success); }
-    .annual-month-row .month-value.negative { color: var(--danger); }
-    .annual-month-row .month-value.zero { color: var(--text-muted); }
-    .annual-month-row .month-extra { color: var(--primary-light); }
-    .annual-month-row .month-salon { color: #e91e63; }
+    .annual-month-row .mv.pos { color: var(--success); }
+    .annual-month-row .mv.neg { color: var(--danger); }
+    .annual-month-row .mv.zero { color: var(--text-muted); }
+    .annual-month-row .mv-ext { color: var(--primary-light); font-weight: 600; }
+    .annual-month-row .mv-sal { color: #e91e63; font-weight: 600; }
     .annual-total-row td {
-      padding: 14px 16px;
-      font-size: 14px;
+      padding: 13px 16px;
+      font-size: 13px;
       font-weight: 700;
       background: var(--bg);
       border-top: 2px solid var(--border);
       text-align: right;
       color: var(--text);
     }
-    .annual-total-row td:first-child {
-      text-align: left;
-    }
+    .annual-total-row td:first-child { text-align: left; }
     .annual-grand-total {
       display: flex;
       align-items: center;
@@ -1045,52 +919,159 @@
       padding: 16px 20px;
       background: linear-gradient(135deg, var(--primary), var(--primary-light));
       color: white;
+      border-radius: 0 0 var(--radius-xl) var(--radius-xl);
     }
-    .annual-grand-total .grand-label {
-      font-size: 14px;
+    .annual-grand-total .gt-label {
+      font-size: 13px;
       font-weight: 600;
       text-transform: uppercase;
       letter-spacing: 0.5px;
       opacity: 0.9;
     }
-    .annual-grand-total .grand-value {
+    .annual-grand-total .gt-value {
       font-size: 20px;
       font-weight: 700;
     }
 
-    /* Back button for annual table */
-    .annual-back-btn {
-      background: none;
+    /* ============================================
+       MODAL BALANCE MES - CARD DESIGN
+       ============================================ */
+    #modalBalanceMes .modal-content { max-width: 780px; }
+    #modalBalanceMes .modal-header {
+      text-align: center;
+      padding: 20px 22px;
+    }
+    #modalBalanceMes .modal-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      padding-right: 40px;
+    }
+    .bal-columns {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .bal-col-card {
       border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 6px 14px;
-      font-size: 12px;
-      cursor: pointer;
-      color: var(--text-secondary);
-      transition: var(--transition);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      background: var(--surface);
+    }
+    .bal-col-header {
+      padding: 10px 16px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .bal-col-header.ingresos-h {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+    }
+    .bal-col-header.egresos-h {
+      background: linear-gradient(135deg, #dc2626, #ef4444);
+      color: white;
+    }
+    .bal-col-row {
       display: flex;
+      justify-content: space-between;
       align-items: center;
-      gap: 6px;
-      font-family: inherit;
+      padding: 9px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-light);
     }
-    .annual-back-btn:hover {
-      border-color: var(--secondary);
-      color: var(--secondary);
+    .bal-col-row:last-child { border-bottom: none; }
+    .bal-col-row .bl { color: var(--text-secondary); font-weight: 400; }
+    .bal-col-row .bv { font-weight: 600; color: var(--text); text-align: right; }
+    .bal-col-row.total-row {
+      background: var(--bg);
+      border-top: 2px solid var(--border);
+      border-bottom: none;
+      margin-top: auto;
     }
+    .bal-col-row.total-row .bl { font-weight: 700; color: var(--text); }
+    .bal-col-row.total-row .bv { font-size: 14px; }
 
-    @media (max-width: 600px) {
+    /* Saldo & Disponible section */
+    .bal-bottom {
+      margin-top: 16px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+    .bal-saldo-card {
+      width: 100%;
+      max-width: 380px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      text-align: center;
+    }
+    .bal-saldo-card .saldo-label {
+      padding: 8px 16px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--bg);
+      color: var(--text-secondary);
+    }
+    .bal-saldo-card .saldo-value {
+      padding: 14px 16px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+    .bal-saldo-card .saldo-value.pos { color: var(--success); }
+    .bal-saldo-card .saldo-value.neg { color: var(--danger); }
+    .bal-disp-card {
+      width: 100%;
+      max-width: 380px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+    }
+    .bal-disp-card .disp-header {
+      padding: 8px 16px;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      background: var(--bg);
+      color: var(--text-secondary);
+      text-align: center;
+    }
+    .bal-disp-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 9px 16px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .bal-disp-row:last-child { border-bottom: none; }
+    .bal-disp-row .dl { color: var(--text-secondary); font-weight: 500; }
+    .bal-disp-row .dv { font-weight: 700; }
+
+    @media (max-width: 640px) {
       .year-cards-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
         gap: 8px;
       }
       .year-card { padding: 16px 12px; }
       .year-card .year-number { font-size: 26px; }
-      .annual-table thead th { padding: 10px 12px; font-size: 10px; }
-      .annual-month-row td { padding: 12px; font-size: 12px; }
-      .annual-total-row td { padding: 12px; font-size: 13px; }
-      .annual-grand-total .grand-value { font-size: 16px; }
+      .bal-columns { grid-template-columns: 1fr; }
+      #modalBalanceMes .modal-content { max-width: 460px; }
+      .annual-table thead th { padding: 9px 12px; font-size: 10px; }
+      .annual-month-row td { padding: 11px 12px; font-size: 12px; }
+      .annual-total-row td { padding: 11px 12px; font-size: 12px; }
+      .annual-grand-total .gt-value { font-size: 16px; }
+      .bal-saldo-card .saldo-value { font-size: 18px; }
     }
-  </style>
+
+    </style>
 </head>
 <body>
   <!-- Splash Screen -->
@@ -1473,8 +1454,6 @@
         </div>
 
         <div id="yearCardsContainer"></div>
-        <div id="annualTableContainer" class="hidden"></div>
-        <div id="balanceContainer" class="hidden"></div>
 
       </div>
 
@@ -1812,6 +1791,22 @@
     </div>
   </div>
 
+
+  <!-- Modal Balance Anual -->
+  <div id="modalBalanceAnual" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title" id="tituloModalAnual">Balance Anual</h3><button class="modal-close" onclick="cerrarModal('modalBalanceAnual')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body" id="bodyModalAnual" style="padding:0;"></div>
+    </div>
+  </div>
+
+  <!-- Modal Balance Mes -->
+  <div id="modalBalanceMes" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title" id="tituloModalMes">Balance</h3><button class="modal-close" onclick="cerrarModal('modalBalanceMes')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body" id="bodyModalMes"></div>
+    </div>
+  </div>
   <!-- Scripts -->
   <script>
     // ============================================
@@ -2418,49 +2413,24 @@
       });
       h += '</div>';
       container.innerHTML = h;
-
-      // Hide annual table and balance when showing year cards
-      document.getElementById('annualTableContainer').classList.add('hidden');
-      document.getElementById('balanceContainer').classList.add('hidden');
     }
 
     // ============================================
-    // TABLA ANUAL POR AÑO
+    // TABLA ANUAL POR AÑO (MODAL)
     // ============================================
     function mostrarTablaAnual(anio) {
-      var container = document.getElementById('annualTableContainer');
-      if (!container) return;
-      container.classList.remove('hidden');
-      document.getElementById('balanceContainer').classList.add('hidden');
-
       state.selectedYear = anio;
-
-      // Highlight active year card
-      var yearCards = document.querySelectorAll('.year-card');
-      yearCards.forEach(function(card) {
-        var num = parseInt(card.querySelector('.year-number').textContent, 10);
-        card.classList.toggle('active', num === anio);
-      });
-
+      document.getElementById('tituloModalAnual').innerHTML = '<i class="fas fa-calendar-alt" style="margin-right:8px;"></i> Balance Anual ' + anio;
       var meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
       var totalEdificio = 0, totalExtra = 0, totalSalon = 0;
-      var tieneDatos = false;
 
       function fmtCol(v) {
-        if (v === 0) return '<span class="month-value zero">$ 0</span>';
-        var cls = v > 0 ? 'positive' : 'negative';
-        return '<span class="month-value ' + cls + '">$ ' + Math.abs(v).toLocaleString('es-CO') + '</span>';
+        if (v === 0) return '<span class="mv zero">$ 0</span>';
+        var cls = v > 0 ? 'pos' : 'neg';
+        return '<span class="mv ' + cls + '">$ ' + Math.abs(v).toLocaleString('es-CO') + '</span>';
       }
 
-      var h = '<div class="annual-container">';
-      h += '<div class="annual-header">';
-      h += '<div class="annual-header-title"><i class="fas fa-calendar-alt"></i> Balance Anual</div>';
-      h += '<div style="display:flex;align-items:center;gap:10px;">';
-      h += '<span class="annual-header-year">' + anio + '</span>';
-      h += '<button class="annual-back-btn" onclick="volverAYears()"><i class="fas fa-arrow-left"></i> Años</button>';
-      h += '</div></div>';
-
-      h += '<table class="annual-table"><thead><tr>';
+      var h = '<table class="annual-table"><thead><tr>';
       h += '<th>MES</th><th>EDIFICIO</th><th>EXTRAORDINARIO</th><th>SALON COMUNAL</th>';
       h += '</tr></thead><tbody>';
 
@@ -2469,144 +2439,103 @@
         var ed = bal ? bal.saldoEdificio : 0;
         var ex = bal ? bal.totalExtraordinario : 0;
         var sa = bal ? bal.totalAlquileres : 0;
-
-        if (bal && (bal.totalIngresos > 0 || bal.totalEgresos > 0)) tieneDatos = true;
-
         totalEdificio += ed;
         totalExtra += ex;
         totalSalon += sa;
-
         h += '<tr class="annual-month-row" onclick="mostrarBalanceMes(' + m + ',' + anio + ')">';
         h += '<td>' + meses[m] + '</td>';
         h += '<td>' + fmtCol(ed) + '</td>';
-        h += '<td><span class="month-value month-extra">$ ' + ex.toLocaleString('es-CO') + '</span></td>';
-        h += '<td><span class="month-value month-salon">$ ' + sa.toLocaleString('es-CO') + '</span></td>';
+        h += '<td><span class="mv-ext">$ ' + ex.toLocaleString('es-CO') + '</span></td>';
+        h += '<td><span class="mv-sal">$ ' + sa.toLocaleString('es-CO') + '</span></td>';
         h += '</tr>';
       }
 
-      // TOTAL row
       h += '<tr class="annual-total-row">';
       h += '<td>TOTAL</td>';
       h += '<td>' + fmtCol(totalEdificio) + '</td>';
-      h += '<td><span class="month-value month-extra" style="font-weight:700">$ ' + totalExtra.toLocaleString('es-CO') + '</span></td>';
-      h += '<td><span class="month-value month-salon" style="font-weight:700">$ ' + totalSalon.toLocaleString('es-CO') + '</span></td>';
+      h += '<td><span class="mv-ext" style="font-weight:700">$ ' + totalExtra.toLocaleString('es-CO') + '</span></td>';
+      h += '<td><span class="mv-sal" style="font-weight:700">$ ' + totalSalon.toLocaleString('es-CO') + '</span></td>';
       h += '</tr>';
-
       h += '</tbody></table>';
 
-      // TOTAL GENERAL
       var granTotal = totalEdificio + totalExtra + totalSalon;
       h += '<div class="annual-grand-total">';
-      h += '<span class="grand-label">TOTAL GENERAL</span>';
-      h += '<span class="grand-value">$ ' + granTotal.toLocaleString('es-CO') + '</span>';
+      h += '<span class="gt-label">TOTAL GENERAL</span>';
+      h += '<span class="gt-value">$ ' + granTotal.toLocaleString('es-CO') + '</span>';
       h += '</div>';
 
-      h += '</div>';
-      container.innerHTML = h;
-
-      // Scroll to annual table
-      container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-
-    function volverAYears() {
-      document.getElementById('annualTableContainer').classList.add('hidden');
-      document.getElementById('balanceContainer').classList.add('hidden');
-      state.selectedYear = null;
-      state.selectedMonth = null;
-
-      var yearCards = document.querySelectorAll('.year-card');
-      yearCards.forEach(function(card) { card.classList.remove('active'); });
+      document.getElementById('bodyModalAnual').innerHTML = h;
+      abrirModal('modalBalanceAnual');
     }
 
     // ============================================
-    // BALANCE DETALLADO POR MES
+    // BALANCE DETALLADO POR MES (MODAL)
     // ============================================
     function mostrarBalanceMes(mesIdx, anio) {
       var bal = calcularBalanceMes(mesIdx, anio);
       if (!bal) return;
-      renderizarBalanceDesdeDatos(bal, mesIdx, anio);
-    }
-
-    function renderizarBalanceDesdeDatos(bal, mesIdx, anio) {
-      var container = document.getElementById('balanceContainer');
-      if (!container) return;
-
       var meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-      var nombreMes = meses[mesIdx];
+      document.getElementById('tituloModalMes').textContent = meses[mesIdx] + ' ' + anio;
 
       function fmt(v) {
-        return 'COP ' + Math.abs(v).toLocaleString('es-CO', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        return '$ ' + Math.abs(v).toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+      }
+      function colRow(label, valor, color) {
+        return '<div class="bal-col-row"><span class="bl">' + label + '</span><span class="bv"' + (color ? ' style="color:' + color + ';"' : '') + '>' + fmt(valor) + '</span></div>';
       }
 
-      function fila(tipo, valor) {
-        if (valor === 0) return '';
-        return '<tr><td class="balance-label">' + tipo + '</td><td class="balance-valor">' + fmt(valor) + '</td></tr>';
-      }
+      var h = '<div class="bal-columns">';
 
-      var h = '<div class="balance-container">';
-      h += '<div class="balance-mes" style="display:flex;align-items:center;justify-content:space-between;padding:12px 16px;">';
-      h += '<span>' + nombreMes + ' ' + anio + '</span>';
-      h += '<button class="annual-back-btn" onclick="volverAAnual()" style="background:rgba(255,255,255,0.15);border-color:rgba(255,255,255,0.2);color:white;font-size:11px;padding:4px 12px;"><i class="fas fa-arrow-left"></i> Anual</button>';
-      h += '</div>';
-
-      // INGRESOS
-      h += '<div class="balance-seccion">';
-      h += '<div class="balance-seccion-header ingresos">INGRESOS</div>';
-      h += '<table class="balance-table">';
-      h += fila('PAGO', bal.totalPago);
-      h += fila('EXTRAORDINARIO', bal.totalExtraordinario);
-      h += fila('MORA', bal.totalMora);
-      h += fila('MULTAS', bal.totalMultas);
-      h += fila('ALQUILERES', bal.totalAlquileres);
-      h += '<tr class="balance-total"><td class="balance-label">TOTAL INGRESOS</td><td class="balance-valor">' + fmt(bal.totalIngresos) + '</td></tr>';
-      h += '</table></div>';
-
-      // EGRESOS
-      h += '<div class="balance-seccion">';
-      h += '<div class="balance-seccion-header egresos">EGRESOS</div>';
-      h += '<table class="balance-table">';
+      // LEFT: EGRESOS
+      h += '<div class="bal-col-card">';
+      h += '<div class="bal-col-header egresos-h">EGRESOS</div>';
       var tiposOrden = ['SEGURIDAD', 'ASEO', 'INTERNET', 'SERVICIO AGUA', 'SERVICIO LUZ', 'INSUMOS ASEO', 'NOMINA', 'IMPUESTO GMF', 'OTROS'];
       tiposOrden.forEach(function(tipo) {
-        h += fila(tipo, bal.egresosPorTipo[tipo] || 0);
+        var v = bal.egresosPorTipo[tipo] || 0;
+        if (v > 0) h += colRow(tipo, v, '');
       });
       Object.keys(bal.egresosPorTipo).forEach(function(tipo) {
-        if (tiposOrden.indexOf(tipo) === -1) {
-          h += fila(tipo, bal.egresosPorTipo[tipo]);
+        if (tiposOrden.indexOf(tipo) === -1 && bal.egresosPorTipo[tipo] > 0) {
+          h += colRow(tipo, bal.egresosPorTipo[tipo], '');
         }
       });
-      h += '<tr class="balance-total"><td class="balance-label">TOTAL EGRESOS</td><td class="balance-valor">' + fmt(bal.totalEgresos) + '</td></tr>';
-      h += '</table></div>';
+      h += '<div class="bal-col-row total-row"><span class="bl">TOTAL EGRESOS</span><span class="bv" style="color:var(--danger);">' + fmt(bal.totalEgresos) + '</span></div>';
+      h += '</div>';
 
-      // SALDO
-      h += '<div class="balance-seccion">';
-      h += '<div class="balance-seccion-header saldo">SALDO</div>';
-      h += '<table class="balance-table">';
-      h += '<tr class="balance-saldo-row ' + (bal.saldoEdificio >= 0 ? 'positive' : 'negative') + '"><td class="balance-label">SALDO A MES DE ' + nombreMes + ' EDIFICIO</td><td class="balance-valor">' + fmt(bal.saldoEdificio) + '</td></tr>';
-      h += '</table></div>';
-
-      // DISPONIBLE POR FONDO
-      h += '<div class="balance-seccion balance-disponible">';
-      h += '<table class="balance-table">';
-      h += '<tr><td class="balance-label">EXTRAORDINARIO</td><td class="balance-valor" style="color: var(--primary-light);">' + fmt(bal.totalExtraordinario) + '</td></tr>';
-      h += '<tr><td class="balance-label">SALON SOCIAL</td><td class="balance-valor" style="color: #e91e63;">' + fmt(bal.totalAlquileres) + '</td></tr>';
-      h += '<tr><td class="balance-label" style="color: var(--text-primary); font-weight: 700;">EDIFICIO</td><td class="balance-valor" style="color: ' + (bal.saldoEdificio >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + fmt(bal.saldoEdificio) + '</td></tr>';
-      h += '</table></div>';
+      // RIGHT: INGRESOS
+      h += '<div class="bal-col-card">';
+      h += '<div class="bal-col-header ingresos-h">INGRESOS</div>';
+      if (bal.totalPago > 0) h += colRow('PAGO', bal.totalPago, '');
+      if (bal.totalExtraordinario > 0) h += colRow('EXTRAORDINARIO', bal.totalExtraordinario, 'var(--primary-light)');
+      if (bal.totalMora > 0) h += colRow('MORA', bal.totalMora, '#d97706');
+      if (bal.totalMultas > 0) h += colRow('MULTAS', bal.totalMultas, '#7c3aed');
+      if (bal.totalAlquileres > 0) h += colRow('ALQUILERES', bal.totalAlquileres, '#e91e63');
+      h += '<div class="bal-col-row total-row"><span class="bl">TOTAL INGRESOS</span><span class="bv" style="color:var(--success);">' + fmt(bal.totalIngresos) + '</span></div>';
+      h += '</div>';
 
       h += '</div>';
-      container.innerHTML = h;
-      container.classList.remove('hidden');
 
-      container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      // BOTTOM CENTERED: SALDO + DISPONIBLE
+      h += '<div class="bal-bottom">';
+      h += '<div class="bal-saldo-card">';
+      h += '<div class="saldo-label">SALDO EDIFICIO</div>';
+      h += '<div class="saldo-value ' + (bal.saldoEdificio >= 0 ? 'pos' : 'neg') + '">' + fmt(bal.saldoEdificio) + '</div>';
+      h += '</div>';
+
+      h += '<div class="bal-disp-card">';
+      h += '<div class="disp-header">DISPONIBLE POR FONDO</div>';
+      h += '<div class="bal-disp-row"><span class="dl">EXTRAORDINARIO</span><span class="dv" style="color:var(--primary-light);">' + fmt(bal.totalExtraordinario) + '</span></div>';
+      h += '<div class="bal-disp-row"><span class="dl">SALON SOCIAL</span><span class="dv" style="color:#e91e63;">' + fmt(bal.totalAlquileres) + '</span></div>';
+      h += '<div class="bal-disp-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;"><span class="dl" style="font-weight:700;color:var(--text);">EDIFICIO</span><span class="dv" style="font-size:16px;color:' + (bal.saldoEdificio >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + fmt(bal.saldoEdificio) + '</span></div>';
+      h += '</div>';
+
+      h += '</div>';
+
+      document.getElementById('bodyModalMes').innerHTML = h;
+      abrirModal('modalBalanceMes');
     }
 
-    function volverAAnual() {
-      document.getElementById('balanceContainer').classList.add('hidden');
-      if (state.selectedYear) {
-        mostrarTablaAnual(state.selectedYear);
-      }
-    }
-
-        function cargarIngresos() {
+    function cargarIngresos() {
       mostrarLoading('Cargando...');
       llamarGS('obtenerDatosingresos', [], function(data) {
         state.cache.ingresos = data;
