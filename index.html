@@ -1395,9 +1395,10 @@
           </div>
           <div class="stat-card danger">
             <div class="stat-header">
-              <div><div class="stat-title">Multas</div><div class="stat-value" id="multasPendientesCount">0</div></div>
+              <div><div class="stat-title">Multas Activas</div><div class="stat-value" id="multasPendientesCount">0</div></div>
               <div class="stat-icon danger"><i class="fas fa-gavel"></i></div>
             </div>
+            <div id="apartamentosConMultas" style="margin-top: 6px; font-size: 11.5px; color: var(--text-muted);"></div>
           </div>
         </div>
       </div>
@@ -2177,19 +2178,20 @@
       document.getElementById("apartmentsInArrears").textContent = (est.mora || []).length;
       document.getElementById("activeRequests").textContent = est.solicitudesActivas || 0;
       var multasPend = est.multasPendientes || [];
-      var multasToShow = state.esAdmin ? multasPend : multasPend.filter(function(m) { return m.apartamento === state.apartamento; });
-      document.getElementById("multasPendientesCount").textContent = multasToShow.length;
+      document.getElementById("multasPendientesCount").textContent = multasPend.length;
+      var aptosMultas = multasPend.map(function(m) { return m.apartamento; });
+      document.getElementById("apartamentosConMultas").innerHTML = aptosMultas.length ? "<strong>Aptos:</strong> " + aptosMultas.join(", ") : "<em>Ninguno</em>";
       var moraCount = (est.mora || []).length;
       var pendCount = (est.pendientes || []).length;
       document.getElementById("badgeMoraText").textContent = moraCount + " en mora";
       document.getElementById("badgePendientesText").textContent = pendCount + " pendientes";
+      var misMultas = multasPend.filter(function(m) { return m.apartamento === state.apartamento; });
       if (state.esAdmin) {
         document.getElementById("badgeMultasText").textContent = multasPend.length + " multas";
         document.getElementById("badgeMultas").style.display = multasPend.length > 0 ? "flex" : "none";
       } else {
-        var misMultas = multasPend.filter(function(m) { return m.apartamento === state.apartamento; });
-        document.getElementById("badgeMultasText").textContent = misMultas.length > 0 ? "Tienes multa" : "";
-        document.getElementById("badgeMultas").style.display = misMultas.length > 0 ? "flex" : "none";
+        document.getElementById("badgeMultasText").textContent = misMultas.length > 0 ? "Tienes multa" : (multasPend.length > 0 ? multasPend.length + " multas" : "");
+        document.getElementById("badgeMultas").style.display = multasPend.length > 0 ? "flex" : "none";
       }
       if (moraCount > 0) {
         document.getElementById("badgeMora").className = "topbar-badge danger";
@@ -3226,9 +3228,7 @@
 
     function cargarMultas() {
       mostrarLoading("Cargando multas...");
-      var funcion = state.esAdmin ? "obtenerMultas" : "obtenerMultasApartamento";
-      var params = state.esAdmin ? [] : [state.apartamento];
-      llamarGS(funcion, params, function(data) {
+      llamarGS("obtenerMultas", [], function(data) {
         ocultarLoading();
         renderizarMultas(data);
       });
@@ -3236,39 +3236,38 @@
 
     function renderizarMultas(multas) {
       var tbody = document.getElementById("tablaMultasBody");
-      var adminOnly = state.esAdmin ? "" : " hidden";
 
-      if (!multas || !multas.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin multas registradas</td></tr>';
+      var pendientes = (!multas || !multas.length) ? [] : multas.filter(function(m) { return m.estado === "Pendiente"; });
+
+      if (!pendientes.length) {
+        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin multas activas</td></tr>';
         if (document.getElementById("totalMultasPendientesCard")) document.getElementById("totalMultasPendientesCard").textContent = "0";
         if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$0";
         return;
       }
 
-      var pendientes = multas.filter(function(m) { return m.estado === "Pendiente"; });
       var totalValor = 0;
       pendientes.forEach(function(m) { totalValor += m.valor; });
 
       if (document.getElementById("totalMultasPendientesCard")) document.getElementById("totalMultasPendientesCard").textContent = pendientes.length;
       if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$" + totalValor.toLocaleString("es-CO");
 
-      tbody.innerHTML = multas.map(function(m) {
-        var isPendiente = m.estado === "Pendiente";
-        var badgeClass = isPendiente ? "badge-danger" : "badge-success";
+      tbody.innerHTML = pendientes.map(function(m) {
+        var esMia = m.apartamento === state.apartamento;
         var acciones = "";
-        if (isPendiente) {
+        if (esMia) {
           acciones = '<button class="btn btn-sm btn-success" onclick="ejecutarPagoMulta(' + m.fila + ')"><i class="fas fa-check"></i> Pagar</button>';
-          if (state.esAdmin) {
-            acciones += ' <button class="btn btn-sm btn-danger" onclick="ejecutarEliminarMulta(' + m.fila + ')"><i class="fas fa-trash"></i></button>';
-          }
+        }
+        if (state.esAdmin) {
+          acciones += (esMia ? ' ' : '') + '<button class="btn btn-sm btn-danger" onclick="ejecutarEliminarMulta(' + m.fila + ')"><i class="fas fa-trash"></i></button>';
         }
         return '<tr>' +
           '<td>' + m.fecha + '</td>' +
           '<td>' + m.apartamento + '</td>' +
           '<td>' + m.motivo + '</td>' +
           '<td style="font-weight:600; color:var(--danger);">$' + m.valor.toLocaleString("es-CO") + '</td>' +
-          '<td><span class="badge ' + badgeClass + '">' + m.estado + '</span></td>' +
-          '<td class="table-actions">' + acciones + '</td>' +
+          '<td><span class="badge badge-danger">Pendiente</span></td>' +
+          (acciones ? '<td class="table-actions">' + acciones + '</td>' : '<td></td>') +
         '</tr>';
       }).join("");
     }
