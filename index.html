@@ -1710,6 +1710,35 @@
     </div>
   </div>
 
+  <!-- Modal Pago Multa -->
+  <div id="modalPagoMulta" class="modal">
+    <div class="modal-content">
+      <div class="modal-header"><h3 class="modal-title">Pago de Multa</h3><button class="modal-close" onclick="cerrarModalPagoMulta()"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); margin-bottom: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="multaPagoApto">-</div></div>
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Motivo</div><div style="font-size: 13px; font-weight: 600;" id="multaPagoMotivo">-</div></div>
+          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600; color: var(--danger);" id="multaPagoValor">$0</div></div>
+        </div>
+        <div class="qr-container"><img src="https://i.imgur.com/G2pDQyY.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')"></div>
+        <div style="text-align: center; margin-top: 8px; color: var(--text-muted); font-size: 12px;"><i class="fas fa-download"></i> Click para descargar QR</div>
+        <div class="form-group" style="margin-top: 18px;">
+          <label class="form-label">Datos Transferencia</label>
+          <div style="background: var(--bg); padding: 16px; border-radius: var(--radius);">
+            <div style="margin-bottom: 8px;"><strong>Llave:</strong> 3214583531</div>
+            <div style="margin-bottom: 8px;"><strong>Tipo:</strong> Bre-B</div>
+            <div><strong>Titular:</strong> Administracion Edificio</div>
+          </div>
+        </div>
+        <div class="form-group" style="margin-top: 18px;"><label class="form-label">Comprobante de Pago</label><input type="file" id="comprobanteMulta" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="procesarPagoMulta()"><i class="fas fa-check"></i> Pagar Multa</button>
+        <button class="btn btn-light" onclick="cerrarModalPagoMulta()">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Pago Efectivo -->
   <div id="modalPagoEfectivo" class="modal">
     <div class="modal-content">
@@ -1831,7 +1860,8 @@
       cache: { ingresos: null, egresos: null, solicitudes: null, activos: null },
       resumenAllData: null,
       selectedYear: null,
-      selectedMonth: null
+      selectedMonth: null,
+      multaFilaPendiente: null
     };
 
     const APARTAMENTOS = ['201','202','203','204','301','302','303','304','401','402','403','404','501','502','503','504'];
@@ -3256,7 +3286,7 @@
         var esMia = String(m.apartamento) === String(state.apartamento);
         var acciones = "";
         if (esMia) {
-          acciones = '<button class="btn btn-sm btn-success" onclick="ejecutarPagoMulta(' + m.fila + ')"><i class="fas fa-check"></i> Pagar</button>';
+          acciones = '<button class="btn btn-sm btn-success" onclick="abrirModalPagoMulta(' + m.fila + ',\'' + m.apartamento + '\',' + '\'' + m.motivo.replace(/'/g, "\\'") + '\',' + m.valor + ')"><i class="fas fa-check"></i> Pagar</button>';
         }
         if (state.esAdmin) {
           acciones += (esMia ? ' ' : '') + '<button class="btn btn-sm btn-danger" onclick="ejecutarEliminarMulta(' + m.fila + ')"><i class="fas fa-trash"></i></button>';
@@ -3272,8 +3302,53 @@
       }).join("");
     }
 
-    function ejecutarPagoMulta(fila) {
-      if (!confirm("¿Confirmar pago de esta multa?")) return;
+    function abrirModalPagoMulta(fila, apto, motivo, valor) {
+      state.multaFilaPendiente = fila;
+      document.getElementById("multaPagoApto").textContent = apto;
+      document.getElementById("multaPagoMotivo").textContent = motivo;
+      document.getElementById("multaPagoValor").textContent = "$" + valor.toLocaleString("es-CO");
+      document.getElementById("comprobanteMulta").value = "";
+      abrirModal("modalPagoMulta");
+    }
+
+    function cerrarModalPagoMulta() {
+      cerrarModal("modalPagoMulta");
+      document.getElementById("comprobanteMulta").value = "";
+      state.multaFilaPendiente = null;
+    }
+
+    function procesarPagoMulta() {
+      var archivo = document.getElementById("comprobanteMulta").files[0];
+      if (!archivo) { mostrarNotificacion("Error", "Selecciona un comprobante", "error"); return; }
+      if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion("Error", "El archivo es muy grande. Máximo 5MB.", "error"); return; }
+
+      mostrarLoading("Procesando pago de multa...");
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64Data = e.target.result.split(",")[1];
+        llamarGS("pagarMultaConSoporte", [{
+          fila: state.multaFilaPendiente,
+          nombreArchivo: archivo.name,
+          base64: base64Data,
+          mimeType: archivo.type
+        }], function(res) {
+          ocultarLoading();
+          cerrarModalPagoMulta();
+          if (res.ok) {
+            mostrarNotificacion("Éxito", res.mensaje, "success");
+            state.estadisticasCache = null;
+            cargarMultas();
+            if (state.seccionActual === "bienvenida") actualizarEstadisticas();
+          } else {
+            mostrarNotificacion("Error", res.mensaje, "error");
+          }
+        });
+      };
+      reader.readAsDataURL(archivo);
+    }
+
+    function ejecutarPagoMultaAdmin(fila) {
+      if (!confirm("¿Confirmar pago de esta multa sin soporte?")) return;
       mostrarLoading("Procesando pago...");
       llamarGS("pagarMulta", [fila], function(res) {
         ocultarLoading();
@@ -3403,7 +3478,7 @@
           subtitle.textContent = "Preparando portal...";
           setTimeout(function() {
             cerrarSplash();
-          }, 9000);
+          }, 3000);
         }
       }
 
