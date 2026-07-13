@@ -3253,7 +3253,7 @@
       if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$" + totalValor.toLocaleString("es-CO");
 
       tbody.innerHTML = pendientes.map(function(m) {
-        var esMia = m.apartamento === state.apartamento;
+        var esMia = String(m.apartamento) === String(state.apartamento);
         var acciones = "";
         if (esMia) {
           acciones = '<button class="btn btn-sm btn-success" onclick="ejecutarPagoMulta(' + m.fila + ')"><i class="fas fa-check"></i> Pagar</button>';
@@ -3403,7 +3403,7 @@
           subtitle.textContent = "Preparando portal...";
           setTimeout(function() {
             cerrarSplash();
-          }, 3000);
+          }, 9000);
         }
       }
 
