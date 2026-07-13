@@ -511,7 +511,7 @@
     .modal-content {
       background: var(--surface); border-radius: var(--radius-xl);
       box-shadow: 0 20px 60px rgba(0,0,0,0.15);
-      width: 100%; max-width: 560px; max-height: 85vh;
+      width: calc(100vw - 32px); max-width: 560px; max-height: 85vh;
       overflow: hidden; display: flex; flex-direction: column;
       animation: fadeInScale 0.25s ease;
     }
@@ -804,6 +804,7 @@
       .payment-banner-divider { display: none; }
       .payment-banner-stat { text-align: left; }
       .stats-grid, .stats-grid-3 { grid-template-columns: 1fr 1fr; }
+      .modal-info-grid-4, .modal-info-grid-3 { grid-template-columns: 1fr 1fr; }
     }
         /* ============================================
        YEAR OVERVIEW - CARDS DE AÑOS
@@ -901,7 +902,7 @@
     .annual-month-row .mv.neg { color: var(--danger); }
     .annual-month-row .mv.zero { color: var(--text-muted); }
     .annual-month-row .mv-ext { color: var(--primary-light); font-weight: 600; }
-    .annual-month-row .mv-sal { color: #e91e63; font-weight: 600; }
+    .annual-month-row .mv-sal { color: #2563eb; font-weight: 600; }
     .annual-total-row td {
       padding: 13px 16px;
       font-size: 13px;
@@ -1055,6 +1056,18 @@
     .bal-disp-row .dl { color: var(--text-secondary); font-weight: 500; }
     .bal-disp-row .dv { font-weight: 700; }
 
+    .modal-info-grid {
+      display: grid; gap: 10px; margin-bottom: 18px;
+      background: var(--bg); padding: 16px; border-radius: var(--radius);
+    }
+    .modal-info-grid > div { text-align: center; }
+    .modal-info-grid > div > div:first-child {
+      font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;
+    }
+    .modal-info-grid > div > div:last-child { font-size: 14px; font-weight: 600; }
+    .modal-info-grid-4 { grid-template-columns: repeat(4, 1fr); }
+    .modal-info-grid-3 { grid-template-columns: repeat(3, 1fr); }
+
     @media (max-width: 640px) {
       .year-cards-grid {
         grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
@@ -1069,6 +1082,8 @@
       .annual-total-row td { padding: 11px 12px; font-size: 12px; }
       .annual-grand-total .gt-value { font-size: 16px; }
       .bal-saldo-card .saldo-value { font-size: 18px; }
+      .modal-info-grid-4 { grid-template-columns: repeat(2, 1fr); }
+      .modal-info-grid-3 { grid-template-columns: repeat(2, 1fr); }
     }
 
     </style>
@@ -1140,7 +1155,7 @@
         </div>
         <div class="rule-item">
           <div class="rule-icon warning-icon"><i class="fas fa-volume-mute"></i></div>
-          <div class="rule-content"><h4>Ruidos y Tranquilidad</h4><p>Se debe mantener silencio y respetar la tranquilidad de los vecinos después de las <strong>10:00 PM</strong>. Queda prohibido el ruido excesivo a despues de la hora indicada.</p></div>
+          <div class="rule-content"><h4>Ruidos y Tranquilidad</h4><p>Se debe mantener silencio y respetar la tranquilidad de los vecinos después de las <strong>10:00 PM</strong>. Queda prohibido el ruido excesivo a cualquier hora.</p></div>
         </div>
         <div class="rule-item">
           <div class="rule-icon success-icon"><i class="fas fa-car"></i></div>
@@ -1431,12 +1446,12 @@
             </div>
             <div class="stat-change" style="color: var(--primary-light);"><i class="fas fa-coins"></i><span>Cuotas especiales</span></div>
           </div>
-          <div class="stat-card" style="border-left-color: #e91e63;">
+          <div class="stat-card" style="border-left-color: #2563eb;">
             <div class="stat-header">
               <div><div class="stat-title">ALQUILER SALÓN</div><div class="stat-value" id="alquileresTotal">$0</div></div>
-              <div class="stat-icon" style="background: linear-gradient(135deg, #e91e63, #f06292);"><i class="fas fa-building"></i></div>
+              <div class="stat-icon" style="background: linear-gradient(135deg, #2563eb, #60a5fa);"><i class="fas fa-building"></i></div>
             </div>
-            <div class="stat-change" style="color: #e91e63;"><i class="fas fa-calendar-check"></i><span>Alquileres de zonas</span></div>
+            <div class="stat-change" style="color: #2563eb;"><i class="fas fa-calendar-check"></i><span>Alquileres de zonas</span></div>
           </div>
           <div class="stat-card" style="border-left-color: #00bcd4;">
             <div class="stat-header">
@@ -1685,7 +1700,7 @@
     <div class="modal-content">
       <div class="modal-header"><h3 class="modal-title">Pago Digital</h3><button class="modal-close" onclick="cerrarModalPago()"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
-        <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); margin-bottom: 18px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;">
+        <div class="modal-info-grid modal-info-grid-4">
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Mes</div><div style="font-size: 14px; font-weight: 600;" id="paymentMonth">-</div></div>
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="paymentApartment">-</div></div>
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600;" id="paymentValue">$0</div></div>
@@ -1715,7 +1730,7 @@
     <div class="modal-content">
       <div class="modal-header"><h3 class="modal-title">Pago de Multa</h3><button class="modal-close" onclick="cerrarModalPagoMulta()"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
-        <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); margin-bottom: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div class="modal-info-grid modal-info-grid-3">
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="multaPagoApto">-</div></div>
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Motivo</div><div style="font-size: 13px; font-weight: 600;" id="multaPagoMotivo">-</div></div>
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600; color: var(--danger);" id="multaPagoValor">$0</div></div>
@@ -1789,7 +1804,7 @@
       <div class="modal-body">
         <div class="form-group"><label class="form-label">Zona</label><select id="rentalZone" class="form-control" onchange="actualizarValorAlquiler()"><option value="">Selecciona</option><option value="Salón Comunal">Salón Comunal</option><option value="Zona de BBQ">Zona de BBQ</option><option value="Sillas">Sillas ($2.000 c/u)</option></select></div>
         <div class="form-group hidden" id="groupCantidadSillas"><label class="form-label">Cantidad (Máx 20)</label><input type="number" id="cantidadSillas" class="form-control" min="1" max="20" value="1" oninput="actualizarValorAlquiler()"></div>
-        <div style="background: var(--bg); padding: 16px; border-radius: var(--radius); margin-bottom: 18px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
+        <div class="modal-info-grid modal-info-grid-3">
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Zona</div><div style="font-size: 14px; font-weight: 600;" id="paymentZone">-</div></div>
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="rentalApartment">-</div></div>
           <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600;" id="rentalValue">$0</div></div>
@@ -2542,7 +2557,7 @@
       if (bal.totalExtraordinario > 0) h += colRow('EXTRAORDINARIO', bal.totalExtraordinario, 'var(--primary-light)');
       if (bal.totalMora > 0) h += colRow('MORA', bal.totalMora, '#d97706');
       if (bal.totalMultas > 0) h += colRow('MULTAS', bal.totalMultas, '#7c3aed');
-      if (bal.totalAlquileres > 0) h += colRow('ALQUILERES', bal.totalAlquileres, '#e91e63');
+      if (bal.totalAlquileres > 0) h += colRow('ALQUILERES', bal.totalAlquileres, '#2563eb');
       h += '<div class="bal-col-row total-row"><span class="bl">TOTAL INGRESOS</span><span class="bv" style="color:var(--success);">' + fmt(bal.totalIngresos) + '</span></div>';
       h += '</div>';
 
@@ -2558,7 +2573,7 @@
       h += '<div class="bal-disp-card">';
       h += '<div class="disp-header">DISPONIBLE POR FONDO</div>';
       h += '<div class="bal-disp-row"><span class="dl">EXTRAORDINARIO</span><span class="dv" style="color:var(--primary-light);">' + fmt(bal.totalExtraordinario) + '</span></div>';
-      h += '<div class="bal-disp-row"><span class="dl">SALON SOCIAL</span><span class="dv" style="color:#e91e63;">' + fmt(bal.totalAlquileres) + '</span></div>';
+      h += '<div class="bal-disp-row"><span class="dl">SALON SOCIAL</span><span class="dv" style="color:#2563eb;">' + fmt(bal.totalAlquileres) + '</span></div>';
       h += '<div class="bal-disp-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;"><span class="dl" style="font-weight:700;color:var(--text);">EDIFICIO</span><span class="dv" style="font-size:16px;color:' + (bal.saldoEdificio >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + fmt(bal.saldoEdificio) + '</span></div>';
       h += '</div>';
 
@@ -3479,7 +3494,7 @@
           subtitle.textContent = "Preparando portal...";
           setTimeout(function() {
             cerrarSplash();
-          }, 9000);
+          }, 3000);
         }
       }
 
