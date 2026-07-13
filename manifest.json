@@ -1,0 +1,28 @@
+{
+  "name": "Claret Real VI - Portal de Gestión",
+  "short_name": "Claret Real VI",
+  "description": "Portal de gestión del Conjunto Residencial Claret Real VI",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#0f172a",
+  "orientation": "portrait-primary",
+  "scope": "./",
+  "icons": [
+    {
+      "src": "https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "productivity"],
+  "lang": "es",
+  "dir": "ltr"
+}
