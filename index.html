@@ -1140,7 +1140,7 @@
         </div>
         <div class="rule-item">
           <div class="rule-icon warning-icon"><i class="fas fa-volume-mute"></i></div>
-          <div class="rule-content"><h4>Ruidos y Tranquilidad</h4><p>Se debe mantener silencio y respetar la tranquilidad de los vecinos después de las <strong>10:00 PM</strong>. Queda prohibido el ruido excesivo despues de la hora indicada.</p></div>
+          <div class="rule-content"><h4>Ruidos y Tranquilidad</h4><p>Se debe mantener silencio y respetar la tranquilidad de los vecinos después de las <strong>10:00 PM</strong>. Queda prohibido el ruido excesivo a despues de la hora indicada.</p></div>
         </div>
         <div class="rule-item">
           <div class="rule-icon success-icon"><i class="fas fa-car"></i></div>
@@ -2459,7 +2459,8 @@
       function fmtCol(v) {
         if (v === 0) return '<span class="mv zero">$ 0</span>';
         var cls = v > 0 ? 'pos' : 'neg';
-        return '<span class="mv ' + cls + '">$ ' + Math.abs(v).toLocaleString('es-CO') + '</span>';
+        var sign = v < 0 ? '-$ ' : '$ ';
+        return '<span class="mv ' + cls + '">' + sign + Math.abs(v).toLocaleString('es-CO') + '</span>';
       }
 
       var h = '<table class="annual-table"><thead><tr>';
@@ -2493,7 +2494,7 @@
       var granTotal = totalEdificio + totalExtra + totalSalon;
       h += '<div class="annual-grand-total">';
       h += '<span class="gt-label">TOTAL GENERAL</span>';
-      h += '<span class="gt-value">$ ' + granTotal.toLocaleString('es-CO') + '</span>';
+      h += '<span class="gt-value" style="color:' + (granTotal < 0 ? 'var(--danger)' : 'var(--success)') + ';">' + (granTotal < 0 ? '-$ ' : '$ ') + Math.abs(granTotal).toLocaleString('es-CO') + '</span>';
       h += '</div>';
 
       document.getElementById('bodyModalAnual').innerHTML = h;
@@ -2510,7 +2511,7 @@
       document.getElementById('tituloModalMes').textContent = meses[mesIdx] + ' ' + anio;
 
       function fmt(v) {
-        return '$ ' + Math.abs(v).toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0});
+        return (v < 0 ? '-$ ' : '$ ') + Math.abs(v).toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0});
       }
       function colRow(label, valor, color) {
         return '<div class="bal-col-row"><span class="bl">' + label + '</span><span class="bv"' + (color ? ' style="color:' + color + ';"' : '') + '>' + fmt(valor) + '</span></div>';
