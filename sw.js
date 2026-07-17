@@ -2,12 +2,12 @@
 // SERVICE WORKER - Claret Real VI
 // ============================================
 
-const CACHE_NAME = 'claret-real-v3';
+const CACHE_NAME = 'claret-real-v4';
 const CACHE_ASSETS = [
   './',
   'https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap',
   'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-  'https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png',
+  'https://i.imgur.com/svn8kaR.png',
   'https://i.imgur.com/G2pDQyY.jpeg'
 ];
 
