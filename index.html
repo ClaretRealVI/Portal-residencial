@@ -1549,6 +1549,7 @@
         <div class="card-header">
           <h2 class="card-title"><i class="fas fa-gavel"></i> Multas y Llamados</h2>
           <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalLlamado')"><i class="fas fa-plus"></i> Registrar Llamado</button>
+          <button class="btn btn-sm btn-danger admin-only" onclick="abrirModalMultaDirecta()"><i class="fas fa-gavel"></i> Multa Directa</button>
         </div>
 
         <div class="section-tabs">
@@ -1607,6 +1608,41 @@
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="procesarLlamado()"><i class="fas fa-bell"></i> Registrar</button>
         <button class="btn btn-light" onclick="cerrarModal('modalLlamado')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+  <!-- Modal Crear Multa Directa -->
+  <div id="modalMultaDirecta" class="modal">
+    <div class="modal-content">
+      <div class="modal-header" style="background: linear-gradient(135deg, #dc2626, #ef4444);">
+        <h3 class="modal-title"><i class="fas fa-gavel" style="margin-right: 8px;"></i>Crear Multa Directa</h3>
+        <button class="modal-close" onclick="cerrarModal('modalMultaDirecta')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="background: rgba(220,38,38,0.05); border: 1px solid rgba(220,38,38,0.15); border-radius: 10px; padding: 14px 16px; margin-bottom: 20px;">
+          <p style="margin: 0; font-size: 12.5px; color: #64748b; line-height: 1.5;">
+            <i class="fas fa-info-circle" style="color: #dc2626; margin-right: 6px;"></i>
+            Al crear esta multa se enviará una notificación por correo al propietario del apartamento informándole que debe pagar en la sección <strong>Multas</strong> del portal.
+          </p>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apartamento <span style="color: var(--danger);">*</span></label>
+          <select id="multaDirectaApto" class="form-control" required>
+            <option value="">Seleccione un apartamento</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Motivo de la multa <span style="color: var(--danger);">*</span></label>
+          <textarea id="multaDirectaMotivo" class="form-control" rows="3" placeholder="Ej: Ruido excesivo después de las 10:00 PM" required></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor de la multa (COP) <span style="color: var(--danger);">*</span></label>
+          <input type="text" id="multaDirectaValor" class="form-control currency-input" placeholder="$30.000" required>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-danger" onclick="crearMultaDirecta()"><i class="fas fa-gavel"></i> Crear Multa y Notificar</button>
+        <button class="btn btn-light" onclick="cerrarModal('modalMultaDirecta')">Cancelar</button>
       </div>
     </div>
   </div>
@@ -3464,6 +3500,49 @@
           info.innerHTML = '<i class="fas fa-bell"></i> ' + count + '/3 llamados este mes' + (count >= 3 ? ' - <strong>MULTA GENERADA</strong>' : "");
         } else {
           info.style.display = "none";
+        }
+      });
+    }
+
+
+    // ============================================
+    // MULTA DIRECTA
+    // ============================================
+    function abrirModalMultaDirecta() {
+      var sel = document.getElementById('multaDirectaApto');
+      sel.innerHTML = '<option value="">Seleccione un apartamento</option>' + APARTAMENTOS.map(function(a) {
+        return '<option value="' + a + '">' + a + '</option>';
+      }).join('');
+      document.getElementById('multaDirectaValor').value = '$30.000';
+      document.getElementById('multaDirectaMotivo').value = '';
+      abrirModal('modalMultaDirecta');
+    }
+
+    function crearMultaDirecta() {
+      var apto = document.getElementById('multaDirectaApto').value;
+      var motivo = document.getElementById('multaDirectaMotivo').value.trim();
+      var valorStr = document.getElementById('multaDirectaValor').value.replace(/\D/g, '');
+      var valor = parseInt(valorStr) || 0;
+
+      if (!apto) { mostrarNotificacion('Error', 'Seleccione un apartamento', 'error'); return; }
+      if (!motivo) { mostrarNotificacion('Error', 'Ingrese el motivo de la multa', 'error'); return; }
+      if (valor <= 0) { mostrarNotificacion('Error', 'Ingrese un valor válido', 'error'); return; }
+
+      if (!confirm('¿Crear multa de $' + valor.toLocaleString('es-CO') + ' para Apto ' + apto + '?\n\nSe enviará notificación por correo al propietario.')) return;
+
+      mostrarLoading('Creando multa y enviando notificación...');
+
+      llamarGS('crearMultaDirecta', [apto, motivo, valor], function(res) {
+        ocultarLoading();
+        cerrarModal('modalMultaDirecta');
+
+        if (res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje + ' (Correo enviado al propietario)', 'success');
+          state.estadisticasCache = null;
+          cargarMultas();
+          if (state.seccionActual === 'bienvenida') actualizarEstadisticas();
+        } else {
+          mostrarNotificacion('Error', res.mensaje, 'error');
         }
       });
     }
