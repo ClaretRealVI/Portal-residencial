@@ -2,18 +2,23 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Portal de Gestión Conjunto Residencial</title>
-  <link rel="icon" type="image/png" href="https://i.imgur.com/svn8kaR.png">
-  <link rel="manifest" id="manifestLink">
+
+  <!-- PWA -->
+  <link rel="icon" type="image/png" href="icons/icon-192.png">
+  <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Claret Real VI">
-  <link rel="apple-touch-icon" href="https://i.imgur.com/svn8kaR.png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+
   <style>
     :root {
       --primary: #0f172a;
@@ -3604,42 +3609,17 @@
 
 
     document.addEventListener('DOMContentLoaded', inicializar);
-    // ============================================
-    // PWA - MANIFEST + SERVICE WORKER
-    // ============================================
-    (function() {
-      // Manifest inline como Blob URL
-      var manifest = {
-        name: "Claret Real VI - Portal de Gesti\xc3\xb3n",
-        short_name: "Claret Real VI",
-        description: "Portal de gesti\xc3\xb3n del Conjunto Residencial Claret Real VI",
-        start_url: location.href.split("?")[0],
-        display: "standalone",
-        background_color: "#f8fafc",
-        theme_color: "#0f172a",
-        orientation: "portrait-primary",
-        scope: location.href.substring(0, location.href.lastIndexOf("/") + 1),
-        icons: [
-          { src: "https://i.imgur.com/26IcShs.png", sizes: "192x192", type: "image/png", purpose: "any maskable" },
-          { src: "https://i.imgur.com/UtMM3XA.png", sizes: "512x512", type: "image/png", purpose: "any maskable" }
-        ],
-        categories: ["business", "productivity"],
-        lang: "es", dir: "ltr"
-      };
-      var blob = new Blob([JSON.stringify(manifest)], { type: "application/json" });
-      var manifestURL = URL.createObjectURL(blob);
-      var link = document.getElementById("manifestLink");
-      if (link) link.href = manifestURL;
 
-      // Service Worker
-      if ("serviceWorker" in navigator) {
-        var swURL = location.href.split("?")[0] + "?file=sw";
-        navigator.serviceWorker.register(swURL, { scope: location.href.substring(0, location.href.lastIndexOf("/") + 1) }).then(function(reg) {
-          console.log("SW registrado:", reg.scope);
-        }).catch(function(err) {
-          console.log("SW no disponible (normal en GAS sin handler):", err.message);
+    // ── Registrar Service Worker ──
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(function(reg) {
+          console.log('✅ SW registrado:', reg.scope);
+        })
+        .catch(function(err) {
+          console.warn('⚠️ SW error:', err.message);
         });
-      }
+    }
     })();
   </script>
 </body>
