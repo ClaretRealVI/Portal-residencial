@@ -2067,7 +2067,10 @@
 
       // Hide payment banner for residents if not needed (we keep it)
       closeSidebar();
-      cargarDatosResidente();
+      mostrarLoading('Cargando datos del apartamento...');
+      cargarDatosResidente(function() {
+        ocultarLoading();
+      });
       if (state.estadisticasCargando && !state.estadisticasCache) {
         mostrarLoading('Cargando datos...');
         state.estadisticasReadyCallback = function() {
@@ -2212,27 +2215,29 @@
     // ============================================
     // CARGA DE DATOS
     // ============================================
-    function cargarDatosResidente() {
+    function cargarDatosResidente(callback) {
       llamarGS('cargarDatosResidente', [state.apartamento], function(datos) {
         if (!datos || datos.status === 'error') {
+          ocultarLoading();
           mostrarNotificacion('Error', datos?.message || 'Error al cargar datos del residente', 'error');
+          if (callback) callback();
           return;
         }
         document.getElementById('currentMonth').textContent = datos.mesActual || '-';
         document.getElementById('paymentAmount').textContent = datos.valorPago ? '$' + datos.valorPago.toLocaleString('es-CO') : '$0';
         document.getElementById('userApartment').textContent = state.apartamento;
         document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-');
-
+    
         var breakdown = document.getElementById('paymentBreakdown');
         if (datos.cuotaExtraordinaria > 0) {
           breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin) + $' + datos.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)';
         } else {
           breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin)';
         }
-
+    
         var paymentSection = document.getElementById('paymentSection');
         var badgePagoText = document.getElementById('badgePagoText');
-
+    
         if (datos.pagado) {
           document.getElementById('paymentState').innerHTML = '<span class="badge" style="background:#059669;color:white;">Pagado</span>';
           paymentSection.classList.add('payment-banner-paid');
@@ -2249,7 +2254,8 @@
           badgePagoText.textContent = 'Pago pendiente';
           document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
         }
-
+    
+        if (callback) callback();
       });
     }
 
