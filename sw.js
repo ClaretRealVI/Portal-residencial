@@ -2,7 +2,7 @@
 // SERVICE WORKER - Claret Real VI
 // ============================================
 
-const CACHE_NAME = "claret-real-v7";
+const CACHE_NAME = "claret-real-v8";
 
 const CACHE_ASSETS = [
     "./"
