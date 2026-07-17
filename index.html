@@ -1628,10 +1628,6 @@
           <label class="form-label">Motivo de la multa</label>
           <input type="text" id="multaDirectaMotivo" class="form-control" placeholder="Ej: Ruido excesivo después de las 10pm">
         </div>
-        <div class="form-group">
-          <label class="form-label">Valor de la multa</label>
-          <input type="number" id="multaDirectaValor" class="form-control" placeholder="Ej: 50000" min="0">
-        </div>
       </div>
       <div class="modal-footer">
         <button class="btn btn-danger" onclick="procesarMultaDirecta()"><i class="fas fa-gavel"></i> Registrar Multa</button>
@@ -3600,6 +3596,7 @@
       var fechaSol = document.getElementById('fechaSolicitud');
       if (fechaSol) fechaSol.min = new Date().toISOString().split('T')[0];
 
+      document.getElementById('llamadoApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('multaDirectaApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('llamadoApto').addEventListener('change', actualizarContadorLlamados);
       iniciarSplash();
