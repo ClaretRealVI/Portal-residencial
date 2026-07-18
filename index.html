@@ -1096,7 +1096,62 @@
       .modal-info-grid-4 { grid-template-columns: repeat(2, 1fr); }
       .modal-info-grid-3 { grid-template-columns: repeat(2, 1fr); }
     }
+    .soporte-thumb {
+      width: 40px; height: 40px; object-fit: cover;
+      border-radius: 6px; border: 1px solid var(--border);
+      cursor: pointer; transition: var(--transition);
+    }
+    .soporte-thumb:hover { transform: scale(1.1); box-shadow: var(--shadow-md); }
 
+    .soportes-grid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: 12px; margin-top: 12px;
+    }
+    .soporte-card {
+      text-align: center; background: var(--bg);
+      border-radius: var(--radius); padding: 12px;
+      border: 1px solid var(--border);
+    }
+    .soporte-card img {
+      width: 100%; height: 140px; object-fit: cover;
+      border-radius: 6px; margin-bottom: 8px; cursor: pointer;
+    }
+    .soporte-card img:hover { opacity: 0.85; }
+    .soporte-card p {
+      font-size: 11px; color: var(--text-secondary);
+      margin: 0; line-height: 1.4;
+    }
+    .soporte-card .soporte-date {
+      font-weight: 600; color: var(--text); font-size: 12px;
+      margin-bottom: 2px;
+    }
+
+    .acta-detalle-section {
+      margin-bottom: 16px;
+    }
+    .acta-detalle-section h4 {
+      font-size: 11px; text-transform: uppercase;
+      color: var(--text-muted); letter-spacing: 0.5px;
+      margin-bottom: 6px; font-weight: 600;
+    }
+    .acta-detalle-section p {
+      font-size: 14px; color: var(--text);
+      line-height: 1.6; white-space: pre-wrap;
+    }
+    .soporte-badge {
+      display: inline-flex; align-items: center; gap: 4px;
+      padding: 3px 10px; border-radius: 12px;
+      font-size: 11px; font-weight: 500;
+      background: rgba(5,150,105,0.08); color: var(--secondary);
+    }
+    .sin-soporte {
+      font-size: 12px; color: var(--text-muted); font-style: italic;
+    }
+
+    @media (max-width: 480px) {
+      .soportes-grid { grid-template-columns: 1fr 1fr; }
+    }
+    
     </style>
 </head>
 <body>
@@ -1334,6 +1389,9 @@
         <a href="#" onclick="mostrarSeccion('multas'); return false;" data-section="multas">
           <i class="fas fa-gavel"></i> Multas
         </a>
+        <a href="#" onclick="mostrarSeccion('actas'); return false;" data-section="actas" class="admin-only">
+          <i class="fas fa-file-alt"></i> Actas de Reunión
+        </a>        
         <a href="#" onclick="mostrarSeccion('solicitudes'); return false;" data-section="solicitudes">
           <i class="fas fa-clipboard-list"></i> Solicitudes
         </a>
@@ -1579,8 +1637,8 @@
           </div>
           <div class="table-container">
             <table class="table">
-              <thead><tr><th>Fecha</th><th>Apartamento</th><th>Motivo</th><th>Valor</th><th>Estado</th><th>Acciones</th></tr></thead>
-              <tbody id="tablaMultasBody"><tr><td colspan="6" style="text-align:center">Sin datos</td></tr></tbody>
+              <thead><tr><th>Fecha</th><th>Apartamento</th><th>Motivo</th><th>Valor</th><th>Estado</th><th>Soporte</th><th>Acciones</th></tr></thead>
+              <tbody id="tablaMultasBody"><tr><td colspan="7" style="text-align:center">Sin datos</td></tr></tbody>
             </table>
           </div>
         </div>
@@ -1588,12 +1646,26 @@
         <div id="llamadosTabContent" class="hidden">
           <div class="table-container">
             <table class="table">
-              <thead><tr><th>Fecha</th><th>Apartamento</th><th>Descripción</th><th class="admin-only">Acciones</th></tr></thead>
-              <tbody id="tablaLlamadosBody"><tr><td colspan="4" style="text-align:center">Sin datos</td></tr></tbody>
+              <thead><tr><th>Fecha</th><th>Apartamento</th><th>Descripción</th><th>Soporte</th><th class="admin-only">Acciones</th></tr></thead>
+              <tbody id="tablaLlamadosBody"><tr><td colspan="5" style="text-align:center">Sin datos</td></tr></tbody>
             </table>
           </div>
         </div>
       </div>
+
+      <!-- Actas de Reunión -->
+      <div id="actasSection" class="card hidden">
+        <div class="card-header">
+          <h2 class="card-title"><i class="fas fa-file-alt"></i> Actas de Reunión</h2>
+          <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalNuevaActa')"><i class="fas fa-plus"></i> Nueva Acta</button>
+        </div>
+        <div class="table-container">
+          <table class="table">
+            <thead><tr><th>Fecha</th><th>Tema</th><th>Asistentes</th><th>Soporte</th><th class="admin-only">Acciones</th></tr></thead>
+            <tbody id="tablaActasBody"><tr><td colspan="5" style="text-align:center">Sin actas registradas</td></tr></tbody>
+          </table>
+        </div>
+      </div>      
 
     </div>
   </div>
@@ -1610,6 +1682,13 @@
         <div class="form-group"><label class="form-label">Descripción</label><textarea id="llamadoDesc" class="form-control" rows="3" placeholder="Ej: Alarma activada sin motivo aparente"></textarea></div>
         <div id="llamadoCounterInfo" style="display:none; margin-bottom:14px;" class="filtro-activo"></div>
       </div>
+      <div class="form-group">
+        <label class="form-label">Soporte (imagen)</label>
+        <input type="file" id="soporteLlamado" class="form-control" accept=".jpg,.jpeg,.png">
+        <div id="previewSoporteLlamado" style="margin-top:8px; text-align:center; display:none;">
+          <img id="imgPreviewLlamado" src="" alt="Vista previa" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border);">
+        </div>
+      </div>      
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="procesarLlamado()"><i class="fas fa-bell"></i> Registrar</button>
         <button class="btn btn-light" onclick="cerrarModal('modalLlamado')">Cancelar</button>
@@ -1623,7 +1702,7 @@
       <div class="modal-header"><h3 class="modal-title" style="color:var(--danger);"><i class="fas fa-gavel"></i> Registrar Multa Directa</h3><button class="modal-close" onclick="cerrarModal('modalMultaDirecta')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
         <div style="background:#fef2f2; border:1px solid #fecaca; border-radius:8px; padding:12px 16px; margin-bottom:18px;">
-          <p style="margin:0; color:#991b1b; font-size:13px;"><i class="fas fa-info-circle"></i> Al registrar esta multa, se enviará una notificación por correo al propietario del apartamento informándole que debe pagar en la sección <strong>Multas</strong> del portal.</p>
+          <p style="margin:0; color:#991b1b; font-size:13px;"><i class="fas fa-info-circle"></i> Al registrar esta multa, se enviara una notificacion por correo al propietario del apartamento informandole que debe pagar en la seccion <strong>Multas</strong> del portal.</p>
         </div>
         <div class="form-group">
           <label class="form-label">Apartamento</label>
@@ -1631,7 +1710,18 @@
         </div>
         <div class="form-group">
           <label class="form-label">Motivo de la multa</label>
-          <input type="text" id="multaDirectaMotivo" class="form-control" placeholder="Ej: Ruido excesivo después de las 10pm">
+          <input type="text" id="multaDirectaMotivo" class="form-control" placeholder="Ej: Ruido excesivo despues de las 10pm">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor ($)</label>
+          <input type="text" id="multaDirectaValor" class="form-control currency-input" placeholder="$30.000" value="$30.000">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Soporte (imagen)</label>
+          <input type="file" id="soporteMultaDirecta" class="form-control" accept=".jpg,.jpeg,.png">
+          <div id="previewSoporteMulta" style="margin-top:8px; text-align:center; display:none;">
+            <img id="imgPreviewMulta" src="" alt="Vista previa" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border);">
+          </div>
         </div>
       </div>
       <div class="modal-footer">
@@ -1639,7 +1729,72 @@
         <button class="btn btn-light" onclick="cerrarModal('modalMultaDirecta')">Cancelar</button>
       </div>
     </div>
+  </div>
+
+  <!-- Modal Ver Soportes Multa por Llamados -->
+  <div id="modalSoportesMulta" class="modal">
+    <div class="modal-content" style="max-width:560px;">
+      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-images"></i> Soportes de Llamados</h3><button class="modal-close" onclick="cerrarModal('modalSoportesMulta')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body" id="soportesMultaBody">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" onclick="cerrarModal('modalSoportesMulta')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Ver Detalle Acta -->
+  <div id="modalDetalleActa" class="modal">
+    <div class="modal-content" style="max-width:600px;">
+      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-file-alt"></i> <span id="detalleActaTitulo">-</span></h3><button class="modal-close" onclick="cerrarModal('modalDetalleActa')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body" id="detalleActaBody">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" onclick="cerrarModal('modalDetalleActa')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal Nueva Acta -->
+  <div id="modalNuevaActa" class="modal">
+    <div class="modal-content" style="max-width:600px;">
+      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-file-alt"></i> Registrar Acta de Reunion</h3><button class="modal-close" onclick="cerrarModal('modalNuevaActa')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Fecha de la reunion</label>
+          <input type="date" id="actaFecha" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tema</label>
+          <input type="text" id="actaTema" class="form-control" placeholder="Ej: Junta ordinaria diciembre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Asistentes</label>
+          <textarea id="actaAsistentes" class="form-control" rows="2" placeholder="Ej: Apto 201, Apto 302, Apto 404..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripcion / Temas tratados</label>
+          <textarea id="actaDescripcion" class="form-control" rows="4" placeholder="Describe los temas tratados en la reunion..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Acuerdos</label>
+          <textarea id="actaAcuerdos" class="form-control" rows="3" placeholder="Lista los acuerdos tomados..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Soporte (imagen del acta)</label>
+          <input type="file" id="soporteActa" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+          <div id="previewSoporteActa" style="margin-top:8px; text-align:center; display:none;">
+            <img id="imgPreviewActa" src="" alt="Vista previa" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border);">
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="procesarNuevaActa()"><i class="fas fa-save"></i> Guardar Acta</button>
+        <button class="btn btn-light" onclick="cerrarModal('modalNuevaActa')">Cancelar</button>
+      </div>
+    </div>
   </div>  
+  
   <!-- Modal Cambio Clave -->
   <div id="modalCambioClave" class="modal">
     <div class="modal-content">
@@ -2179,7 +2334,7 @@
     // ============================================
     function mostrarSeccion(seccion) {
       state.seccionActual = seccion;
-      var secciones = ["bienvenidaSection", "resumenSection", "ingresosSection", "egresosSection", "activosSection", "solicitudesFormatosSection", "multasSection"];
+      var secciones = ["bienvenidaSection", "resumenSection", "ingresosSection", "egresosSection", "activosSection", "solicitudesFormatosSection", "multasSection", "actasSection"];
       secciones.forEach(function(id) { document.getElementById(id).classList.add("hidden"); });
 
       if (seccion === "solicitudes" || seccion === "formatos") {
@@ -2206,7 +2361,8 @@
         activos: cargarActivos,
         solicitudes: cargarSolicitudes,
         formatos: cargarFormatos,
-        multas: cargarMultas
+        multas: cargarMultas,
+        actas: cargarActas
       };
 
       if (cargadores[seccion]) cargadores[seccion]();
@@ -3328,7 +3484,7 @@
       var pendientes = (!multas || !multas.length) ? [] : multas.filter(function(m) { return m.estado === "Pendiente"; });
 
       if (!pendientes.length) {
-        tbody.innerHTML = '<tr><td colspan="6" style="text-align:center; color:var(--text-muted);">Sin multas activas</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center; color:var(--text-muted);">Sin multas activas</td></tr>';
         if (document.getElementById("totalMultasPendientesCard")) document.getElementById("totalMultasPendientesCard").textContent = "0";
         if (document.getElementById("totalValorMultasCard")) document.getElementById("totalValorMultasCard").textContent = "$0";
         return;
@@ -3342,19 +3498,46 @@
 
       tbody.innerHTML = pendientes.map(function(m) {
         var esMia = String(m.apartamento) === String(state.apartamento);
+        var esMultaLlamados = m.motivo && m.motivo.indexOf("llamados de alarma") !== -1;
         var acciones = "";
+
+        // Botón pagar (solo si es del residente)
         if (esMia) {
-          acciones = '<button class="btn btn-sm btn-success" onclick="abrirModalPagoMulta(' + m.fila + ',\'' + m.apartamento + '\',' + '\'' + m.motivo.replace(/'/g, "\\'") + '\',' + m.valor + ')"><i class="fas fa-check"></i> Pagar</button>';
+          acciones = '<button class="btn btn-sm btn-success" onclick="abrirModalPagoMulta(' + m.fila + ',\'' + m.apartamento + '\',\'' + m.motivo.replace(/'/g, "\\'") + '\',' + m.valor + ')"><i class="fas fa-check"></i> Pagar</button>';
         }
+
+        // Botón ver soportes de llamados (si es multa por 3 llamados)
+        if (esMultaLlamados && m.uuid) {
+          acciones += ' <button class="btn btn-sm btn-primary" onclick="verSoportesMultaLlamados(\'' + m.uuid + '\')" title="Ver 3 soportes de llamados"><i class="fas fa-images"></i></button>';
+        }
+
+        // Botón ver soporte directo (si tiene soporte y no es por llamados)
+        if (m.soporte && !esMultaLlamados) {
+          acciones += ' <a href="' + m.soporte + '" target="_blank" class="btn btn-sm btn-light" title="Ver soporte"><i class="fas fa-image"></i></a>';
+        }
+
+        // Botón eliminar (admin)
         if (state.esAdmin) {
           acciones += (esMia ? ' ' : '') + '<button class="btn btn-sm btn-danger" onclick="ejecutarEliminarMulta(' + m.fila + ')"><i class="fas fa-trash"></i></button>';
         }
+
+        // Columna soporte
+        var soporteCol = "";
+        if (esMultaLlamados && m.uuid) {
+          soporteCol = '<span class="soporte-badge" onclick="verSoportesMultaLlamados(\'' + m.uuid + '\')" style="cursor:pointer;"><i class="fas fa-images"></i> 3 llamados</span>';
+        } else if (m.soporte) {
+          soporteCol = '<a href="' + m.soporte + '" target="_blank"><img src="' + m.soporte + '" class="soporte-thumb" alt="Soporte"></a>';
+        } else {
+          soporteCol = '<span class="sin-soporte">Sin soporte</span>';
+        }
+
         return '<tr>' +
           '<td>' + m.fecha + '</td>' +
           '<td>' + m.apartamento + '</td>' +
           '<td>' + m.motivo + '</td>' +
           '<td style="font-weight:600; color:var(--danger);">$' + m.valor.toLocaleString("es-CO") + '</td>' +
           '<td><span class="badge badge-danger">Pendiente</span></td>' +
+          '<td>' + soporteCol + '</td>' +
           (acciones ? '<td class="table-actions">' + acciones + '</td>' : '<td></td>') +
         '</tr>';
       }).join("");
@@ -3442,16 +3625,23 @@
         ocultarLoading();
         var tbody = document.getElementById("tablaLlamadosBody");
         if (!data || !data.length) {
-          tbody.innerHTML = '<tr><td colspan="' + (state.esAdmin ? 4 : 3) + '" style="text-align:center">Sin llamados registrados</td></tr>';
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Sin llamados registrados</td></tr>';
           return;
         }
         tbody.innerHTML = data.map(function(r) {
-          var acc = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td>' : '';
-          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td>' + acc + '</tr>';
+          // r = [fila, fecha, apartamento, descripcion, uuid, idMulta, soporte]
+          var soporteCol = r[6]
+            ? '<a href="' + r[6] + '" target="_blank"><img src="' + r[6] + '" class="soporte-thumb" alt="Soporte"></a>'
+            : '<span class="sin-soporte">-</span>';
+          var acc = state.esAdmin
+            ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td>'
+            : '';
+          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td><td>' + soporteCol + '</td>' + acc + '</tr>';
         }).join("");
       });
     }
 
+    
     function ejecutarEliminarLlamado(fila) {
       if (!confirm("¿Eliminar este llamado?")) return;
       mostrarLoading("Eliminando...");
@@ -3470,22 +3660,56 @@
       var apt = document.getElementById("llamadoApto").value;
       var desc = document.getElementById("llamadoDesc").value.trim();
       if (!apt) { mostrarNotificacion("Error", "Selecciona un apartamento", "error"); return; }
-      mostrarLoading("Registrando llamado...");
-      llamarGS("registrarLlamado", [apt, desc], function(res) {
+
+      var archivoInput = document.getElementById("soporteLlamado");
+      var soporteData = null;
+
+      if (archivoInput.files && archivoInput.files[0]) {
+        var archivo = archivoInput.files[0];
+        if (archivo.size > 5 * 1024 * 1024) {
+          mostrarNotificacion("Error", "La imagen es muy grande. Maximo 5MB.", "error");
+          return;
+        }
+        // Leer archivo y enviar
+        mostrarLoading("Subiendo soporte y registrando llamado...");
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var base64Data = e.target.result.split(",")[1];
+          soporteData = {
+            base64: base64Data,
+            nombreArchivo: archivo.name,
+            mimeType: archivo.type
+          };
+          enviarLlamadoConSoporte(apt, desc, soporteData);
+        };
+        reader.readAsDataURL(archivo);
+      } else {
+        // Sin soporte
+        mostrarLoading("Registrando llamado...");
+        enviarLlamadoConSoporte(apt, desc, null);
+      }
+    }
+
+
+    function enviarLlamadoConSoporte(apt, desc, soporteData) {
+      llamarGS("registrarLlamado", [apt, desc, soporteData], function(res) {
         ocultarLoading();
         if (res.ok) {
-          mostrarNotificacion("Éxito", res.mensaje, res.multaGenerada ? "warning" : "success");
+          mostrarNotificacion("Exito", res.mensaje, res.multaGenerada ? "warning" : "success");
           cerrarModal("modalLlamado");
           document.getElementById("llamadoDesc").value = "";
+          document.getElementById("soporteLlamado").value = "";
           document.getElementById("llamadoCounterInfo").style.display = "none";
+          document.getElementById("previewSoporteLlamado").style.display = "none";
           state.estadisticasCache = null;
-          if (state.seccionActual === "multas") cargarMultas();
+          if (state.seccionActual === "multas") { cargarMultas(); cargarLlamados(); }
           if (state.seccionActual === "bienvenida") actualizarEstadisticas();
         } else {
           mostrarNotificacion("Error", res.mensaje, "error");
         }
       });
     }
+    
 
     // ==========================================
     // MULTA DIRECTA
@@ -3493,27 +3717,58 @@
     function procesarMultaDirecta() {
       var apt = document.getElementById("multaDirectaApto").value;
       var motivo = document.getElementById("multaDirectaMotivo").value.trim();
-      var valor = parseInt(document.getElementById("multaDirectaValor").value) || 0;
+      var valorRaw = (document.getElementById("multaDirectaValor").value || "").replace(/[^\d]/g, "");
+      var valor = parseInt(valorRaw) || 0;
 
       if (!apt) { mostrarNotificacion("Error", "Selecciona un apartamento", "error"); return; }
       if (!motivo) { mostrarNotificacion("Error", "Ingresa el motivo de la multa", "error"); return; }
-      if (valor <= 0) { mostrarNotificacion("Error", "Ingresa un valor válido para la multa", "error"); return; }
+      if (valor <= 0) { mostrarNotificacion("Error", "Ingresa un valor valido para la multa", "error"); return; }
 
-      mostrarLoading("Registrando multa directa...");
+      var archivoInput = document.getElementById("soporteMultaDirecta");
+      var soporteData = null;
 
-      llamarGS("registrarMultaDirecta", [apt, motivo, valor], function(res) {
+      if (archivoInput.files && archivoInput.files[0]) {
+        var archivo = archivoInput.files[0];
+        if (archivo.size > 5 * 1024 * 1024) {
+          mostrarNotificacion("Error", "La imagen es muy grande. Maximo 5MB.", "error");
+          return;
+        }
+        mostrarLoading("Subiendo soporte y registrando multa...");
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          var base64Data = e.target.result.split(",")[1];
+          soporteData = {
+            base64: base64Data,
+            nombreArchivo: archivo.name,
+            mimeType: archivo.type
+          };
+          enviarMultaDirectaConSoporte(apt, motivo, valor, soporteData);
+        };
+        reader.readAsDataURL(archivo);
+      } else {
+        mostrarLoading("Registrando multa directa...");
+        enviarMultaDirectaConSoporte(apt, motivo, valor, null);
+      }
+    }
+
+    function enviarMultaDirectaConSoporte(apt, motivo, valor, soporteData) {
+      llamarGS("registrarMultaDirecta", [apt, motivo, valor, soporteData], function(res) {
         ocultarLoading();
         if (res.ok) {
-          mostrarNotificacion("Éxito", res.mensaje, "success");
+          mostrarNotificacion("Exito", res.mensaje, "success");
           cerrarModal("modalMultaDirecta");
           document.getElementById("multaDirectaMotivo").value = "";
-          document.getElementById("multaDirectaValor").value = "";
+          document.getElementById("multaDirectaValor").value = "$30.000";
+          document.getElementById("soporteMultaDirecta").value = "";
+          document.getElementById("previewSoporteMulta").style.display = "none";
+          state.estadisticasCache = null;
           cargarMultas();
         } else {
           mostrarNotificacion("Error", res.mensaje, "error");
         }
       });
-    }    
+    }
+ 
     
     function actualizarContadorLlamados() {
       var apt = document.getElementById("llamadoApto").value;
@@ -3532,6 +3787,186 @@
       });
     }
 
+    // ============================================
+    // VER SOPORTES DE MULTA POR 3 LLAMADOS
+    // ============================================
+    function verSoportesMultaLlamados(multaUuid) {
+      mostrarLoading("Cargando soportes...");
+      llamarGS("obtenerLlamadosPorMultaUuid", [multaUuid], function(llamados) {
+        ocultarLoading();
+        var body = document.getElementById("soportesMultaBody");
+
+        if (!llamados || !llamados.length) {
+          body.innerHTML = '<p style="text-align:center; color:var(--text-muted);">No se encontraron llamados vinculados.</p>';
+          abrirModal("modalSoportesMulta");
+          return;
+        }
+
+        var html = '<p style="margin-bottom:12px; color:var(--text-secondary); font-size:13px;">Estos son los <strong>3 soportes</strong> de los llamados de alarma que generaron la multa:</p>';
+        html += '<div class="soportes-grid">';
+
+        llamados.forEach(function(ll) {
+          html += '<div class="soporte-card">';
+          if (ll.soporte) {
+            html += '<img src="' + ll.soporte + '" onclick="window.open(\'' + ll.soporte + '\',\'_blank\')" alt="Soporte">';
+          } else {
+            html += '<div style="width:100%;height:140px;background:var(--bg);border-radius:6px;display:flex;align-items:center;justify-content:center;color:var(--text-muted);font-size:12px;"><i class="fas fa-image" style="margin-right:6px;"></i>Sin soporte</div>';
+          }
+          html += '<p class="soporte-date">' + ll.fecha + '</p>';
+          html += '<p>' + (ll.descripcion || "Alarma injustificada") + '</p>';
+          html += '</div>';
+        });
+
+        html += '</div>';
+        body.innerHTML = html;
+        abrirModal("modalSoportesMulta");
+      });
+    }
+
+    // ============================================
+    // ACTAS DE REUNIÓN
+    // ============================================
+    function cargarActas() {
+      mostrarLoading("Cargando actas...");
+      llamarGS("obtenerActas", [], function(data) {
+        ocultarLoading();
+        var tbody = document.getElementById("tablaActasBody");
+        if (!data || !data.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin actas registradas</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(function(a) {
+          var soporteCol = a.soporte
+            ? '<a href="' + a.soporte + '" target="_blank"><img src="' + a.soporte + '" class="soporte-thumb" alt="Soporte"></a>'
+            : '<span class="sin-soporte">-</span>';
+          var descripcionCorta = a.descripcion ? (a.descripcion.length > 50 ? a.descripcion.substring(0, 50) + "..." : a.descripcion) : "-";
+          var accAdmin = state.esAdmin
+            ? '<button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>'
+            : '';
+          var accVer = '<button class="btn btn-sm btn-primary" onclick="verDetalleActa(' + a.fila + ')"><i class="fas fa-eye"></i></button>';
+          var acc = accVer + (accAdmin ? ' ' + accAdmin : '');
+          return '<tr>' +
+            '<td>' + a.fecha + '</td>' +
+            '<td><strong>' + a.tema + '</strong></td>' +
+            '<td style="font-size:12px; color:var(--text-secondary);">' + a.asistentes + '</td>' +
+            '<td>' + soporteCol + '</td>' +
+            '<td class="table-actions">' + acc + '</td>' +
+          '</tr>';
+        }).join("");
+      });
+    }
+
+    function procesarNuevaActa() {
+      var tema = document.getElementById("actaTema").value.trim();
+      var asistentes = document.getElementById("actaAsistentes").value.trim();
+      var descripcion = document.getElementById("actaDescripcion").value.trim();
+      var acuerdos = document.getElementById("actaAcuerdos").value.trim();
+      var fecha = document.getElementById("actaFecha").value;
+
+      if (!tema) { mostrarNotificacion("Error", "El tema es obligatorio", "error"); return; }
+
+      var archivoInput = document.getElementById("soporteActa");
+      var datos = {
+        tema: tema,
+        asistentes: asistentes,
+        descripcion: descripcion,
+        acuerdos: acuerdos,
+        fecha: fecha || null,
+        base64: null,
+        nombreArchivo: null,
+        mimeType: null
+      };
+
+      if (archivoInput.files && archivoInput.files[0]) {
+        var archivo = archivoInput.files[0];
+        if (archivo.size > 5 * 1024 * 1024) {
+          mostrarNotificacion("Error", "El archivo es muy grande. Maximo 5MB.", "error");
+          return;
+        }
+        mostrarLoading("Subiendo acta...");
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          datos.base64 = e.target.result.split(",")[1];
+          datos.nombreArchivo = archivo.name;
+          datos.mimeType = archivo.type;
+          enviarActa(datos);
+        };
+        reader.readAsDataURL(archivo);
+      } else {
+        mostrarLoading("Guardando acta...");
+        enviarActa(datos);
+      }
+    }
+
+    function enviarActa(datos) {
+      llamarGS("registrarActa", [datos], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          mostrarNotificacion("Exito", res.mensaje, "success");
+          cerrarModal("modalNuevaActa");
+          document.getElementById("actaTema").value = "";
+          document.getElementById("actaAsistentes").value = "";
+          document.getElementById("actaDescripcion").value = "";
+          document.getElementById("actaAcuerdos").value = "";
+          document.getElementById("actaFecha").value = "";
+          document.getElementById("soporteActa").value = "";
+          document.getElementById("previewSoporteActa").style.display = "none";
+          cargarActas();
+        } else {
+          mostrarNotificacion("Error", res.mensaje, "error");
+        }
+      });
+    }
+
+    function verDetalleActa(fila) {
+      mostrarLoading("Cargando acta...");
+      llamarGS("obtenerActas", [], function(data) {
+        ocultarLoading();
+        if (!data || !data.length) { mostrarNotificacion("Error", "No se encontraron actas", "error"); return; }
+        var acta = null;
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].fila === fila) { acta = data[i]; break; }
+        }
+        if (!acta) { mostrarNotificacion("Error", "Acta no encontrada", "error"); return; }
+
+        document.getElementById("detalleActaTitulo").textContent = acta.tema;
+        var body = document.getElementById("detalleActaBody");
+        var html = '';
+
+        html += '<div class="modal-info-grid" style="grid-template-columns:1fr 1fr;">';
+        html += '<div><div style="font-size:10.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Fecha</div><div style="font-size:14px;font-weight:600;">' + acta.fecha + '</div></div>';
+        html += '<div><div style="font-size:10.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Asistentes</div><div style="font-size:14px;font-weight:600;">' + (acta.asistentes || "-") + '</div></div>';
+        html += '</div>';
+
+        if (acta.descripcion) {
+          html += '<div class="acta-detalle-section"><h4>Temas Tratados</h4><p>' + acta.descripcion + '</p></div>';
+        }
+        if (acta.acuerdos) {
+          html += '<div class="acta-detalle-section"><h4>Acuerdos</h4><p>' + acta.acuerdos + '</p></div>';
+        }
+        if (acta.soporte) {
+          html += '<div class="acta-detalle-section"><h4>Soporte</h4><a href="' + acta.soporte + '" target="_blank"><img src="' + acta.soporte + '" style="max-width:100%;max-height:300px;border-radius:8px;border:1px solid var(--border);cursor:pointer;" alt="Acta"></a></div>';
+        }
+
+        body.innerHTML = html;
+        abrirModal("modalDetalleActa");
+      });
+    }
+
+    function ejecutarEliminarActa(fila) {
+      if (!confirm("Eliminar esta acta?")) return;
+      mostrarLoading("Eliminando...");
+      llamarGS("eliminarActa", [fila], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          mostrarNotificacion("Exito", res.mensaje, "success");
+          cargarActas();
+        } else {
+          mostrarNotificacion("Error", res.mensaje, "error");
+        }
+      });
+    }
+    
     // ============================================
     // INICIALIZACIÓN
     // ============================================
@@ -3610,6 +4045,43 @@
       document.getElementById('llamadoApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('multaDirectaApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('llamadoApto').addEventListener('change', actualizarContadorLlamados);
+
+      // Preview de imagen para llamado
+      document.getElementById('soporteLlamado').addEventListener('change', function(e) {
+        var preview = document.getElementById('previewSoporteLlamado');
+        var img = document.getElementById('imgPreviewLlamado');
+        if (e.target.files && e.target.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(ev) { img.src = ev.target.result; preview.style.display = "block"; };
+          reader.readAsDataURL(e.target.files[0]);
+        } else { preview.style.display = "none"; }
+      });
+
+      // Preview de imagen para multa directa
+      document.getElementById('soporteMultaDirecta').addEventListener('change', function(e) {
+        var preview = document.getElementById('previewSoporteMulta');
+        var img = document.getElementById('imgPreviewMulta');
+        if (e.target.files && e.target.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(ev) { img.src = ev.target.result; preview.style.display = "block"; };
+          reader.readAsDataURL(e.target.files[0]);
+        } else { preview.style.display = "none"; }
+      });
+
+      // Preview de imagen para acta
+      document.getElementById('soporteActa').addEventListener('change', function(e) {
+        var preview = document.getElementById('previewSoporteActa');
+        var img = document.getElementById('imgPreviewActa');
+        if (e.target.files && e.target.files[0]) {
+          var reader = new FileReader();
+          reader.onload = function(ev) { img.src = ev.target.result; preview.style.display = "block"; };
+          reader.readAsDataURL(e.target.files[0]);
+        } else { preview.style.display = "none"; }
+      });
+
+      // Fecha mínima para acta (hoy)
+      var fechaActa = document.getElementById('actaFecha');
+      if (fechaActa) fechaActa.max = new Date().toISOString().split('T')[0];      
       iniciarSplash();
     }
 
