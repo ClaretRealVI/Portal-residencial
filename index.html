@@ -2203,7 +2203,8 @@
         <button class="btn btn-light" onclick="cerrarModal('modalEditarActa')">Cancelar</button>
       </div>
     </div>
-  </div>  
+  </div>
+
   
   <!-- Modal Cambio Clave -->
   <div id="modalCambioClave" class="modal">
@@ -4427,12 +4428,13 @@
           var soporteCol = a.soporte
             ? '<a href="' + a.soporte + '" target="_blank"><img src="' + a.soporte + '" class="soporte-thumb" alt="Soporte"></a>'
             : '<span class="sin-soporte">-</span>';
-          // Tema clickeable para ver detalle (todos pueden ver)
+          // Tema clickeable para que residentes puedan ver detalle
           var temaCol = '<a href="#" onclick="verDetalleActa(' + a.fila + '); return false;" style="color:var(--text); text-decoration:none;"><strong>' + a.tema + '</strong></a>';
           var acc = "";
           if (state.esAdmin) {
             acc = '<td class="table-actions">'
-              + '<button class="btn btn-sm btn-light" onclick="abrirEditarActa(' + a.fila + ')" title="Editar"><i class="fas fa-edit"></i></button>'
+              + '<button class="btn btn-sm btn-primary" onclick="verDetalleActa(' + a.fila + ')"><i class="fas fa-eye"></i></button>'
+              + ' <button class="btn btn-sm btn-light" onclick="abrirEditarActa(' + a.fila + ')" title="Editar"><i class="fas fa-edit"></i></button>'
               + ' <button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>'
               + '</td>';
           }
@@ -4535,7 +4537,7 @@
           mostrarNotificacion("Error", res.mensaje, "error");
         }
       });
-    }    
+    }
     
     function verDetalleActa(fila) {
       mostrarLoading("Cargando acta...");
