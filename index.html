@@ -1642,7 +1642,7 @@
         <a href="#" onclick="mostrarSeccion('multas'); return false;" data-section="multas">
           <i class="fas fa-gavel"></i> Multas
         </a>
-        <a href="#" onclick="mostrarSeccion('actas'); return false;" data-section="actas" class="admin-only">
+        <a href="#" onclick="mostrarSeccion('actas'); return false;" data-section="actas">
           <i class="fas fa-file-alt"></i> Actas de Reunión
         </a>        
         <a href="#" onclick="mostrarSeccion('solicitudes'); return false;" data-section="solicitudes">
@@ -2156,6 +2156,51 @@
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="procesarNuevaActa()"><i class="fas fa-save"></i> Guardar Acta</button>
         <button class="btn btn-light" onclick="cerrarModal('modalNuevaActa')">Cancelar</button>
+      </div>
+    </div>
+  </div>  
+
+  <!-- Modal Editar Acta -->
+  <div id="modalEditarActa" class="modal">
+    <div class="modal-content" style="max-width:600px;">
+      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-edit"></i> Editar Acta de Reunion</h3><button class="modal-close" onclick="cerrarModal('modalEditarActa')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body">
+        <input type="hidden" id="editarActaFila" value="">
+        <div class="form-group">
+          <label class="form-label">Fecha de la reunion</label>
+          <input type="date" id="editarActaFecha" class="form-control">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Tema</label>
+          <input type="text" id="editarActaTema" class="form-control" placeholder="Ej: Junta ordinaria diciembre">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Asistentes</label>
+          <textarea id="editarActaAsistentes" class="form-control" rows="2" placeholder="Ej: Apto 201, Apto 302, Apto 404..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Descripcion / Temas tratados</label>
+          <textarea id="editarActaDescripcion" class="form-control" rows="4" placeholder="Describe los temas tratados en la reunion..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Acuerdos</label>
+          <textarea id="editarActaAcuerdos" class="form-control" rows="3" placeholder="Lista los acuerdos tomados..."></textarea>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Soporte (imagen del acta) - Dejar vacio para mantener el actual</label>
+          <input type="file" id="editarSoporteActa" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+          <div id="previewEditarSoporteActa" style="margin-top:8px; text-align:center; display:none;">
+            <img id="imgPreviewEditarActa" src="" alt="Vista previa" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border);">
+          </div>
+          <div id="soporteActualInfo" style="margin-top:6px; display:none;">
+            <span class="soporte-badge"><i class="fas fa-image"></i> Tiene soporte actual</span>
+            <a id="verSoporteActualLink" href="#" target="_blank" style="margin-left:8px; font-size:12px; color:var(--primary);">Ver actual</a>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="procesarEditarActa()"><i class="fas fa-save"></i> Guardar Cambios</button>
+        <button class="btn btn-light" onclick="cerrarModal('modalEditarActa')">Cancelar</button>
       </div>
     </div>
   </div>  
@@ -4379,31 +4424,119 @@
           return;
         }
         tbody.innerHTML = data.map(function(a) {
-          var estadoHtml = "";
-          if (a.estadoAprobacion === "Aprobada") {
-            estadoHtml = '<span class="acta-estado-badge aprobada"><i class="fas fa-check"></i> Aprobada</span>';
-          } else if (a.estadoAprobacion === "Pendiente") {
-            estadoHtml = '<span class="acta-estado-badge pendiente"><i class="fas fa-clock"></i> Pendiente</span>';
-          } else {
-            estadoHtml = '<span class="acta-estado-badge observaciones"><i class="fas fa-eye"></i> Con observaciones</span>';
+          var soporteCol = a.soporte
+            ? '<a href="' + a.soporte + '" target="_blank"><img src="' + a.soporte + '" class="soporte-thumb" alt="Soporte"></a>'
+            : '<span class="sin-soporte">-</span>';
+          // Tema clickeable para ver detalle (todos pueden ver)
+          var temaCol = '<a href="#" onclick="verDetalleActa(' + a.fila + '); return false;" style="color:var(--text); text-decoration:none;"><strong>' + a.tema + '</strong></a>';
+          var acc = "";
+          if (state.esAdmin) {
+            acc = '<td class="table-actions">'
+              + '<button class="btn btn-sm btn-light" onclick="abrirEditarActa(' + a.fila + ')" title="Editar"><i class="fas fa-edit"></i></button>'
+              + ' <button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>'
+              + '</td>';
           }
-          var tipoLabel = a.tipo || "Ordinaria";
-          var accAdmin = state.esAdmin
-            ? '<button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>'
-            : '';
-          var accVer = '<button class="btn btn-sm btn-primary" onclick="verDetalleActa(' + a.fila + ')"><i class="fas fa-eye"></i></button>';
-          var acc = accVer + (accAdmin ? ' ' + accAdmin : '');
-          return '<tr>' +
-            '<td>' + a.fecha + '</td>' +
-            '<td><strong>' + a.tema + '</strong></td>' +
-            '<td><span style="font-size:12px; color:var(--text-secondary);">' + tipoLabel + '</span></td>' +
-            '<td>' + estadoHtml + '</td>' +
-            '<td class="table-actions">' + acc + '</td>' +
-          '</tr>';
+          return '<tr>'
+            + '<td>' + a.fecha + '</td>'
+            + '<td>' + temaCol + '</td>'
+            + '<td style="font-size:12px; color:var(--text-secondary);">' + a.asistentes + '</td>'
+            + '<td>' + soporteCol + '</td>'
+            + acc
+            + '</tr>';
         }).join("");
       });
     }
 
+    function abrirEditarActa(fila) {
+      mostrarLoading("Cargando acta...");
+      llamarGS("obtenerActas", [], function(data) {
+        ocultarLoading();
+        if (!data || !data.length) { mostrarNotificacion("Error", "No se encontraron actas", "error"); return; }
+        var acta = null;
+        for (var i = 0; i < data.length; i++) {
+          if (data[i].fila === fila) { acta = data[i]; break; }
+        }
+        if (!acta) { mostrarNotificacion("Error", "Acta no encontrada", "error"); return; }
+
+        document.getElementById("editarActaFila").value = acta.fila;
+        document.getElementById("editarActaFecha").value = acta.fecha || "";
+        document.getElementById("editarActaTema").value = acta.tema || "";
+        document.getElementById("editarActaAsistentes").value = acta.asistentes || "";
+        document.getElementById("editarActaDescripcion").value = acta.descripcion || "";
+        document.getElementById("editarActaAcuerdos").value = acta.acuerdos || "";
+        document.getElementById("editarSoporteActa").value = "";
+        document.getElementById("previewEditarSoporteActa").style.display = "none";
+
+        var soporteInfo = document.getElementById("soporteActualInfo");
+        var soporteLink = document.getElementById("verSoporteActualLink");
+        if (acta.soporte) {
+          soporteInfo.style.display = "block";
+          soporteLink.href = acta.soporte;
+        } else {
+          soporteInfo.style.display = "none";
+        }
+
+        abrirModal("modalEditarActa");
+      });
+    }
+
+    function procesarEditarActa() {
+      var fila = parseInt(document.getElementById("editarActaFila").value);
+      var tema = document.getElementById("editarActaTema").value.trim();
+      var asistentes = document.getElementById("editarActaAsistentes").value.trim();
+      var descripcion = document.getElementById("editarActaDescripcion").value.trim();
+      var acuerdos = document.getElementById("editarActaAcuerdos").value.trim();
+      var fecha = document.getElementById("editarActaFecha").value;
+
+      if (!tema) { mostrarNotificacion("Error", "El tema es obligatorio", "error"); return; }
+
+      var datos = {
+        tema: tema,
+        asistentes: asistentes,
+        descripcion: descripcion,
+        acuerdos: acuerdos,
+        fecha: fecha || null,
+        base64: null,
+        nombreArchivo: null,
+        mimeType: null
+      };
+
+      var archivoInput = document.getElementById("editarSoporteActa");
+
+      if (archivoInput.files && archivoInput.files[0]) {
+        var archivo = archivoInput.files[0];
+        if (archivo.size > 5 * 1024 * 1024) {
+          mostrarNotificacion("Error", "El archivo es muy grande. Maximo 5MB.", "error");
+          return;
+        }
+        mostrarLoading("Subiendo cambios...");
+        var reader = new FileReader();
+        reader.onload = function(e) {
+          datos.base64 = e.target.result.split(",")[1];
+          datos.nombreArchivo = archivo.name;
+          datos.mimeType = archivo.type;
+          enviarEdicionActa(fila, datos);
+        };
+        reader.readAsDataURL(archivo);
+      } else {
+        mostrarLoading("Guardando cambios...");
+        enviarEdicionActa(fila, datos);
+      }
+    }
+
+    function enviarEdicionActa(fila, datos) {
+      llamarGS("editarActa", [fila, datos], function(res) {
+        ocultarLoading();
+        if (res.ok) {
+          mostrarNotificacion("Exito", res.mensaje, "success");
+          cerrarModal("modalEditarActa");
+          cargarActas();
+        } else {
+          mostrarNotificacion("Error", res.mensaje, "error");
+        }
+      });
+    }    
+    
     function verDetalleActa(fila) {
       mostrarLoading("Cargando acta...");
       llamarGS("obtenerActas", [], function(data) {
@@ -4664,10 +4797,10 @@
         } else { preview.style.display = "none"; }
       });
 
-      // Preview de imagen para acta
-      document.getElementById('soporteActa').addEventListener('change', function(e) {
-        var preview = document.getElementById('previewSoporteActa');
-        var img = document.getElementById('imgPreviewActa');
+      // Preview de imagen para editar acta
+      document.getElementById('editarSoporteActa').addEventListener('change', function(e) {
+        var preview = document.getElementById('previewEditarSoporteActa');
+        var img = document.getElementById('imgPreviewEditarActa');
         if (e.target.files && e.target.files[0]) {
           var reader = new FileReader();
           reader.onload = function(ev) { img.src = ev.target.result; preview.style.display = "block"; };
