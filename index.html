@@ -1915,7 +1915,7 @@
         <div class="table-container">
           <table class="table">
             <thead><tr>
-              <th>Fecha</th><th>Tema</th><th>Tipo</th><th>Estado</th><th class="admin-only">Acciones</th>
+              <th>Fecha</th><th>Tema</th><th>Tipo</th><th>Estado</th><th>Acciones</th>
             </tr></thead>
             <tbody id="tablaActasBody"><tr><td colspan="5" style="text-align:center">Sin actas registradas</td></tr></tbody>
           </table>
@@ -2162,39 +2162,143 @@
 
   <!-- Modal Editar Acta -->
   <div id="modalEditarActa" class="modal">
-    <div class="modal-content" style="max-width:600px;">
-      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-edit"></i> Editar Acta de Reunion</h3><button class="modal-close" onclick="cerrarModal('modalEditarActa')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-content" style="max-width:720px; max-height:90vh; overflow-y:auto;">
+      <div class="modal-header" style="background:var(--warning); border-bottom:3px solid #b45309;">
+        <div>
+          <h3 class="modal-title" style="color:white; font-size:16px;"><i class="fas fa-edit"></i> Editar Acta de Reunion</h3>
+          <p style="color:rgba(255,255,255,0.8); font-size:12px; margin:0;" id="editarActaSubtitulo">-</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalEditarActa')" style="color:white;"><i class="fas fa-times"></i></button>
+      </div>
       <div class="modal-body">
         <input type="hidden" id="editarActaFila" value="">
-        <div class="form-group">
-          <label class="form-label">Fecha de la reunion</label>
-          <input type="date" id="editarActaFecha" class="form-control">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Tema</label>
-          <input type="text" id="editarActaTema" class="form-control" placeholder="Ej: Junta ordinaria diciembre">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Asistentes</label>
-          <textarea id="editarActaAsistentes" class="form-control" rows="2" placeholder="Ej: Apto 201, Apto 302, Apto 404..."></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Descripcion / Temas tratados</label>
-          <textarea id="editarActaDescripcion" class="form-control" rows="4" placeholder="Describe los temas tratados en la reunion..."></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Acuerdos</label>
-          <textarea id="editarActaAcuerdos" class="form-control" rows="3" placeholder="Lista los acuerdos tomados..."></textarea>
-        </div>
-        <div class="form-group">
-          <label class="form-label">Soporte (imagen del acta) - Dejar vacio para mantener el actual</label>
-          <input type="file" id="editarSoporteActa" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
-          <div id="previewEditarSoporteActa" style="margin-top:8px; text-align:center; display:none;">
-            <img id="imgPreviewEditarActa" src="" alt="Vista previa" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border);">
+        <!-- PASO 1: Información General -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-info-circle" style="color:var(--warning); margin-right:6px;"></i> Informacion General
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Tema de la reunion *</label>
+            <input type="text" id="editarActaTema" class="form-control" placeholder="Ej: Junta ordinaria julio 2026">
           </div>
-          <div id="soporteActualInfo" style="margin-top:6px; display:none;">
-            <span class="soporte-badge"><i class="fas fa-image"></i> Tiene soporte actual</span>
-            <a id="verSoporteActualLink" href="#" target="_blank" style="margin-left:8px; font-size:12px; color:var(--primary);">Ver actual</a>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Fecha</label>
+              <input type="date" id="editarActaFecha" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de reunion</label>
+              <select id="editarActaTipo" class="form-control">
+                <option value="Ordinaria">Ordinaria</option>
+                <option value="Extraordinaria">Extraordinaria</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lugar</label>
+              <input type="text" id="editarActaLugar" class="form-control" placeholder="Ej: Salon comunal">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Convocada por</label>
+              <input type="text" id="editarActaConvocadaPor" class="form-control" placeholder="Nombre de quien convoca">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora de inicio</label>
+              <input type="time" id="editarActaHoraInicio" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora de finalizacion</label>
+              <input type="time" id="editarActaHoraFin" class="form-control">
+            </div>
+          </div>
+        </div>
+
+        <!-- PASO 2: Quórum -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-users" style="color:var(--warning); margin-right:6px;"></i> Quorum
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Apartamentos presentes</label>
+            <textarea id="editarActaAsistentes" class="form-control" rows="2" placeholder="Ej: 201, 202, 301, 302, 401, 404, 503..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apartamentos representados mediante poder</label>
+            <input type="text" id="editarActaRepresentados" class="form-control" placeholder="Ej: 203, 402">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Porcentaje de coeficientes representados</label>
+            <input type="text" id="editarActaQuorum" class="form-control" placeholder="Ej: 75%">
+          </div>
+        </div>
+
+        <!-- PASO 3: Orden del Día -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0; font-weight:700;">
+              <i class="fas fa-list-ol" style="color:var(--warning); margin-right:6px;"></i> Orden del Dia
+            </h4>
+            <button type="button" class="btn btn-sm btn-light" onclick="editarAgregarItemOrden()"><i class="fas fa-plus"></i> Agregar</button>
+          </div>
+          <div id="editarOrdenDelDiaContainer"></div>
+          <p style="font-size:11px; color:var(--text-muted); margin:8px 0 0 0;">Agrega los temas del orden del dia.</p>
+        </div>
+
+        <!-- PASO 4: Temas Tratados -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0; font-weight:700;">
+              <i class="fas fa-clipboard-list" style="color:var(--warning); margin-right:6px;"></i> Temas Tratados
+            </h4>
+            <button type="button" class="btn btn-sm btn-light" onclick="editarAgregarTemaTratado()"><i class="fas fa-plus"></i> Agregar Tema</button>
+          </div>
+          <div id="editarTemasTratadosContainer"></div>
+        </div>
+
+        <!-- PASO 5: Compromisos -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-handshake" style="color:var(--warning); margin-right:6px;"></i> Compromisos
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Compromisos de la Administracion</label>
+            <textarea id="editarActaCompromisosAdmin" class="form-control" rows="3" placeholder="Compromisos de la administracion..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Compromisos de los Copropietarios</label>
+            <textarea id="editarActaCompromisosCopropietarios" class="form-control" rows="3" placeholder="Compromisos de los copropietarios..."></textarea>
+          </div>
+        </div>
+
+        <!-- PASO 6: Aprobación -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-check-circle" style="color:var(--warning); margin-right:6px;"></i> Aprobacion del Acta
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Estado de aprobacion</label>
+            <select id="editarActaEstadoAprobacion" class="form-control">
+              <option value="Aprobada">Aprobada durante la reunion</option>
+              <option value="Pendiente">Pendiente de revision</option>
+              <option value="Con observaciones">Aprobada con observaciones</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PASO 7: Soporte -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-image" style="color:var(--warning); margin-right:6px;"></i> Soporte
+          </h4>
+          <div id="editarSoporteActualDiv" style="display:none; margin-bottom:12px; text-align:center;">
+            <p style="font-size:11px; color:var(--text-muted); margin-bottom:6px;">Soporte actual (clic para ver completo):</p>
+            <a id="editarSoporteActualLink" href="#" target="_blank"><img id="editarSoporteActualImg" src="" alt="Soporte actual" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border); cursor:pointer;"></a>
+          </div>
+          <div class="form-group" style="margin-bottom:0;">
+            <label class="form-label">Cambiar soporte (dejar vacio para mantener el actual)</label>
+            <input type="file" id="editarSoporteActa" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
+            <div id="editarPreviewSoporteActa" style="margin-top:8px; text-align:center; display:none;">
+              <img id="editarImgPreviewActa" src="" alt="Vista previa" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border);">
+            </div>
           </div>
         </div>
       </div>
@@ -4425,28 +4529,86 @@
           return;
         }
         tbody.innerHTML = data.map(function(a) {
-          var soporteCol = a.soporte
-            ? '<a href="' + a.soporte + '" target="_blank"><img src="' + a.soporte + '" class="soporte-thumb" alt="Soporte"></a>'
-            : '<span class="sin-soporte">-</span>';
-          // Tema clickeable para que residentes puedan ver detalle
-          var temaCol = '<a href="#" onclick="verDetalleActa(' + a.fila + '); return false;" style="color:var(--text); text-decoration:none;"><strong>' + a.tema + '</strong></a>';
-          var acc = "";
+          // Tipo
+          var tipoBadge = a.tipo
+            ? '<span class="badge" style="background:rgba(5,150,105,0.1);color:var(--secondary);font-size:11px;">' + a.tipo + '</span>'
+            : '-';
+          // Estado
+          var estadoBadge = '-';
+          if (a.estadoAprobacion) {
+            var ec = a.estadoAprobacion === "Aprobada" ? "aprobada" : a.estadoAprobacion === "Pendiente" ? "pendiente" : "observaciones";
+            var ei = a.estadoAprobacion === "Aprobada" ? "fa-check-circle" : a.estadoAprobacion === "Pendiente" ? "fa-clock" : "fa-eye";
+            estadoBadge = '<span class="acta-estado-badge ' + ec + '"><i class="fas ' + ei + '"></i> ' + a.estadoAprobacion + '</span>';
+          }
+          // Acciones: ojo para todos, editar+eliminar solo admin
+          var acc = '<button class="btn btn-sm btn-primary" onclick="verDetalleActa(' + a.fila + ')"><i class="fas fa-eye"></i></button>';
           if (state.esAdmin) {
-            acc = '<td class="table-actions">'
-              + '<button class="btn btn-sm btn-primary" onclick="verDetalleActa(' + a.fila + ')"><i class="fas fa-eye"></i></button>'
-              + ' <button class="btn btn-sm btn-light" onclick="abrirEditarActa(' + a.fila + ')" title="Editar"><i class="fas fa-edit"></i></button>'
-              + ' <button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>'
-              + '</td>';
+            acc += ' <button class="btn btn-sm btn-light" onclick="abrirEditarActa(' + a.fila + ')" title="Editar"><i class="fas fa-edit"></i></button>';
+            acc += ' <button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>';
           }
           return '<tr>'
-            + '<td>' + a.fecha + '</td>'
-            + '<td>' + temaCol + '</td>'
-            + '<td style="font-size:12px; color:var(--text-secondary);">' + a.asistentes + '</td>'
-            + '<td>' + soporteCol + '</td>'
-            + acc
+            + '<td style="white-space:nowrap;">' + a.fecha + '</td>'
+            + '<td><strong>' + a.tema + '</strong></td>'
+            + '<td>' + tipoBadge + '</td>'
+            + '<td>' + estadoBadge + '</td>'
+            + '<td class="table-actions">' + acc + '</td>'
             + '</tr>';
         }).join("");
       });
+    }
+
+    var _editarTemaCounter = 0;
+
+    function editarAgregarItemOrden() {
+      var container = document.getElementById("editarOrdenDelDiaContainer");
+      var count = container.querySelectorAll(".editar-orden-item").length + 1;
+      var div = document.createElement("div");
+      div.className = "editar-orden-item";
+      div.style.cssText = "display:flex;gap:8px;margin-bottom:8px;align-items:center;";
+      div.innerHTML =
+        '<span style="min-width:24px;font-size:13px;font-weight:700;color:var(--text-muted);text-align:center;">' + count + '.</span>' +
+        '<input type="text" class="form-control editar-orden-input" placeholder="Tema del orden del dia">' +
+        '<button type="button" class="btn btn-sm btn-light" onclick="this.parentElement.remove();editarRenumerarOrden();" style="color:var(--danger);"><i class="fas fa-times"></i></button>';
+      container.appendChild(div);
+    }
+
+    function editarRenumerarOrden() {
+      var items = document.querySelectorAll("#editarOrdenDelDiaContainer .editar-orden-item");
+      items.forEach(function(item, i) {
+        item.querySelector("span").textContent = (i + 1) + ".";
+      });
+    }
+
+    function editarAgregarTemaTratado() {
+      _editarTemaCounter++;
+      var num = _editarTemaCounter;
+      var container = document.getElementById("editarTemasTratadosContainer");
+      var div = document.createElement("div");
+      div.className = "tema-tratado-block";
+      div.id = "editarTemaBlock_" + num;
+      div.innerHTML =
+        '<span class="tema-num">Tema ' + num + '</span>' +
+        '<button type="button" class="tema-remove" onclick="document.getElementById(\'editarTemaBlock_' + num + '\').remove();"><i class="fas fa-trash"></i></button>' +
+        '<div style="margin-top:8px;">' +
+          '<div class="form-group">' +
+            '<label class="form-label">Titulo del tema</label>' +
+            '<input type="text" class="form-control editar-tema-titulo" placeholder="Ej: Revision del sistema de multas">' +
+          '</div>' +
+          '<div class="form-group">' +
+            '<label class="form-label">Descripcion / Desarrollo</label>' +
+            '<textarea class="form-control editar-tema-descripcion" rows="3" placeholder="Describe lo discutido..."></textarea>' +
+          '</div>' +
+          '<div class="form-group">' +
+            '<label class="form-label">Decision tomada</label>' +
+            '<textarea class="form-control editar-tema-decision" rows="2" placeholder="Cual fue la decision?"></textarea>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
+            '<div class="form-group"><label class="form-label" style="font-size:11px;">A favor (%)</label><input type="text" class="form-control editar-tema-favor" placeholder="%"></div>' +
+            '<div class="form-group"><label class="form-label" style="font-size:11px;">En contra (%)</label><input type="text" class="form-control editar-tema-contra" placeholder="%"></div>' +
+            '<div class="form-group"><label class="form-label" style="font-size:11px;">En blanco (%)</label><input type="text" class="form-control editar-tema-blanco" placeholder="%"></div>' +
+          '</div>' +
+        '</div>';
+      container.appendChild(div);
     }
 
     function abrirEditarActa(fila) {
@@ -4461,21 +4623,91 @@
         if (!acta) { mostrarNotificacion("Error", "Acta no encontrada", "error"); return; }
 
         document.getElementById("editarActaFila").value = acta.fila;
-        document.getElementById("editarActaFecha").value = acta.fecha || "";
-        document.getElementById("editarActaTema").value = acta.tema || "";
-        document.getElementById("editarActaAsistentes").value = acta.asistentes || "";
-        document.getElementById("editarActaDescripcion").value = acta.descripcion || "";
-        document.getElementById("editarActaAcuerdos").value = acta.acuerdos || "";
-        document.getElementById("editarSoporteActa").value = "";
-        document.getElementById("previewEditarSoporteActa").style.display = "none";
+        document.getElementById("editarActaSubtitulo").textContent = acta.tema + " | " + acta.fecha;
 
-        var soporteInfo = document.getElementById("soporteActualInfo");
-        var soporteLink = document.getElementById("verSoporteActualLink");
-        if (acta.soporte) {
-          soporteInfo.style.display = "block";
-          soporteLink.href = acta.soporte;
+        // Info General
+        document.getElementById("editarActaTema").value = acta.tema || "";
+        document.getElementById("editarActaFecha").value = acta.fecha || "";
+        document.getElementById("editarActaTipo").value = acta.tipo || "Ordinaria";
+        document.getElementById("editarActaLugar").value = acta.lugar || "";
+        document.getElementById("editarActaConvocadaPor").value = acta.convocadaPor || "";
+        document.getElementById("editarActaHoraInicio").value = acta.horaInicio || "";
+        document.getElementById("editarActaHoraFin").value = acta.horaFin || "";
+
+        // Quorum
+        document.getElementById("editarActaAsistentes").value = acta.asistentes || "";
+        document.getElementById("editarActaRepresentados").value = acta.representados || "";
+        document.getElementById("editarActaQuorum").value = acta.quorumPorcentaje || "";
+
+        // Orden del Día
+        var ordenContainer = document.getElementById("editarOrdenDelDiaContainer");
+        ordenContainer.innerHTML = "";
+        var orden = [];
+        try { orden = JSON.parse(acta.ordenDelDia || "[]"); } catch(e) {}
+        if (orden.length > 0) {
+          orden.forEach(function(item, idx) {
+            var div = document.createElement("div");
+            div.className = "editar-orden-item";
+            div.style.cssText = "display:flex;gap:8px;margin-bottom:8px;align-items:center;";
+            div.innerHTML =
+              '<span style="min-width:24px;font-size:13px;font-weight:700;color:var(--text-muted);text-align:center;">' + (idx+1) + '.</span>' +
+              '<input type="text" class="form-control editar-orden-input" value="' + (item || "").replace(/"/g, '&quot;') + '">' +
+              '<button type="button" class="btn btn-sm btn-light" onclick="this.parentElement.remove();editarRenumerarOrden();" style="color:var(--danger);"><i class="fas fa-times"></i></button>';
+            ordenContainer.appendChild(div);
+          });
         } else {
-          soporteInfo.style.display = "none";
+          editarAgregarItemOrden();
+        }
+
+        // Temas Tratados
+        _editarTemaCounter = 0;
+        var temasContainer = document.getElementById("editarTemasTratadosContainer");
+        temasContainer.innerHTML = "";
+        var temas = [];
+        try { temas = JSON.parse(acta.temasTratados || "[]"); } catch(e) {}
+        if (temas.length > 0) {
+          temas.forEach(function(t) {
+            _editarTemaCounter++;
+            var num = _editarTemaCounter;
+            var div = document.createElement("div");
+            div.className = "tema-tratado-block";
+            div.id = "editarTemaBlock_" + num;
+            div.innerHTML =
+              '<span class="tema-num">Tema ' + num + '</span>' +
+              '<button type="button" class="tema-remove" onclick="document.getElementById(\'editarTemaBlock_' + num + '\').remove();"><i class="fas fa-trash"></i></button>' +
+              '<div style="margin-top:8px;">' +
+                '<div class="form-group"><label class="form-label">Titulo del tema</label><input type="text" class="form-control editar-tema-titulo" value="' + (t.titulo || "").replace(/"/g, '&quot;') + '"></div>' +
+                '<div class="form-group"><label class="form-label">Descripcion / Desarrollo</label><textarea class="form-control editar-tema-descripcion" rows="3">' + (t.descripcion || "") + '</textarea></div>' +
+                '<div class="form-group"><label class="form-label">Decision tomada</label><textarea class="form-control editar-tema-decision" rows="2">' + (t.decision || "") + '</textarea></div>' +
+                '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
+                  '<div class="form-group"><label class="form-label" style="font-size:11px;">A favor (%)</label><input type="text" class="form-control editar-tema-favor" value="' + (t.votoFavor || "") + '"></div>' +
+                  '<div class="form-group"><label class="form-label" style="font-size:11px;">En contra (%)</label><input type="text" class="form-control editar-tema-contra" value="' + (t.votoContra || "") + '"></div>' +
+                  '<div class="form-group"><label class="form-label" style="font-size:11px;">En blanco (%)</label><input type="text" class="form-control editar-tema-blanco" value="' + (t.votoBlanco || "") + '"></div>' +
+                '</div>' +
+              '</div>';
+            temasContainer.appendChild(div);
+          });
+        } else {
+          editarAgregarTemaTratado();
+        }
+
+        // Compromisos
+        document.getElementById("editarActaCompromisosAdmin").value = acta.compromisosAdmin || "";
+        document.getElementById("editarActaCompromisosCopropietarios").value = acta.compromisosCopropietarios || "";
+
+        // Aprobación
+        document.getElementById("editarActaEstadoAprobacion").value = acta.estadoAprobacion || "Aprobada";
+
+        // Soporte
+        document.getElementById("editarSoporteActa").value = "";
+        document.getElementById("editarPreviewSoporteActa").style.display = "none";
+        var soporteDiv = document.getElementById("editarSoporteActualDiv");
+        if (acta.soporte) {
+          soporteDiv.style.display = "block";
+          document.getElementById("editarSoporteActualLink").href = acta.soporte;
+          document.getElementById("editarSoporteActualImg").src = acta.soporte;
+        } else {
+          soporteDiv.style.display = "none";
         }
 
         abrirModal("modalEditarActa");
@@ -4485,26 +4717,54 @@
     function procesarEditarActa() {
       var fila = parseInt(document.getElementById("editarActaFila").value);
       var tema = document.getElementById("editarActaTema").value.trim();
-      var asistentes = document.getElementById("editarActaAsistentes").value.trim();
-      var descripcion = document.getElementById("editarActaDescripcion").value.trim();
-      var acuerdos = document.getElementById("editarActaAcuerdos").value.trim();
-      var fecha = document.getElementById("editarActaFecha").value;
-
       if (!tema) { mostrarNotificacion("Error", "El tema es obligatorio", "error"); return; }
+
+      // Recoger orden del día
+      var ordenItems = document.querySelectorAll("#editarOrdenDelDiaContainer .editar-orden-input");
+      var ordenDelDia = [];
+      ordenItems.forEach(function(input) {
+        if (input.value.trim()) ordenDelDia.push(input.value.trim());
+      });
+
+      // Recoger temas tratados
+      var temaBlocks = document.querySelectorAll("#editarTemasTratadosContainer .tema-tratado-block");
+      var temasTratados = [];
+      temaBlocks.forEach(function(block) {
+        var t = block.querySelector(".editar-tema-titulo").value.trim();
+        if (t) {
+          temasTratados.push({
+            titulo: t,
+            descripcion: (block.querySelector(".editar-tema-descripcion").value || "").trim(),
+            decision: (block.querySelector(".editar-tema-decision").value || "").trim(),
+            votoFavor: (block.querySelector(".editar-tema-favor").value || "").trim(),
+            votoContra: (block.querySelector(".editar-tema-contra").value || "").trim(),
+            votoBlanco: (block.querySelector(".editar-tema-blanco").value || "").trim()
+          });
+        }
+      });
 
       var datos = {
         tema: tema,
-        asistentes: asistentes,
-        descripcion: descripcion,
-        acuerdos: acuerdos,
-        fecha: fecha || null,
+        fecha: document.getElementById("editarActaFecha").value || null,
+        tipo: document.getElementById("editarActaTipo").value,
+        lugar: document.getElementById("editarActaLugar").value.trim(),
+        convocadaPor: document.getElementById("editarActaConvocadaPor").value.trim(),
+        horaInicio: document.getElementById("editarActaHoraInicio").value,
+        horaFin: document.getElementById("editarActaHoraFin").value,
+        asistentes: document.getElementById("editarActaAsistentes").value.trim(),
+        representados: document.getElementById("editarActaRepresentados").value.trim(),
+        quorumPorcentaje: document.getElementById("editarActaQuorum").value.trim(),
+        ordenDelDia: JSON.stringify(ordenDelDia),
+        temasTratados: JSON.stringify(temasTratados),
+        compromisosAdmin: document.getElementById("editarActaCompromisosAdmin").value.trim(),
+        compromisosCopropietarios: document.getElementById("editarActaCompromisosCopropietarios").value.trim(),
+        estadoAprobacion: document.getElementById("editarActaEstadoAprobacion").value,
         base64: null,
         nombreArchivo: null,
         mimeType: null
       };
 
       var archivoInput = document.getElementById("editarSoporteActa");
-
       if (archivoInput.files && archivoInput.files[0]) {
         var archivo = archivoInput.files[0];
         if (archivo.size > 5 * 1024 * 1024) {
@@ -4801,15 +5061,14 @@
 
       // Preview de imagen para editar acta
       document.getElementById('editarSoporteActa').addEventListener('change', function(e) {
-        var preview = document.getElementById('previewEditarSoporteActa');
-        var img = document.getElementById('imgPreviewEditarActa');
+        var preview = document.getElementById('editarPreviewSoporteActa');
+        var img = document.getElementById('editarImgPreviewActa');
         if (e.target.files && e.target.files[0]) {
           var reader = new FileReader();
           reader.onload = function(ev) { img.src = ev.target.result; preview.style.display = "block"; };
           reader.readAsDataURL(e.target.files[0]);
         } else { preview.style.display = "none"; }
       });
-
       // Fecha maxima para acta (hoy)
       var fechaActa = document.getElementById('actaFecha');
       if (fechaActa) fechaActa.max = new Date().toISOString().split('T')[0];
