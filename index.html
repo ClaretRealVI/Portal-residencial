@@ -1404,6 +1404,37 @@
       .acta-doc-header { padding: 20px 16px; }
       .acta-doc-section { padding: 16px; }
     }    
+    /* ========== FIRMA DIGITAL ========== */
+    .firma-section { padding: 20px; }
+    .firma-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; margin-top: 12px; }
+    .firma-card { background: var(--bg); border: 1px solid var(--border-light); border-radius: 10px; padding: 12px; text-align: center; transition: all 0.2s; }
+    .firma-card:hover { border-color: var(--primary); box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+    .firma-card-header { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .firma-card-img { width: 100%; height: 60px; object-fit: contain; border-radius: 6px; background: white; padding: 4px; border: 1px solid var(--border-light); }
+    .firma-card-signed { border-color: var(--success); background: rgba(5,150,105,0.03); }
+    .firma-card-signed .firma-card-header { color: var(--success); }
+    .firma-btn { display: inline-flex; align-items: center; gap: 6px; padding: 6px 14px; border: 1px dashed var(--border); border-radius: 8px; background: transparent; color: var(--text-secondary); font-size: 12px; cursor: pointer; transition: all 0.2s; }
+    .firma-btn:hover { border-color: var(--primary); color: var(--primary); background: rgba(var(--primary-rgb), 0.05); }
+    .firma-btn i { font-size: 14px; }
+    
+    /* Modal Firma */
+    .firma-modal-tabs { display: flex; gap: 0; margin-bottom: 16px; background: var(--bg); border-radius: 8px; padding: 3px; }
+    .firma-modal-tab { flex: 1; padding: 8px; text-align: center; font-size: 13px; font-weight: 600; border-radius: 6px; cursor: pointer; transition: all 0.2s; color: var(--text-muted); border: none; background: transparent; }
+    .firma-modal-tab.active { background: var(--primary); color: white; box-shadow: 0 2px 6px rgba(0,0,0,0.15); }
+    .firma-canvas-wrap { position: relative; background: white; border: 2px dashed var(--border); border-radius: 10px; overflow: hidden; margin-bottom: 12px; }
+    .firma-canvas-wrap canvas { display: block; width: 100%; cursor: crosshair; touch-action: none; }
+    .firma-canvas-wrap.active-drawing { border-color: var(--primary); border-style: solid; }
+    .firma-typed-section { display: none; }
+    .firma-typed-section.active { display: block; }
+    .firma-typed-input { font-size: 18px; text-align: center; padding: 12px; border: 2px solid var(--border); border-radius: 10px; background: white; font-family: 'Segoe Script', 'Dancing Script', cursive, serif; }
+    .firma-typed-input:focus { border-color: var(--primary); outline: none; }
+    .firma-typed-preview { width: 100%; height: 80px; background: white; border: 1px solid var(--border-light); border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: center; padding: 8px; }
+    .firma-typed-preview span { font-size: 28px; font-family: 'Segoe Script', 'Dancing Script', cursive, serif; color: #1a1a2e; font-style: italic; }
+    .firma-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
+    
+    @media (max-width: 600px) {
+      .firma-grid { grid-template-columns: repeat(2, 1fr); }
+    }    
     
     </style>
 </head>
@@ -2309,7 +2340,45 @@
     </div>
   </div>
 
-  
+  <!-- Modal Firma Digital -->
+  <div id="modalFirma" class="modal">
+    <div class="modal-content" style="max-width:450px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-signature" style="color:var(--secondary);"></i> Firmar - Apto <span id="firmaAptoLabel">-</span></h3>
+        <button class="modal-close" onclick="cerrarModal('modalFirma')"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" id="firmaActaFila" value="">
+        <input type="hidden" id="firmaApto" value="">
+
+        <!-- Tabs -->
+        <div class="firma-modal-tabs">
+          <button class="firma-modal-tab active" onclick="cambiarModoFirma('dibujar')" id="tabFirmaDibujar"><i class="fas fa-pen-nib"></i> Dibujar firma</button>
+          <button class="firma-modal-tab" onclick="cambiarModoFirma('escribir')" id="tabFirmaEscribir"><i class="fas fa-keyboard"></i> Escribir nombre</button>
+        </div>
+
+        <!-- Modo Dibujar -->
+        <div id="firmaModoDibujar">
+          <div class="firma-canvas-wrap" id="firmaCanvasWrap">
+            <canvas id="firmaCanvas" width="350" height="120"></canvas>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); text-align:center; margin:0 0 8px 0;">Dibuja tu firma con el mouse o el dedo</p>
+        </div>
+
+        <!-- Modo Escribir -->
+        <div id="firmaModoEscribir" class="firma-typed-section">
+          <input type="text" id="firmaNombreInput" class="form-control firma-typed-input" placeholder="Escribe tu nombre completo" oninput="actualizarVistaPreviaFirma()">
+          <div class="firma-typed-preview"><span id="firmaNombrePreview">Tu nombre aqui</span></div>
+        </div>
+
+        <!-- Botones -->
+        <div class="firma-actions">
+          <button class="btn btn-light" onclick="limpiarFirma()"><i class="fas fa-eraser"></i> Limpiar</button>
+          <button class="btn btn-primary" onclick="guardarFirma()"><i class="fas fa-check"></i> Guardar Firma</button>
+        </div>
+      </div>
+    </div>
+  </div>  
   <!-- Modal Cambio Clave -->
   <div id="modalCambioClave" class="modal">
     <div class="modal-content">
@@ -4942,6 +5011,42 @@
           h += '</div>';
         }
 
+        // FIRMAS
+        var aptosFirma = [];
+        if (acta.asistentes) {
+          aptosFirma = acta.asistentes.split(/[\s,;]+/).filter(function(a) { return a.trim(); }).map(function(a) { return a.trim().replace(/^(apto|apartamento)\s*/i, ''); });
+        }
+        var firmas = {};
+        try { firmas = JSON.parse(acta.firmas || '{}'); } catch(e) {}
+        if (aptosFirma.length > 0) {
+          h += '<div class="acta-doc-section firma-section">';
+          h += '<h3 class="acta-doc-section-title"><span class="num">5</span> Firmas de los Asistentes</h3>';
+          h += '<div class="firma-grid">';
+          aptosFirma.forEach(function(apto) {
+            var firmaData = firmas[apto];
+            if (firmaData) {
+              h += '<div class="firma-card firma-card-signed">';
+              h += '<div class="firma-card-header"><i class="fas fa-check-circle"></i> Apto ' + escapeHtml(apto) + '</div>';
+              h += '<img src="' + firmaData + '" class="firma-card-img" alt="Firma ' + escapeHtml(apto) + '">';
+              h += '</div>';
+            } else {
+              var puedeFirmar = state.esAdmin || state.apartamento === apto;
+              if (puedeFirmar) {
+                h += '<div class="firma-card">';
+                h += '<div class="firma-card-header">Apto ' + escapeHtml(apto) + '</div>';
+                h += '<button class="firma-btn" onclick="abrirFirma(' + fila + ', \'' + apto + '\')"><i class="fas fa-pen-nib"></i> Firmar</button>';
+                h += '</div>';
+              } else {
+                h += '<div class="firma-card">';
+                h += '<div class="firma-card-header">Apto ' + escapeHtml(apto) + '</div>';
+                h += '<p style="font-size:11px;color:var(--text-muted);margin:0;">Sin firma</p>';
+                h += '</div>';
+              }
+            }
+          });
+          h += '</div></div>';
+        }
+
         h += '</div>';
         body.innerHTML = h;
         abrirModal("modalDetalleActa");
@@ -5051,6 +5156,25 @@
       document.getElementById('multaDirectaApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('llamadoApto').addEventListener('change', actualizarContadorLlamados);
 
+      // Auto-formato % para coeficientes
+      var quorumInput = document.getElementById('actaQuorum');
+      if (quorumInput) {
+        quorumInput.addEventListener('input', function() {
+          var val = this.value.replace(/[^0-9.]/g, '');
+          if (val && !val.endsWith('%')) {
+            this.value = val + '%';
+          } else {
+            this.value = val;
+          }
+        });
+        quorumInput.addEventListener('blur', function() {
+          var val = this.value.replace('%', '').trim();
+          if (val && !this.value.includes('%')) {
+            this.value = val + '%';
+          }
+        });
+      }      
+
       // Preview de imagen para llamado
       document.getElementById('soporteLlamado').addEventListener('change', function(e) {
         var preview = document.getElementById('previewSoporteLlamado');
@@ -5092,6 +5216,161 @@
 
     document.addEventListener('DOMContentLoaded', inicializar);
 
+
+    // ============================================
+    // FIRMA DIGITAL
+    // ============================================
+    var firmaCanvas, firmaCtx, firmaDibujando = false, firmaModoActual = 'dibujar';
+
+    function initFirmaCanvas() {
+      firmaCanvas = document.getElementById('firmaCanvas');
+      firmaCtx = firmaCanvas.getContext('2d');
+      limpiarCanvasFirma();
+
+      // Mouse events
+      firmaCanvas.addEventListener('mousedown', function(e) {
+        firmaDibujando = true;
+        firmaCtx.beginPath();
+        firmaCtx.moveTo(e.offsetX, e.offsetY);
+        document.getElementById('firmaCanvasWrap').classList.add('active-drawing');
+      });
+      firmaCanvas.addEventListener('mousemove', function(e) {
+        if (!firmaDibujando) return;
+        firmaCtx.lineTo(e.offsetX, e.offsetY);
+        firmaCtx.strokeStyle = '#1a1a2e';
+        firmaCtx.lineWidth = 2;
+        firmaCtx.lineCap = 'round';
+        firmaCtx.lineJoin = 'round';
+        firmaCtx.stroke();
+      });
+      firmaCanvas.addEventListener('mouseup', function() {
+        firmaDibujando = false;
+        document.getElementById('firmaCanvasWrap').classList.remove('active-drawing');
+      });
+      firmaCanvas.addEventListener('mouseleave', function() {
+        firmaDibujando = false;
+        document.getElementById('firmaCanvasWrap').classList.remove('active-drawing');
+      });
+
+      // Touch events
+      firmaCanvas.addEventListener('touchstart', function(e) {
+        e.preventDefault();
+        firmaDibujando = true;
+        var rect = firmaCanvas.getBoundingClientRect();
+        var touch = e.touches[0];
+        firmaCtx.beginPath();
+        firmaCtx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        document.getElementById('firmaCanvasWrap').classList.add('active-drawing');
+      }, { passive: false });
+      firmaCanvas.addEventListener('touchmove', function(e) {
+        e.preventDefault();
+        if (!firmaDibujando) return;
+        var rect = firmaCanvas.getBoundingClientRect();
+        var touch = e.touches[0];
+        firmaCtx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+        firmaCtx.strokeStyle = '#1a1a2e';
+        firmaCtx.lineWidth = 2.5;
+        firmaCtx.lineCap = 'round';
+        firmaCtx.lineJoin = 'round';
+        firmaCtx.stroke();
+      }, { passive: false });
+      firmaCanvas.addEventListener('touchend', function(e) {
+        e.preventDefault();
+        firmaDibujando = false;
+        document.getElementById('firmaCanvasWrap').classList.remove('active-drawing');
+      }, { passive: false });
+    }
+
+    function limpiarCanvasFirma() {
+      if (!firmaCtx) return;
+      firmaCtx.fillStyle = '#ffffff';
+      firmaCtx.fillRect(0, 0, firmaCanvas.width, firmaCanvas.height);
+    }
+
+    function cambiarModoFirma(modo) {
+      firmaModoActual = modo;
+      document.getElementById('tabFirmaDibujar').classList.toggle('active', modo === 'dibujar');
+      document.getElementById('tabFirmaEscribir').classList.toggle('active', modo === 'escribir');
+      document.getElementById('firmaModoDibujar').style.display = modo === 'dibujar' ? 'block' : 'none';
+      document.getElementById('firmaModoEscribir').classList.toggle('active', modo === 'escribir');
+    }
+
+    function actualizarVistaPreviaFirma() {
+      var nombre = document.getElementById('firmaNombreInput').value.trim();
+      document.getElementById('firmaNombrePreview').textContent = nombre || 'Tu nombre aqui';
+    }
+
+    function abrirFirma(fila, apto) {
+      document.getElementById('firmaActaFila').value = fila;
+      document.getElementById('firmaApto').value = apto;
+      document.getElementById('firmaAptoLabel').textContent = apto;
+      document.getElementById('firmaNombreInput').value = '';
+      document.getElementById('firmaNombrePreview').textContent = 'Tu nombre aqui';
+      cambiarModoFirma('dibujar');
+      // Inicializar canvas si no se ha hecho
+      if (!firmaCanvas) initFirmaCanvas();
+      limpiarCanvasFirma();
+      abrirModal('modalFirma');
+    }
+
+    function limpiarFirma() {
+      if (firmaModoActual === 'dibujar') {
+        limpiarCanvasFirma();
+      } else {
+        document.getElementById('firmaNombreInput').value = '';
+        document.getElementById('firmaNombrePreview').textContent = 'Tu nombre aqui';
+      }
+    }
+
+    function generarImagenFirma() {
+      if (firmaModoActual === 'dibujar') {
+        return firmaCanvas.toDataURL('image/jpeg', 0.5);
+      } else {
+        // Render nombre en un canvas
+        var nombre = document.getElementById('firmaNombreInput').value.trim();
+        if (!nombre) return null;
+        var c = document.createElement('canvas');
+        c.width = 350; c.height = 100;
+        var ctx = c.getContext('2d');
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, c.width, c.height);
+        ctx.font = 'italic 32px "Segoe Script", "Dancing Script", cursive, serif';
+        ctx.fillStyle = '#1a1a2e';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(nombre, c.width / 2, c.height / 2);
+        return c.toDataURL('image/jpeg', 0.5);
+      }
+    }
+
+    function guardarFirma() {
+      var imagen = generarImagenFirma();
+      if (!imagen) {
+        if (firmaModoActual === 'dibujar') {
+          mostrarNotificacion('Error', 'Primero dibuja tu firma', 'error');
+        } else {
+          mostrarNotificacion('Error', 'Escribe tu nombre primero', 'error');
+        }
+        return;
+      }
+      var fila = parseInt(document.getElementById('firmaActaFila').value);
+      var apto = document.getElementById('firmaApto').value;
+      // Extraer solo el base64 sin el prefijo
+      var base64Solo = imagen.split(',')[1];
+      mostrarLoading('Guardando firma...');
+      llamarGS('guardarFirmaActa', [fila, apto, base64Solo], function(res) {
+        ocultarLoading();
+        if (res && res.ok) {
+          mostrarNotificacion('Exito', 'Firma guardada correctamente', 'success');
+          cerrarModal('modalFirma');
+          // Refrescar el detalle del acta
+          verDetalleActa(fila);
+        } else {
+          mostrarNotificacion('Error', (res && res.mensaje) || 'Error al guardar la firma', 'error');
+        }
+      });
+    }
+    
     // ── Registrar Service Worker ──
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
