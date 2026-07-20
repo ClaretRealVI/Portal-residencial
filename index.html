@@ -1126,18 +1126,7 @@
       margin-bottom: 2px;
     }
 
-    .acta-detalle-section {
-      margin-bottom: 16px;
-    }
-    .acta-detalle-section h4 {
-      font-size: 11px; text-transform: uppercase;
-      color: var(--text-muted); letter-spacing: 0.5px;
-      margin-bottom: 6px; font-weight: 600;
-    }
-    .acta-detalle-section p {
-      font-size: 14px; color: var(--text);
-      line-height: 1.6; white-space: pre-wrap;
-    }
+
     .soporte-badge {
       display: inline-flex; align-items: center; gap: 4px;
       padding: 3px 10px; border-radius: 12px;
@@ -1151,6 +1140,269 @@
     @media (max-width: 480px) {
       .soportes-grid { grid-template-columns: 1fr 1fr; }
     }
+
+    /* ========== ESTILOS ACTAS PROFESIONALES ========== */
+    .acta-doc {
+      font-family: 'Inter', sans-serif;
+      font-size: 13.5px;
+      color: var(--text);
+      line-height: 1.65;
+    }
+    .acta-doc-header {
+      background: var(--primary);
+      color: white;
+      padding: 28px 28px 22px;
+      text-align: center;
+      border-bottom: 4px solid var(--secondary);
+    }
+    .acta-doc-header h2 {
+      margin: 0 0 4px 0;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .acta-doc-header p {
+      margin: 0;
+      font-size: 13px;
+      opacity: 0.85;
+    }
+    .acta-doc-info {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 24px;
+      padding: 18px 28px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+    }
+    .acta-doc-info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    .acta-doc-info-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.6px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .acta-doc-info-value {
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .acta-doc-section {
+      padding: 20px 28px;
+      border-bottom: 1px solid var(--border-light);
+    }
+    .acta-doc-section:last-child {
+      border-bottom: none;
+    }
+    .acta-doc-section-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0 0 12px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--secondary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .acta-doc-section-title .num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--secondary);
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .acta-doc-text {
+      margin: 0 0 10px 0;
+      white-space: pre-wrap;
+      line-height: 1.7;
+    }
+    .acta-doc-text strong {
+      color: var(--primary);
+    }
+    .acta-doc-list {
+      margin: 8px 0;
+      padding-left: 0;
+      list-style: none;
+    }
+    .acta-doc-list li {
+      position: relative;
+      padding: 6px 0 6px 28px;
+      border-bottom: 1px dashed var(--border-light);
+    }
+    .acta-doc-list li:last-child {
+      border-bottom: none;
+    }
+    .acta-doc-list li::before {
+      content: attr(data-num);
+      position: absolute;
+      left: 0;
+      top: 6px;
+      font-weight: 700;
+      color: var(--secondary);
+      font-size: 12px;
+    }
+    .acta-tema-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      margin-bottom: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+    .acta-tema-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 0 0 10px 0;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--secondary);
+    }
+    .acta-tema-field {
+      margin-bottom: 10px;
+    }
+    .acta-tema-field-label {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.5px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .acta-tema-field-value {
+      font-size: 13px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    .acta-votacion {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-top: 6px;
+    }
+    .acta-votacion-item {
+      background: var(--bg);
+      border-radius: 6px;
+      padding: 8px 10px;
+      text-align: center;
+    }
+    .acta-votacion-item .lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+    }
+    .acta-votacion-item .val {
+      font-size: 15px;
+      font-weight: 700;
+    }
+    .acta-votacion-item.favor .val { color: var(--success); }
+    .acta-votacion-item.contra .val { color: var(--danger); }
+    .acta-votacion-item.blanco .val { color: var(--text-muted); }
+    .acta-compromisos-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+    .acta-compromiso-col {
+      background: var(--bg);
+      border-radius: 8px;
+      padding: 14px;
+      border: 1px solid var(--border-light);
+    }
+    .acta-compromiso-col h5 {
+      font-size: 12px;
+      text-transform: uppercase;
+      color: var(--secondary);
+      margin: 0 0 8px 0;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+    }
+    .acta-compromiso-col ul {
+      margin: 0;
+      padding-left: 16px;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .acta-estado-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+    .acta-estado-badge.aprobada { background: rgba(5,150,105,0.1); color: var(--success); }
+    .acta-estado-badge.pendiente { background: rgba(217,119,6,0.1); color: var(--warning); }
+    .acta-estado-badge.observaciones { background: rgba(124,58,237,0.1); color: var(--accent); }
+    .acta-soporte-section {
+      text-align: center;
+      padding: 20px 28px;
+    }
+    .acta-soporte-section img {
+      max-width: 100%;
+      max-height: 350px;
+      border-radius: 10px;
+      border: 2px solid var(--border);
+      cursor: pointer;
+      transition: var(--transition);
+    }
+    .acta-soporte-section img:hover {
+      box-shadow: var(--shadow-md);
+      transform: scale(1.01);
+    }
+    .tema-tratado-block {
+      background: #f8fafc;
+      border: 1px solid var(--border-light);
+      border-radius: 10px;
+      padding: 14px;
+      margin-bottom: 12px;
+      position: relative;
+    }
+    .tema-tratado-block .tema-num {
+      position: absolute;
+      top: -8px;
+      left: 12px;
+      background: var(--secondary);
+      color: white;
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 10px;
+      border-radius: 10px;
+    }
+    .tema-tratado-block .tema-remove {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 16px;
+      padding: 4px;
+    }
+    .tema-tratado-block .tema-remove:hover { color: var(--danger); }
+    .tema-tratado-block .form-group { margin-bottom: 10px; }
+    .tema-tratado-block .form-group:last-child { margin-bottom: 0; }
+
+    @media (max-width: 600px) {
+      .acta-doc-info { grid-template-columns: 1fr; }
+      .acta-compromisos-grid { grid-template-columns: 1fr; }
+      .acta-votacion { grid-template-columns: 1fr; }
+      .acta-doc-header { padding: 20px 16px; }
+      .acta-doc-section { padding: 16px; }
+    }    
     
     </style>
 </head>
@@ -1657,15 +1909,17 @@
       <div id="actasSection" class="card hidden">
         <div class="card-header">
           <h2 class="card-title"><i class="fas fa-file-alt"></i> Actas de Reunión</h2>
-          <button class="btn btn-sm btn-primary admin-only" onclick="abrirModal('modalNuevaActa')"><i class="fas fa-plus"></i> Nueva Acta</button>
+          <button class="btn btn-sm btn-primary admin-only" onclick="abrirFormularioActa()"><i class="fas fa-plus"></i> Nueva Acta</button>
         </div>
         <div class="table-container">
           <table class="table">
-            <thead><tr><th>Fecha</th><th>Tema</th><th>Asistentes</th><th>Soporte</th><th class="admin-only">Acciones</th></tr></thead>
+            <thead><tr>
+              <th>Fecha</th><th>Tema</th><th>Tipo</th><th>Estado</th><th class="admin-only">Acciones</th>
+            </tr></thead>
             <tbody id="tablaActasBody"><tr><td colspan="5" style="text-align:center">Sin actas registradas</td></tr></tbody>
           </table>
         </div>
-      </div>      
+      </div>    
 
     </div>
   </div>
@@ -1745,9 +1999,15 @@
 
   <!-- Modal Ver Detalle Acta -->
   <div id="modalDetalleActa" class="modal">
-    <div class="modal-content" style="max-width:600px;">
-      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-file-alt"></i> <span id="detalleActaTitulo">-</span></h3><button class="modal-close" onclick="cerrarModal('modalDetalleActa')"><i class="fas fa-times"></i></button></div>
-      <div class="modal-body" id="detalleActaBody">
+    <div class="modal-content" style="max-width:780px; max-height:92vh; overflow-y:auto;">
+      <div class="modal-header" style="background:var(--primary); border-bottom:3px solid var(--secondary);">
+        <div>
+          <h3 class="modal-title" style="color:white; font-size:16px; margin-bottom:2px;" id="detalleActaTitulo">-</h3>
+          <p style="color:rgba(255,255,255,0.7); font-size:12px; margin:0;" id="detalleActaSubtitulo">-</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalDetalleActa')" style="color:white;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body" id="detalleActaBody" style="padding:0;">
       </div>
       <div class="modal-footer">
         <button class="btn btn-light" onclick="cerrarModal('modalDetalleActa')">Cerrar</button>
@@ -1755,33 +2015,137 @@
     </div>
   </div>
 
+
   <!-- Modal Nueva Acta -->
   <div id="modalNuevaActa" class="modal">
-    <div class="modal-content" style="max-width:600px;">
-      <div class="modal-header"><h3 class="modal-title"><i class="fas fa-file-alt"></i> Registrar Acta de Reunion</h3><button class="modal-close" onclick="cerrarModal('modalNuevaActa')"><i class="fas fa-times"></i></button></div>
+    <div class="modal-content" style="max-width:720px; max-height:90vh; overflow-y:auto;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-file-alt"></i> Registrar Acta de Reunion</h3>
+        <button class="modal-close" onclick="cerrarModal('modalNuevaActa')"><i class="fas fa-times"></i></button>
+      </div>
       <div class="modal-body">
-        <div class="form-group">
-          <label class="form-label">Fecha de la reunion</label>
-          <input type="date" id="actaFecha" class="form-control">
+        <!-- PASO 1: Información General -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-info-circle" style="color:var(--secondary); margin-right:6px;"></i> Informacion General
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Tema de la reunion *</label>
+            <input type="text" id="actaTema" class="form-control" placeholder="Ej: Junta ordinaria julio 2026">
+          </div>
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+            <div class="form-group">
+              <label class="form-label">Fecha</label>
+              <input type="date" id="actaFecha" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Tipo de reunion</label>
+              <select id="actaTipo" class="form-control">
+                <option value="Ordinaria">Ordinaria</option>
+                <option value="Extraordinaria">Extraordinaria</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Lugar</label>
+              <input type="text" id="actaLugar" class="form-control" placeholder="Ej: Salon comunal" value="Salon comunal">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Convocada por</label>
+              <input type="text" id="actaConvocadaPor" class="form-control" placeholder="Nombre de quien convoca">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora de inicio</label>
+              <input type="time" id="actaHoraInicio" class="form-control">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Hora de finalizacion</label>
+              <input type="time" id="actaHoraFin" class="form-control">
+            </div>
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Tema</label>
-          <input type="text" id="actaTema" class="form-control" placeholder="Ej: Junta ordinaria diciembre">
+
+        <!-- PASO 2: Quórum -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-users" style="color:var(--secondary); margin-right:6px;"></i> Quorum
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Apartamentos presentes</label>
+            <textarea id="actaAsistentes" class="form-control" rows="2" placeholder="Ej: 201, 202, 301, 302, 401, 404, 503..."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Apartamentos representados mediante poder</label>
+            <input type="text" id="actaRepresentados" class="form-control" placeholder="Ej: 203, 402">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Porcentaje de coeficientes representados</label>
+            <input type="text" id="actaQuorum" class="form-control" placeholder="Ej: 75%">
+          </div>
         </div>
-        <div class="form-group">
-          <label class="form-label">Asistentes</label>
-          <textarea id="actaAsistentes" class="form-control" rows="2" placeholder="Ej: Apto 201, Apto 302, Apto 404..."></textarea>
+
+        <!-- PASO 3: Orden del Día -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0; font-weight:700;">
+              <i class="fas fa-list-ol" style="color:var(--secondary); margin-right:6px;"></i> Orden del Dia
+            </h4>
+            <button type="button" class="btn btn-sm btn-light" onclick="agregarItemOrden()"><i class="fas fa-plus"></i> Agregar</button>
+          </div>
+          <div id="ordenDelDiaContainer">
+            <div class="orden-item" style="display:flex; gap:8px; margin-bottom:8px; align-items:center;">
+              <span style="min-width:24px; font-size:13px; font-weight:700; color:var(--text-muted); text-align:center;">1.</span>
+              <input type="text" class="form-control orden-input" placeholder="Tema del orden del dia">
+              <button type="button" class="btn btn-sm btn-light" onclick="this.parentElement.remove(); renumerarOrden();" style="color:var(--danger);"><i class="fas fa-times"></i></button>
+            </div>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); margin:8px 0 0 0;">Agrega los temas que se aprobaron en el orden del dia.</p>
         </div>
-        <div class="form-group">
-          <label class="form-label">Descripcion / Temas tratados</label>
-          <textarea id="actaDescripcion" class="form-control" rows="4" placeholder="Describe los temas tratados en la reunion..."></textarea>
+
+        <!-- PASO 4: Temas Tratados -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:14px;">
+            <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0; font-weight:700;">
+              <i class="fas fa-clipboard-list" style="color:var(--secondary); margin-right:6px;"></i> Temas Tratados
+            </h4>
+            <button type="button" class="btn btn-sm btn-light" onclick="agregarTemaTratado()"><i class="fas fa-plus"></i> Agregar Tema</button>
+          </div>
+          <div id="temasTratadosContainer"></div>
+          <p style="font-size:11px; color:var(--text-muted); margin:8px 0 0 0;">Cada tema incluye su descripcion, la decision tomada y el resultado de la votacion (opcional).</p>
         </div>
-        <div class="form-group">
-          <label class="form-label">Acuerdos</label>
-          <textarea id="actaAcuerdos" class="form-control" rows="3" placeholder="Lista los acuerdos tomados..."></textarea>
+
+        <!-- PASO 5: Compromisos -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-handshake" style="color:var(--secondary); margin-right:6px;"></i> Compromisos
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Compromisos de la Administracion</label>
+            <textarea id="actaCompromisosAdmin" class="form-control" rows="3" placeholder="- Notificar por escrito los llamados de atencion.&#10;- Presentar las cotizaciones completas.&#10;- Compartir el acta con todos los copropietarios."></textarea>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Compromisos de los Copropietarios</label>
+            <textarea id="actaCompromisosCopropietarios" class="form-control" rows="3" placeholder="- Mantener activada la alarma.&#10;- Informar previamente los trabajos que generen ruido.&#10;- Pagar oportunamente las cuotas aprobadas."></textarea>
+          </div>
         </div>
+
+        <!-- PASO 6: Aprobación -->
+        <div style="background:var(--bg); border-radius:10px; padding:16px; margin-bottom:16px; border:1px solid var(--border-light);">
+          <h4 style="font-size:13px; text-transform:uppercase; color:var(--text-muted); letter-spacing:0.5px; margin:0 0 14px 0; font-weight:700;">
+            <i class="fas fa-check-circle" style="color:var(--secondary); margin-right:6px;"></i> Aprobacion del Acta
+          </h4>
+          <div class="form-group">
+            <label class="form-label">Estado de aprobacion</label>
+            <select id="actaEstadoAprobacion" class="form-control">
+              <option value="Aprobada">Aprobada durante la reunion</option>
+              <option value="Pendiente">Pendiente de revision</option>
+              <option value="Con observaciones">Aprobada con observaciones</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- PASO 7: Soporte -->
         <div class="form-group">
-          <label class="form-label">Soporte (imagen del acta)</label>
+          <label class="form-label">Soporte (imagen o PDF del acta firmada)</label>
           <input type="file" id="soporteActa" class="form-control" accept=".jpg,.jpeg,.png,.pdf">
           <div id="previewSoporteActa" style="margin-top:8px; text-align:center; display:none;">
             <img id="imgPreviewActa" src="" alt="Vista previa" style="max-width:200px; max-height:150px; border-radius:8px; border:1px solid var(--border);">
@@ -3824,59 +4188,152 @@
     }
 
     // ============================================
-    // ACTAS DE REUNIÓN
+    // ACTAS DE REUNIÓN (VERSIÓN PROFESIONAL)
     // ============================================
-    function cargarActas() {
-      mostrarLoading("Cargando actas...");
-      llamarGS("obtenerActas", [], function(data) {
-        ocultarLoading();
-        var tbody = document.getElementById("tablaActasBody");
-        if (!data || !data.length) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin actas registradas</td></tr>';
-          return;
-        }
-        tbody.innerHTML = data.map(function(a) {
-          var soporteCol = a.soporte
-            ? '<a href="' + a.soporte + '" target="_blank"><img src="' + a.soporte + '" class="soporte-thumb" alt="Soporte"></a>'
-            : '<span class="sin-soporte">-</span>';
-          var descripcionCorta = a.descripcion ? (a.descripcion.length > 50 ? a.descripcion.substring(0, 50) + "..." : a.descripcion) : "-";
-          var accAdmin = state.esAdmin
-            ? '<button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>'
-            : '';
-          var accVer = '<button class="btn btn-sm btn-primary" onclick="verDetalleActa(' + a.fila + ')"><i class="fas fa-eye"></i></button>';
-          var acc = accVer + (accAdmin ? ' ' + accAdmin : '');
-          return '<tr>' +
-            '<td>' + a.fecha + '</td>' +
-            '<td><strong>' + a.tema + '</strong></td>' +
-            '<td style="font-size:12px; color:var(--text-secondary);">' + a.asistentes + '</td>' +
-            '<td>' + soporteCol + '</td>' +
-            '<td class="table-actions">' + acc + '</td>' +
-          '</tr>';
-        }).join("");
+    var _temaCounter = 0;
+
+    function abrirFormularioActa() {
+      _temaCounter = 0;
+      // Limpiar campos
+      document.getElementById("actaTema").value = "";
+      document.getElementById("actaFecha").value = new Date().toISOString().split("T")[0];
+      document.getElementById("actaTipo").value = "Ordinaria";
+      document.getElementById("actaLugar").value = "Salon comunal";
+      document.getElementById("actaConvocadaPor").value = "";
+      document.getElementById("actaHoraInicio").value = "";
+      document.getElementById("actaHoraFin").value = "";
+      document.getElementById("actaAsistentes").value = "";
+      document.getElementById("actaRepresentados").value = "";
+      document.getElementById("actaQuorum").value = "";
+      document.getElementById("actaCompromisosAdmin").value = "";
+      document.getElementById("actaCompromisosCopropietarios").value = "";
+      document.getElementById("actaEstadoAprobacion").value = "Aprobada";
+      document.getElementById("soporteActa").value = "";
+      document.getElementById("previewSoporteActa").style.display = "none";
+      // Resetear orden del día (dejar 1 vacío)
+      document.getElementById("ordenDelDiaContainer").innerHTML =
+        '<div class="orden-item" style="display:flex;gap:8px;margin-bottom:8px;align-items:center;">' +
+        '<span style="min-width:24px;font-size:13px;font-weight:700;color:var(--text-muted);text-align:center;">1.</span>' +
+        '<input type="text" class="form-control orden-input" placeholder="Tema del orden del dia">' +
+        '<button type="button" class="btn btn-sm btn-light" onclick="this.parentElement.remove();renumerarOrden();" style="color:var(--danger);"><i class="fas fa-times"></i></button></div>';
+      // Limpiar temas tratados
+      document.getElementById("temasTratadosContainer").innerHTML = "";
+      // Agregar un tema tratado vacío
+      agregarTemaTratado();
+      abrirModal("modalNuevaActa");
+    }
+
+    function agregarItemOrden() {
+      var container = document.getElementById("ordenDelDiaContainer");
+      var count = container.querySelectorAll(".orden-item").length + 1;
+      var div = document.createElement("div");
+      div.className = "orden-item";
+      div.style.cssText = "display:flex;gap:8px;margin-bottom:8px;align-items:center;";
+      div.innerHTML =
+        '<span style="min-width:24px;font-size:13px;font-weight:700;color:var(--text-muted);text-align:center;">' + count + '.</span>' +
+        '<input type="text" class="form-control orden-input" placeholder="Tema del orden del dia">' +
+        '<button type="button" class="btn btn-sm btn-light" onclick="this.parentElement.remove();renumerarOrden();" style="color:var(--danger);"><i class="fas fa-times"></i></button>';
+      container.appendChild(div);
+    }
+
+    function renumerarOrden() {
+      var items = document.querySelectorAll("#ordenDelDiaContainer .orden-item");
+      items.forEach(function(item, i) {
+        item.querySelector("span").textContent = (i + 1) + ".";
       });
+    }
+
+    function agregarTemaTratado() {
+      _temaCounter++;
+      var num = _temaCounter;
+      var container = document.getElementById("temasTratadosContainer");
+      var div = document.createElement("div");
+      div.className = "tema-tratado-block";
+      div.id = "temaBlock_" + num;
+      div.innerHTML =
+        '<span class="tema-num">Tema ' + num + '</span>' +
+        '<button type="button" class="tema-remove" onclick="document.getElementById(\'temaBlock_' + num + '\').remove();"><i class="fas fa-trash"></i></button>' +
+        '<div style="margin-top:8px;">' +
+          '<div class="form-group">' +
+            '<label class="form-label">Titulo del tema</label>' +
+            '<input type="text" class="form-control tema-titulo" placeholder="Ej: Revision del sistema de multas">' +
+          '</div>' +
+          '<div class="form-group">' +
+            '<label class="form-label">Descripcion / Desarrollo</label>' +
+            '<textarea class="form-control tema-descripcion" rows="3" placeholder="Describe lo discutido en este tema..."></textarea>' +
+          '</div>' +
+          '<div class="form-group">' +
+            '<label class="form-label">Decision tomada</label>' +
+            '<textarea class="form-control tema-decision" rows="2" placeholder="Cual fue la decision?"></textarea>' +
+          '</div>' +
+          '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
+            '<div class="form-group">' +
+              '<label class="form-label" style="font-size:11px;">A favor (%)</label>' +
+              '<input type="text" class="form-control tema-favor" placeholder="%">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label class="form-label" style="font-size:11px;">En contra (%)</label>' +
+              '<input type="text" class="form-control tema-contra" placeholder="%">' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label class="form-label" style="font-size:11px;">En blanco (%)</label>' +
+              '<input type="text" class="form-control tema-blanco" placeholder="%">' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      container.appendChild(div);
     }
 
     function procesarNuevaActa() {
       var tema = document.getElementById("actaTema").value.trim();
-      var asistentes = document.getElementById("actaAsistentes").value.trim();
-      var descripcion = document.getElementById("actaDescripcion").value.trim();
-      var acuerdos = document.getElementById("actaAcuerdos").value.trim();
-      var fecha = document.getElementById("actaFecha").value;
-
       if (!tema) { mostrarNotificacion("Error", "El tema es obligatorio", "error"); return; }
 
-      var archivoInput = document.getElementById("soporteActa");
+      // Recoger orden del día
+      var ordenItems = document.querySelectorAll("#ordenDelDiaContainer .orden-input");
+      var ordenDelDia = [];
+      ordenItems.forEach(function(input) {
+        if (input.value.trim()) ordenDelDia.push(input.value.trim());
+      });
+
+      // Recoger temas tratados
+      var temaBlocks = document.querySelectorAll("#temasTratadosContainer .tema-tratado-block");
+      var temasTratados = [];
+      temaBlocks.forEach(function(block) {
+        var t = block.querySelector(".tema-titulo").value.trim();
+        if (t) {
+          temasTratados.push({
+            titulo: t,
+            descripcion: (block.querySelector(".tema-descripcion").value || "").trim(),
+            decision: (block.querySelector(".tema-decision").value || "").trim(),
+            votoFavor: (block.querySelector(".tema-favor").value || "").trim(),
+            votoContra: (block.querySelector(".tema-contra").value || "").trim(),
+            votoBlanco: (block.querySelector(".tema-blanco").value || "").trim()
+          });
+        }
+      });
+
       var datos = {
         tema: tema,
-        asistentes: asistentes,
-        descripcion: descripcion,
-        acuerdos: acuerdos,
-        fecha: fecha || null,
+        fecha: document.getElementById("actaFecha").value || null,
+        tipo: document.getElementById("actaTipo").value,
+        lugar: document.getElementById("actaLugar").value.trim(),
+        convocadaPor: document.getElementById("actaConvocadaPor").value.trim(),
+        horaInicio: document.getElementById("actaHoraInicio").value,
+        horaFin: document.getElementById("actaHoraFin").value,
+        asistentes: document.getElementById("actaAsistentes").value.trim(),
+        representados: document.getElementById("actaRepresentados").value.trim(),
+        quorumPorcentaje: document.getElementById("actaQuorum").value.trim(),
+        ordenDelDia: JSON.stringify(ordenDelDia),
+        temasTratados: JSON.stringify(temasTratados),
+        compromisosAdmin: document.getElementById("actaCompromisosAdmin").value.trim(),
+        compromisosCopropietarios: document.getElementById("actaCompromisosCopropietarios").value.trim(),
+        estadoAprobacion: document.getElementById("actaEstadoAprobacion").value,
         base64: null,
         nombreArchivo: null,
         mimeType: null
       };
 
+      var archivoInput = document.getElementById("soporteActa");
       if (archivoInput.files && archivoInput.files[0]) {
         var archivo = archivoInput.files[0];
         if (archivo.size > 5 * 1024 * 1024) {
@@ -3904,17 +4361,45 @@
         if (res.ok) {
           mostrarNotificacion("Exito", res.mensaje, "success");
           cerrarModal("modalNuevaActa");
-          document.getElementById("actaTema").value = "";
-          document.getElementById("actaAsistentes").value = "";
-          document.getElementById("actaDescripcion").value = "";
-          document.getElementById("actaAcuerdos").value = "";
-          document.getElementById("actaFecha").value = "";
-          document.getElementById("soporteActa").value = "";
-          document.getElementById("previewSoporteActa").style.display = "none";
           cargarActas();
         } else {
           mostrarNotificacion("Error", res.mensaje, "error");
         }
+      });
+    }
+
+    function cargarActas() {
+      mostrarLoading("Cargando actas...");
+      llamarGS("obtenerActas", [], function(data) {
+        ocultarLoading();
+        var tbody = document.getElementById("tablaActasBody");
+        if (!data || !data.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin actas registradas</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(function(a) {
+          var estadoHtml = "";
+          if (a.estadoAprobacion === "Aprobada") {
+            estadoHtml = '<span class="acta-estado-badge aprobada"><i class="fas fa-check"></i> Aprobada</span>';
+          } else if (a.estadoAprobacion === "Pendiente") {
+            estadoHtml = '<span class="acta-estado-badge pendiente"><i class="fas fa-clock"></i> Pendiente</span>';
+          } else {
+            estadoHtml = '<span class="acta-estado-badge observaciones"><i class="fas fa-eye"></i> Con observaciones</span>';
+          }
+          var tipoLabel = a.tipo || "Ordinaria";
+          var accAdmin = state.esAdmin
+            ? '<button class="btn btn-sm btn-danger" onclick="ejecutarEliminarActa(' + a.fila + ')"><i class="fas fa-trash"></i></button>'
+            : '';
+          var accVer = '<button class="btn btn-sm btn-primary" onclick="verDetalleActa(' + a.fila + ')"><i class="fas fa-eye"></i></button>';
+          var acc = accVer + (accAdmin ? ' ' + accAdmin : '');
+          return '<tr>' +
+            '<td>' + a.fecha + '</td>' +
+            '<td><strong>' + a.tema + '</strong></td>' +
+            '<td><span style="font-size:12px; color:var(--text-secondary);">' + tipoLabel + '</span></td>' +
+            '<td>' + estadoHtml + '</td>' +
+            '<td class="table-actions">' + acc + '</td>' +
+          '</tr>';
+        }).join("");
       });
     }
 
@@ -3929,28 +4414,137 @@
         }
         if (!acta) { mostrarNotificacion("Error", "Acta no encontrada", "error"); return; }
 
-        document.getElementById("detalleActaTitulo").textContent = acta.tema;
+        document.getElementById("detalleActaTitulo").textContent = "ACTA DE REUNION DE COPROPIETARIOS";
+        document.getElementById("detalleActaSubtitulo").textContent = acta.tema + " | " + acta.fecha;
         var body = document.getElementById("detalleActaBody");
-        var html = '';
+        var h = '<div class="acta-doc">';
 
-        html += '<div class="modal-info-grid" style="grid-template-columns:1fr 1fr;">';
-        html += '<div><div style="font-size:10.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Fecha</div><div style="font-size:14px;font-weight:600;">' + acta.fecha + '</div></div>';
-        html += '<div><div style="font-size:10.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Asistentes</div><div style="font-size:14px;font-weight:600;">' + (acta.asistentes || "-") + '</div></div>';
-        html += '</div>';
+        // HEADER
+        h += '<div class="acta-doc-header">';
+        h += '<h2>Acta de Reunion de Copropietarios</h2>';
+        h += '<p>Edificio: Claret Real 6</p>';
+        if (acta.tipo) h += '<p>Tipo: ' + acta.tipo + '</p>';
+        h += '</div>';
 
-        if (acta.descripcion) {
-          html += '<div class="acta-detalle-section"><h4>Temas Tratados</h4><p>' + acta.descripcion + '</p></div>';
+        // INFO GENERAL
+        h += '<div class="acta-doc-info">';
+        h += infoItem("Fecha", acta.fecha);
+        h += infoItem("Lugar", acta.lugar || "Salon comunal");
+        h += infoItem("Hora inicio", acta.horaInicio || "-");
+        h += infoItem("Hora finalizacion", acta.horaFin || "-");
+        if (acta.convocadaPor) h += infoItem("Convocada por", acta.convocadaPor);
+        if (acta.estadoAprobacion) {
+          var estadoIcon = acta.estadoAprobacion === "Aprobada" ? "fa-check-circle" : acta.estadoAprobacion === "Pendiente" ? "fa-clock" : "fa-eye";
+          h += '<div class="acta-doc-info-item" style="grid-column:1/-1;"><div class="acta-doc-info-label">Estado</div>';
+          h += '<div class="acta-doc-info-value"><span class="acta-estado-badge ' + (acta.estadoAprobacion === "Aprobada" ? "aprobada" : acta.estadoAprobacion === "Pendiente" ? "pendiente" : "observaciones") + '"><i class="fas ' + estadoIcon + '"></i> ' + acta.estadoAprobacion + '</span></div></div>';
         }
-        if (acta.acuerdos) {
-          html += '<div class="acta-detalle-section"><h4>Acuerdos</h4><p>' + acta.acuerdos + '</p></div>';
+        h += '</div>';
+
+        // 1. QUÓRUM
+        h += '<div class="acta-doc-section">';
+        h += '<h3 class="acta-doc-section-title"><span class="num">1</span> Verificacion del Quorum</h3>';
+        if (acta.asistentes) {
+          h += '<p class="acta-doc-text"><strong>Apartamentos presentes:</strong> ' + acta.asistentes + '</p>';
         }
+        if (acta.representados) {
+          h += '<p class="acta-doc-text"><strong>Representados mediante poder:</strong> ' + acta.representados + '</p>';
+        }
+        if (acta.quorumPorcentaje) {
+          h += '<p class="acta-doc-text"><strong>Coeficientes representados:</strong> ' + acta.quorumPorcentaje + '</p>';
+        }
+        if (!acta.asistentes && !acta.representados && !acta.quorumPorcentaje) {
+          h += '<p class="acta-doc-text" style="color:var(--text-muted); font-style:italic;">No se registraron datos de quorum.</p>';
+        }
+        h += '</div>';
+
+        // 2. ORDEN DEL DÍA
+        h += '<div class="acta-doc-section">';
+        h += '<h3 class="acta-doc-section-title"><span class="num">2</span> Orden del Dia</h3>';
+        var orden = [];
+        try { orden = JSON.parse(acta.ordenDelDia || "[]"); } catch(e) {}
+        if (orden.length > 0) {
+          h += '<ol class="acta-doc-list">';
+          orden.forEach(function(item, idx) {
+            h += '<li data-num="' + (idx + 1) + '. " style="font-size:13.5px;">' + escapeHtml(item) + '</li>';
+          });
+          h += '</ol>';
+        } else {
+          h += '<p class="acta-doc-text" style="color:var(--text-muted); font-style:italic;">No se registraron items.</p>';
+        }
+        h += '</div>';
+
+        // 3. TEMAS TRATADOS
+        var temas = [];
+        try { temas = JSON.parse(acta.temasTratados || "[]"); } catch(e) {}
+        if (temas.length > 0) {
+          h += '<div class="acta-doc-section">';
+          h += '<h3 class="acta-doc-section-title"><span class="num">3</span> Temas Tratados</h3>';
+          temas.forEach(function(t, idx) {
+            h += '<div class="acta-tema-card">';
+            h += '<h4 class="acta-tema-card-title">' + (idx + 1) + '. ' + escapeHtml(t.titulo) + '</h4>';
+            if (t.descripcion) {
+              h += '<div class="acta-tema-field"><div class="acta-tema-field-label">Descripcion</div><div class="acta-tema-field-value">' + escapeHtml(t.descripcion) + '</div></div>';
+            }
+            if (t.decision) {
+              h += '<div class="acta-tema-field"><div class="acta-tema-field-label">Decision</div><div class="acta-tema-field-value">' + escapeHtml(t.decision) + '</div></div>';
+            }
+            if (t.votoFavor || t.votoContra || t.votoBlanco) {
+              h += '<div class="acta-tema-field"><div class="acta-tema-field-label">Resultado de la Votacion</div>';
+              h += '<div class="acta-votacion">';
+              h += '<div class="acta-votacion-item favor"><div class="lbl">A favor</div><div class="val">' + escapeHtml(t.votoFavor || "-") + '</div></div>';
+              h += '<div class="acta-votacion-item contra"><div class="lbl">En contra</div><div class="val">' + escapeHtml(t.votoContra || "-") + '</div></div>';
+              h += '<div class="acta-votacion-item blanco"><div class="lbl">En blanco</div><div class="val">' + escapeHtml(t.votoBlanco || "-") + '</div></div>';
+              h += '</div></div>';
+            }
+            h += '</div>';
+          });
+          h += '</div>';
+        }
+
+        // 4. COMPROMISOS
+        if (acta.compromisosAdmin || acta.compromisosCopropietarios) {
+          h += '<div class="acta-doc-section">';
+          h += '<h3 class="acta-doc-section-title"><span class="num">4</span> Compromisos</h3>';
+          h += '<div class="acta-compromisos-grid">';
+          h += '<div class="acta-compromiso-col"><h5><i class="fas fa-building"></i> Administracion</h5>';
+          if (acta.compromisosAdmin) {
+            var lineas = acta.compromisosAdmin.split("\n").filter(function(l) { return l.trim(); });
+            h += '<ul>' + lineas.map(function(l) { return '<li>' + escapeHtml(l.replace(/^[-•]\s*/, "")) + '</li>'; }).join("") + '</ul>';
+          } else {
+            h += '<p style="color:var(--text-muted);font-style:italic;font-size:12px;">No registrados</p>';
+          }
+          h += '</div>';
+          h += '<div class="acta-compromiso-col"><h5><i class="fas fa-home"></i> Copropietarios</h5>';
+          if (acta.compromisosCopropietarios) {
+            var lineas2 = acta.compromisosCopropietarios.split("\n").filter(function(l) { return l.trim(); });
+            h += '<ul>' + lineas2.map(function(l) { return '<li>' + escapeHtml(l.replace(/^[-•]\s*/, "")) + '</li>'; }).join("") + '</ul>';
+          } else {
+            h += '<p style="color:var(--text-muted);font-style:italic;font-size:12px;">No registrados</p>';
+          }
+          h += '</div></div></div>';
+        }
+
+        // SOPORTE
         if (acta.soporte) {
-          html += '<div class="acta-detalle-section"><h4>Soporte</h4><a href="' + acta.soporte + '" target="_blank"><img src="' + acta.soporte + '" style="max-width:100%;max-height:300px;border-radius:8px;border:1px solid var(--border);cursor:pointer;" alt="Acta"></a></div>';
+          h += '<div class="acta-soporte-section">';
+          h += '<p style="font-size:10.5px;text-transform:uppercase;color:var(--text-muted);letter-spacing:0.5px;margin-bottom:8px;font-weight:600;">Soporte del Acta</p>';
+          h += '<a href="' + acta.soporte + '" target="_blank"><img src="' + acta.soporte + '" alt="Soporte del acta"></a>';
+          h += '</div>';
         }
 
-        body.innerHTML = html;
+        h += '</div>';
+        body.innerHTML = h;
         abrirModal("modalDetalleActa");
       });
+    }
+
+    function infoItem(label, value) {
+      return '<div class="acta-doc-info-item"><div class="acta-doc-info-label">' + label + '</div><div class="acta-doc-info-value">' + escapeHtml(value) + '</div></div>';
+    }
+
+    function escapeHtml(text) {
+      if (!text) return "";
+      return String(text).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
     }
 
     function ejecutarEliminarActa(fila) {
@@ -3966,6 +4560,7 @@
         }
       });
     }
+
     
     // ============================================
     // INICIALIZACIÓN
@@ -4079,9 +4674,9 @@
         } else { preview.style.display = "none"; }
       });
 
-      // Fecha mínima para acta (hoy)
+      // Fecha maxima para acta (hoy)
       var fechaActa = document.getElementById('actaFecha');
-      if (fechaActa) fechaActa.max = new Date().toISOString().split('T')[0];      
+      if (fechaActa) fechaActa.max = new Date().toISOString().split('T')[0];
       iniciarSplash();
     }
 
