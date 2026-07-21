@@ -1,4 +1,4 @@
-const CACHE_NAME = 'claret-real-v22';
+const CACHE_NAME = 'claret-real-v23';
 
 const ASSETS_TO_CACHE = [
   './',
