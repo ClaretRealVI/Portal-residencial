@@ -3426,12 +3426,12 @@
           document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
         }
     
-        // Cargar cuotas especiales para el residente
-        cargarCuotasEspecialesResidente();
-        
-        if (callback) callback();
+        // Cargar cuotas especiales antes de ocultar loading
+        cargarCuotasEspecialesResidente(callback);
       });
     }
+
+
 
     function aplicarEstadisticas(est) {
       document.getElementById("paymentsUpToDate").textContent = est.pagosAlDia || 0;
@@ -6003,18 +6003,19 @@
 
     // --- CARGAR CUOTAS ESPECIALES PARA EL RESIDENTE ---
     // Se llama al iniciar sesión como residente
-    function cargarCuotasEspecialesResidente() {
-      if (state.esAdmin || !state.apartamento) return;
+    function cargarCuotasEspecialesResidente(callback) {
+      if (state.esAdmin || !state.apartamento) { if (callback) callback(); return; }
       llamarGS('obtenerCuotasEspecialesApartamento', [state.apartamento], function(cuotas) {
         var container = document.getElementById('ceButtonsContainer');
         if (!cuotas || !cuotas.length) {
           container.style.display = 'none';
+          if (callback) callback();
           return;
         }
 
         var html = '';
         cuotas.forEach(function(ce) {
-          if (ce.completado) return; // No mostrar si ya pagó completo
+          if (ce.completado) return;
           var porcentaje = Math.min(100, Math.round((ce.totalPagado / ce.valorTotal) * 100));
           html += '<button class="ce-btn-pago" onclick="abrirModalPagarCE(\'' + ce.uuid + '\',\'' + escapeHtml(ce.concepto) + '\',' + ce.valorTotal + ',' + ce.totalPagado + ')">' +
             '<i class="fas fa-coins"></i>' +
@@ -6030,6 +6031,8 @@
         } else {
           container.style.display = 'none';
         }
+
+        if (callback) callback();
       });
     }
 
