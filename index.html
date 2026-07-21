@@ -4509,17 +4509,17 @@
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
             <div class="form-group">
               <label class="form-label" style="font-size:11px;">A favor (apts)</label>
-              <input type="number" min="0" class="form-control tema-favor" placeholder="0" oninput="calcularVotacionPreview(this, "favor")">
+              <input type="number" min="0" class="form-control tema-favor" placeholder="0" oninput="calcularVotacionPreview(this, 'favor')">
               <div class="voto-indicador" id="votoInd-favor-${num}"></div>
             </div>
             <div class="form-group">
               <label class="form-label" style="font-size:11px;">En contra (apts)</label>
-              <input type="number" min="0" class="form-control tema-contra" placeholder="0" oninput="calcularVotacionPreview(this, "contra")">
+              <input type="number" min="0" class="form-control tema-contra" placeholder="0" oninput="calcularVotacionPreview(this, 'contra')">
               <div class="voto-indicador" id="votoInd-contra-${num}"></div>
             </div>
             <div class="form-group">
               <label class="form-label" style="font-size:11px;">En blanco (apts)</label>
-              <input type="number" min="0" class="form-control tema-blanco" placeholder="0" oninput="calcularVotacionPreview(this, "blanco")">
+              <input type="number" min="0" class="form-control tema-blanco" placeholder="0" oninput="calcularVotacionPreview(this, 'blanco')">
               <div class="voto-indicador" id="votoInd-blanco-${num}"></div>
             </div>
           </div>
@@ -4712,17 +4712,17 @@
           '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
             '<div class="form-group">' +
               '<label class="form-label" style="font-size:11px;">A favor (apts)</label>' +
-              '<input type="number" min="0" class="form-control editar-tema-favor" placeholder="0" oninput="calcularVotacionPreviewEditar(this, "favor")">' +
+              '<input type="number" min="0" class="form-control editar-tema-favor" placeholder="0" oninput="calcularVotacionPreviewEditar(this, \'favor\')">' +
               '<div class="voto-indicador" id="editVotoInd-favor-' + num + '"></div>' +
             '</div>' +
             '<div class="form-group">' +
               '<label class="form-label" style="font-size:11px;">En contra (apts)</label>' +
-              '<input type="number" min="0" class="form-control editar-tema-contra" placeholder="0" oninput="calcularVotacionPreviewEditar(this, "contra")">' +
+              '<input type="number" min="0" class="form-control editar-tema-contra" placeholder="0" oninput="calcularVotacionPreviewEditar(this, \'contra\')">' +
               '<div class="voto-indicador" id="editVotoInd-contra-' + num + '"></div>' +
             '</div>' +
             '<div class="form-group">' +
               '<label class="form-label" style="font-size:11px;">En blanco (apts)</label>' +
-              '<input type="number" min="0" class="form-control editar-tema-blanco" placeholder="0" oninput="calcularVotacionPreviewEditar(this, "blanco")">' +
+              '<input type="number" min="0" class="form-control editar-tema-blanco" placeholder="0" oninput="calcularVotacionPreviewEditar(this, \'blanco\')">' +
               '<div class="voto-indicador" id="editVotoInd-blanco-' + num + '"></div>' +
             '</div>' +
           '</div>' +
@@ -4884,17 +4884,17 @@
                 '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
                   '<div class="form-group">' +
                     '<label class="form-label" style="font-size:11px;">A favor (apts)</label>' +
-                    '<input type="number" min="0" class="form-control editar-tema-favor" value="' + extraerNumApts(t.votoFavor) + '" oninput="calcularVotacionPreviewEditar(this, "favor")">' +
+                    '<input type="number" min="0" class="form-control editar-tema-favor" value="' + extraerNumApts(t.votoFavor) + '" oninput="calcularVotacionPreviewEditar(this, \'favor\')">' +
                     '<div class="voto-indicador" id="editVotoInd-favor-' + num + '">' + extraerPorcentaje(t.votoFavor) + '</div>' +
                   '</div>' +
                   '<div class="form-group">' +
                     '<label class="form-label" style="font-size:11px;">En contra (apts)</label>' +
-                    '<input type="number" min="0" class="form-control editar-tema-contra" value="' + extraerNumApts(t.votoContra) + '" oninput="calcularVotacionPreviewEditar(this, "contra")">' +
+                    '<input type="number" min="0" class="form-control editar-tema-contra" value="' + extraerNumApts(t.votoContra) + '" oninput="calcularVotacionPreviewEditar(this, \'contra\')">' +
                     '<div class="voto-indicador" id="editVotoInd-contra-' + num + '">' + extraerPorcentaje(t.votoContra) + '</div>' +
                   '</div>' +
                   '<div class="form-group">' +
                     '<label class="form-label" style="font-size:11px;">En blanco (apts)</label>' +
-                    '<input type="number" min="0" class="form-control editar-tema-blanco" value="' + extraerNumApts(t.votoBlanco) + '" oninput="calcularVotacionPreviewEditar(this, "blanco")">' +
+                    '<input type="number" min="0" class="form-control editar-tema-blanco" value="' + extraerNumApts(t.votoBlanco) + '" oninput="calcularVotacionPreviewEditar(this, \'blanco\')">' +
                     '<div class="voto-indicador" id="editVotoInd-blanco-' + num + '">' + extraerPorcentaje(t.votoBlanco) + '</div>' +
                   '</div>' +
                 '</div>' +
