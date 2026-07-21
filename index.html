@@ -4549,9 +4549,9 @@
             titulo: t,
             descripcion: (block.querySelector(".tema-descripcion").value || "").trim(),
             decision: (block.querySelector(".tema-decision").value || "").trim(),
-            votoFavor: formatearVoto(block.querySelector(".tema-favor"), "actaAsistentes"),
-            votoContra: formatearVoto(block.querySelector(".tema-contra"), "actaAsistentes"),
-            votoBlanco: formatearVoto(block.querySelector(".tema-blanco"), "actaAsistentes"),
+            votoFavor: formatearVoto(block.querySelector(".tema-favor"), "actaAsistentes", "actaRepresentados"),
+            votoContra: formatearVoto(block.querySelector(".tema-contra"), "actaAsistentes", "actaRepresentados"),
+            votoBlanco: formatearVoto(block.querySelector(".tema-blanco"), "actaAsistentes", "actaRepresentados"),
           });
         }
       });
@@ -4973,9 +4973,9 @@
             titulo: t,
             descripcion: (block.querySelector(".editar-tema-descripcion").value || "").trim(),
             decision: (block.querySelector(".editar-tema-decision").value || "").trim(),
-            votoFavor: formatearVoto(block.querySelector(".editar-tema-favor"), "editarActaAsistentes"),
-            votoContra: formatearVoto(block.querySelector(".editar-tema-contra"), "editarActaAsistentes"),
-            votoBlanco: formatearVoto(block.querySelector(".editar-tema-blanco"), "editarActaAsistentes")
+            votoFavor: formatearVoto(block.querySelector(".editar-tema-favor"), "editarActaAsistentes", "editarActaRepresentados"),
+            votoContra: formatearVoto(block.querySelector(".editar-tema-contra"), "editarActaAsistentes", "editarActaRepresentados"),
+            votoBlanco: formatearVoto(block.querySelector(".editar-tema-blanco"), "editarActaAsistentes", "editarActaRepresentados")
           });
         }
       });
