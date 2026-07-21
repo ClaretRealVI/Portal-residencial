@@ -2111,7 +2111,8 @@
           </div>
           <div class="form-group">
             <label class="form-label">Porcentaje de coeficientes representados</label>
-            <input type="text" id="actaQuorum" class="form-control" placeholder="Ej: 75%">
+            <input type="text" id="actaQuorum" class="form-control" readonly style="background:var(--bg); font-weight:700; font-size:16px; color:var(--primary); text-align:center; cursor:default;" placeholder="Se calcula automaticamente">
+            <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0 0;"><i class="fas fa-calculator" style="margin-right:4px;"></i> Se calcula automaticamente segun los apartamentos presentes y representados</p>
           </div>
         </div>
 
@@ -2655,7 +2656,19 @@
     };
 
     const APARTAMENTOS = ['201','202','203','204','301','302','303','304','401','402','403','404','501','502','503','504'];
-    const PRECIOS_ALQUILER = { 'Salón Comunal': 100000, 'Zona de BBQ': 50000, 'Sillas': 2000 };
+
+    // ========== COEFICIENTES DE COPROPIEDAD ==========
+    // CAMBIA estos valores por los coeficientes REALES de tu edificio.
+    // La suma de todos debe ser 100.
+    // Si no los conoces, deja los 6.25 (iguales para los 16 apartamentos).
+    const COEFICIENTES = {
+      '201': 6.25, '202': 6.25, '203': 6.25, '204': 6.25,
+      '301': 6.25, '302': 6.25, '303': 6.25, '304': 6.25,
+      '401': 6.25, '402': 6.25, '403': 6.25, '404': 6.25,
+      '501': 6.25, '502': 6.25, '503': 6.25, '504': 6.25
+    };
+
+    const PRECIOS_ALQUILER = { 'Salón Común': 100000, 'Zona de BBQ': 50000, 'Sillas': 2000 };
     const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
     // ============================================
@@ -5156,23 +5169,34 @@
       document.getElementById('multaDirectaApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('llamadoApto').addEventListener('change', actualizarContadorLlamados);
 
-      // Auto-formato % para coeficientes
-      var quorumInput = document.getElementById('actaQuorum');
-      if (quorumInput) {
-        quorumInput.addEventListener('input', function() {
-          var val = this.value.replace(/[^0-9.]/g, '');
-          if (val && !val.endsWith('%')) {
-            this.value = val + '%';
-          } else {
-            this.value = val;
+      // Auto-calculo de coeficientes representados
+      function calcularCoeficientes() {
+        var asistentesVal = document.getElementById('actaAsistentes').value;
+        var representadosVal = document.getElementById('actaRepresentados').value;
+        var textoCompleto = (asistentesVal + ', ' + representadosVal);
+        // Extraer numeros de apartamento (3 o 4 digitos)
+        var aptos = textoCompleto.match(/\d{3,4}/g) || [];
+        var total = 0;
+        aptos.forEach(function(a) {
+          a = a.trim();
+          if (COEFICIENTES[a] !== undefined) {
+            total += COEFICIENTES[a];
           }
         });
-        quorumInput.addEventListener('blur', function() {
-          var val = this.value.replace('%', '').trim();
-          if (val && !this.value.includes('%')) {
-            this.value = val + '%';
-          }
-        });
+        // Redondear a 2 decimales
+        var porcentaje = Math.round(total * 100) / 100;
+        document.getElementById('actaQuorum').value = porcentaje + '%';
+      }
+
+      var asistentesInput = document.getElementById('actaAsistentes');
+      if (asistentesInput) {
+        asistentesInput.addEventListener('input', calcularCoeficientes);
+        asistentesInput.addEventListener('change', calcularCoeficientes);
+      }
+      var representadosInput = document.getElementById('actaRepresentados');
+      if (representadosInput) {
+        representadosInput.addEventListener('input', calcularCoeficientes);
+        representadosInput.addEventListener('change', calcularCoeficientes);
       }      
 
       // Preview de imagen para llamado
