@@ -5299,7 +5299,7 @@
         // FIRMAS
         var aptosFirma = [];
         if (acta.asistentes) {
-          aptosFirma = acta.asistentes.split(/[\s,;]+/).filter(function(a) { return a.trim(); }).map(function(a) { return a.trim().replace(/^(apto|apartamento)\s*/i, ''); });
+          aptosFirma = String(acta.asistentes || '').split(/[\s,;]+/).filter(function(a) { return a.trim(); }).map(function(a) { return a.trim().replace(/^(apto|apartamento)\s*/i, ''); });
         }
         var firmas = {};
         try { firmas = JSON.parse(acta.firmas || '{}'); } catch(e) {}
