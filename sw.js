@@ -1,4 +1,4 @@
-const CACHE_NAME = 'claret-real-v17';
+const CACHE_NAME = 'claret-real-v18';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -25,6 +25,13 @@ self.addEventListener('activate', (event) => {
   );
 });
 
+// ── ESCUCHAR MENSAJES (para SKIP_WAITING desde el cliente) ──
+self.addEventListener('message', (event) => {
+  if (event.data && event.data.type === 'SKIP_WAITING') {
+    self.skipWaiting();
+  }
+});
+
 // ── FETCH ──
 self.addEventListener('fetch', (event) => {
 
@@ -41,7 +48,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // ── INDEX.HTML: red primero (siempre trae la última versión) ──
-  if (url.pathname === '/' || url.pathname === '/index.html') {
+  if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.endsWith('/index.html')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
