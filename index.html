@@ -4858,19 +4858,7 @@
         } else {
           soporteDiv.style.display = "none";
         }
-        // Funcion auxiliar: obtener numero de apartamentos asistentes
-        function obtenerTotalAsistentes() {
-          var asistentesVal = document.getElementById('actaAsistentes').value;
-          var aptos = asistentesVal.match(/\d{3,4}/g) || [];
-          return aptos.length;
-        }
-    
-        // Funcion auxiliar: obtener numero de apartamentos asistentes (edicion)
-        function obtenerTotalAsistentesEditar() {
-          var asistentesVal = document.getElementById('editarActaAsistentes').value;
-          var aptos = asistentesVal.match(/\d{3,4}/g) || [];
-          return aptos.length;
-        }
+
 
         
         // Auto-calculo de coeficientes en editar
