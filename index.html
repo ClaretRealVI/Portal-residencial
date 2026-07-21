@@ -3426,6 +3426,9 @@
           document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
         }
     
+        // Cargar cuotas especiales para el residente
+        cargarCuotasEspecialesResidente();
+        
         if (callback) callback();
       });
     }
@@ -6257,7 +6260,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 21;
+    const SW_VERSION = 22;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
