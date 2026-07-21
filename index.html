@@ -2062,6 +2062,7 @@
       <div class="modal-header"><h3 class="modal-title">Registrar Llamado de Alarma</h3><button class="modal-close" onclick="cerrarModal('modalLlamado')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
         <div class="form-group"><label class="form-label">Apartamento</label><select id="llamadoApto" class="form-control"></select></div>
+        <div class="form-group"><label class="form-label">Fecha del llamado</label><input type="date" id="fechaLlamado" class="form-control" style="max-width:220px;"></div>
         <div class="form-group"><label class="form-label">Descripción</label><textarea id="llamadoDesc" class="form-control" rows="3" placeholder="Ej: Alarma activada sin motivo aparente"></textarea></div>
         <div id="llamadoCounterInfo" style="display:none; margin-bottom:14px;" class="filtro-activo"></div>
       </div>
@@ -2090,6 +2091,10 @@
         <div class="form-group">
           <label class="form-label">Apartamento</label>
           <select id="multaDirectaApto" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Fecha de la multa</label>
+          <input type="date" id="fechaMultaDirecta" class="form-control" style="max-width:220px;">
         </div>
         <div class="form-group">
           <label class="form-label">Motivo de la multa</label>
@@ -4354,6 +4359,7 @@
     function procesarLlamado() {
       var apt = document.getElementById("llamadoApto").value;
       var desc = document.getElementById("llamadoDesc").value.trim();
+      var fecha = document.getElementById("fechaLlamado").value || '';
       if (!apt) { mostrarNotificacion("Error", "Selecciona un apartamento", "error"); return; }
 
       var archivoInput = document.getElementById("soporteLlamado");
@@ -4365,7 +4371,6 @@
           mostrarNotificacion("Error", "La imagen es muy grande. Maximo 5MB.", "error");
           return;
         }
-        // Leer archivo y enviar
         mostrarLoading("Subiendo soporte y registrando llamado...");
         var reader = new FileReader();
         reader.onload = function(e) {
@@ -4375,24 +4380,24 @@
             nombreArchivo: archivo.name,
             mimeType: archivo.type
           };
-          enviarLlamadoConSoporte(apt, desc, soporteData);
+          enviarLlamadoConSoporte(apt, desc, soporteData, fecha);
         };
         reader.readAsDataURL(archivo);
       } else {
-        // Sin soporte
         mostrarLoading("Registrando llamado...");
-        enviarLlamadoConSoporte(apt, desc, null);
+        enviarLlamadoConSoporte(apt, desc, null, fecha);
       }
     }
 
 
-    function enviarLlamadoConSoporte(apt, desc, soporteData) {
-      llamarGS("registrarLlamado", [apt, desc, soporteData], function(res) {
+    function enviarLlamadoConSoporte(apt, desc, soporteData, fecha) {
+      llamarGS("registrarLlamado", [apt, desc, soporteData, fecha], function(res) {
         ocultarLoading();
         if (res.ok) {
           mostrarNotificacion("Exito", res.mensaje, res.multaGenerada ? "warning" : "success");
           cerrarModal("modalLlamado");
           document.getElementById("llamadoDesc").value = "";
+          document.getElementById("fechaLlamado").value = "";
           document.getElementById("soporteLlamado").value = "";
           document.getElementById("llamadoCounterInfo").style.display = "none";
           document.getElementById("previewSoporteLlamado").style.display = "none";
@@ -4412,6 +4417,7 @@
     function procesarMultaDirecta() {
       var apt = document.getElementById("multaDirectaApto").value;
       var motivo = document.getElementById("multaDirectaMotivo").value.trim();
+      var fecha = document.getElementById("fechaMultaDirecta").value || '';
       var valorRaw = (document.getElementById("multaDirectaValor").value || "").replace(/[^\d]/g, "");
       var valor = parseInt(valorRaw) || 0;
 
@@ -4437,22 +4443,23 @@
             nombreArchivo: archivo.name,
             mimeType: archivo.type
           };
-          enviarMultaDirectaConSoporte(apt, motivo, valor, soporteData);
+          enviarMultaDirectaConSoporte(apt, motivo, valor, soporteData, fecha);
         };
         reader.readAsDataURL(archivo);
       } else {
         mostrarLoading("Registrando multa directa...");
-        enviarMultaDirectaConSoporte(apt, motivo, valor, null);
+        enviarMultaDirectaConSoporte(apt, motivo, valor, null, fecha);
       }
     }
 
-    function enviarMultaDirectaConSoporte(apt, motivo, valor, soporteData) {
-      llamarGS("registrarMultaDirecta", [apt, motivo, valor, soporteData], function(res) {
+    function enviarMultaDirectaConSoporte(apt, motivo, valor, soporteData, fecha) {
+      llamarGS("registrarMultaDirecta", [apt, motivo, valor, soporteData, fecha], function(res) {
         ocultarLoading();
         if (res.ok) {
           mostrarNotificacion("Exito", res.mensaje, "success");
           cerrarModal("modalMultaDirecta");
           document.getElementById("multaDirectaMotivo").value = "";
+          document.getElementById("fechaMultaDirecta").value = "";
           document.getElementById("multaDirectaValor").value = "$30.000";
           document.getElementById("soporteMultaDirecta").value = "";
           document.getElementById("previewSoporteMulta").style.display = "none";
