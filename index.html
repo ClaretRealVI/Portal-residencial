@@ -2950,7 +2950,7 @@
           <label class="form-label">Valor por apartamento <span style="color:var(--danger);">*</span></label>
           <div class="ce-monto-input-group">
             <span class="ce-monto-prefix">$</span>
-            <input type="text" id="ceNuevoValor" class="currency-input" placeholder="300000" oninput="this.value = this.value.replace(/[^0-9]/g, '').replace(/\B(?=(\d{3})+(?!\d))/g, '.')">
+            <input type="text" id="ceNuevoValor" class="form-control currency-input" placeholder="$0">
           </div>
           <div style="margin-top:8px; padding:10px; background:var(--bg); border-radius:8px; font-size:12px; color:var(--text-secondary);">
             <i class="fas fa-info-circle" style="color:var(--secondary);"></i>
@@ -6091,7 +6091,7 @@
     // --- ADMIN: CREAR CUOTA ESPECIAL ---
     function crearCuotaEspecial() {
       var concepto = document.getElementById('ceNuevoConcepto').value.trim();
-      var valorStr = (document.getElementById('ceNuevoValor').value || '').replace(/\./g, '');
+      var valorStr = (document.getElementById('ceNuevoValor').value || '').replace(/\D/g, '');
       var valor = parseInt(valorStr, 10) || 0;
 
       if (!concepto) { mostrarNotificacion('Error', 'Ingresa el concepto', 'error'); return; }
@@ -6194,7 +6194,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 19;
+    const SW_VERSION = 20;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
