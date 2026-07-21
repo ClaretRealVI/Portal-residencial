@@ -2259,7 +2259,8 @@
           </div>
           <div class="form-group">
             <label class="form-label">Porcentaje de coeficientes representados</label>
-            <input type="text" id="editarActaQuorum" class="form-control" placeholder="Ej: 75%">
+            <input type="text" id="editarActaQuorum" class="form-control" readonly style="background:var(--bg); font-weight:700; font-size:16px; color:var(--primary); text-align:center; cursor:default;" placeholder="Se calcula automaticamente">
+            <p style="font-size:11px; color:var(--text-muted); margin:4px 0 0 0;"><i class="fas fa-calculator" style="margin-right:4px;"></i> Se calcula automaticamente segun los apartamentos presentes y representados</p>
           </div>
         </div>
 
@@ -4805,7 +4806,27 @@
         } else {
           soporteDiv.style.display = "none";
         }
-
+        // Auto-calculo de coeficientes en editar
+        function editarCalcularCoeficientes() {
+          var asistentesVal = document.getElementById('editarActaAsistentes').value;
+          var representadosVal = document.getElementById('editarActaRepresentados').value;
+          var textoCompleto = (asistentesVal + ', ' + representadosVal);
+          var aptos = textoCompleto.match(/\d{3,4}/g) || [];
+          var total = 0;
+          aptos.forEach(function(a) {
+            a = a.trim();
+            if (COEFICIENTES[a] !== undefined) {
+              total += COEFICIENTES[a];
+            }
+          });
+          var porcentaje = Math.round(total * 100) / 100;
+          document.getElementById('editarActaQuorum').value = porcentaje + '%';
+        }
+        document.getElementById('editarActaAsistentes').oninput = editarCalcularCoeficientes;
+        document.getElementById('editarActaRepresentados').oninput = editarCalcularCoeficientes;
+        // Calcular al abrir con datos existentes
+        editarCalcularCoeficientes();
+        
         abrirModal("modalEditarActa");
       });
     }
