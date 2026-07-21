@@ -2957,6 +2957,24 @@
             Este valor aplica para cada uno de los 16 apartamentos. Los residentes podrán pagar por abonos parciales.
           </div>
         </div>
+
+        <!-- Switch Exenciones -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid var(--border-light); margin-top:4px;">
+          <div>
+            <div style="font-size:14px; font-weight:600; color:var(--text);"><i class="fas fa-shield-alt" style="color:var(--warning); margin-right:6px;"></i>Exenciones</div>
+            <div style="font-size:12px; color:var(--text-muted); margin-top:2px;">Eximir apartamentos de esta cuota</div>
+          </div>
+          <label style="position:relative; display:inline-block; width:48px; height:26px; cursor:pointer;">
+            <input type="checkbox" id="ceSwitchExenciones" onchange="toggleExencionesCE()" style="opacity:0; width:0; height:0;">
+            <span style="position:absolute; inset:0; background:var(--border); border-radius:13px; transition:0.3s;"></span>
+            <span id="ceSwitchDot" style="position:absolute; left:3px; top:3px; width:20px; height:20px; background:white; border-radius:50%; transition:0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></span>
+          </label>
+        </div>
+        <div id="ceExencionesContainer" style="display:none;">
+          <div style="margin-bottom:8px; font-size:13px; font-weight:600; color:var(--text-secondary);"><i class="fas fa-ban" style="color:var(--danger);"></i> Selecciona los apartamentos exentos:</div>
+          <div class="apartment-grid" id="ceAptosExentos"></div>
+        </div>
+
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="crearCuotaEspecial()"><i class="fas fa-save"></i> Crear Cuota Especial</button>
@@ -6097,8 +6115,15 @@
       if (!concepto) { mostrarNotificacion('Error', 'Ingresa el concepto', 'error'); return; }
       if (valor <= 0) { mostrarNotificacion('Error', 'Ingresa un valor válido', 'error'); return; }
 
+      // Recoger exenciones si el switch está activo
+      var exenciones = [];
+      if (document.getElementById('ceSwitchExenciones').checked) {
+        var selectedExentos = document.querySelectorAll('#ceAptosExentos .apartment-btn.selected');
+        exenciones = Array.from(selectedExentos).map(function(btn) { return btn.textContent.trim(); });
+      }
+
       mostrarLoading('Creando cuota especial...');
-      llamarGS('agregarCuotaEspecial', [concepto, valor], function(res) {
+      llamarGS('agregarCuotaEspecial', [concepto, valor, exenciones], function(res) {
         ocultarLoading();
 
         if (res.ok === false || res.status === 'error') {
@@ -6109,10 +6134,43 @@
         cerrarModal('modalCrearCuotaEspecial');
         document.getElementById('ceNuevoConcepto').value = '';
         document.getElementById('ceNuevoValor').value = '';
+        document.getElementById('ceSwitchExenciones').checked = false;
+        document.getElementById('ceExencionesContainer').style.display = 'none';
+        resetSwitchCE();
 
         cargarCuotasEspecialesAdmin();
-        mostrarNotificacion('Éxito', 'Cuota especial "' + concepto + '" creada por $' + valor.toLocaleString('es-CO') + ' por apartamento', 'success');
+        var msg = 'Cuota especial "' + concepto + '" creada por $' + valor.toLocaleString('es-CO') + ' por apartamento';
+        if (exenciones.length) msg += ' (' + exenciones.length + ' exentos)';
+        mostrarNotificacion('Éxito', msg, 'success');
       });
+    }
+
+    function toggleExencionesCE() {
+      var on = document.getElementById('ceSwitchExenciones').checked;
+      var container = document.getElementById('ceExencionesContainer');
+      var dot = document.getElementById('ceSwitchDot');
+
+      if (on) {
+        container.style.display = 'block';
+        dot.style.left = '25px';
+        dot.parentElement.querySelector('span:first-of-type').style.background = 'var(--secondary)';
+
+        // Llenar apartamentos si está vacío
+        if (!document.getElementById('ceAptosExentos').children.length) {
+          document.getElementById('ceAptosExentos').innerHTML = APARTAMENTOS.map(function(a) {
+            return '<button type="button" class="apartment-btn" onclick="this.classList.toggle(\'selected\')">' + a + '</button>';
+          }).join('');
+        }
+      } else {
+        container.style.display = 'none';
+        resetSwitchCE();
+      }
+    }
+
+    function resetSwitchCE() {
+      var dot = document.getElementById('ceSwitchDot');
+      dot.style.left = '3px';
+      dot.parentElement.querySelector('span:first-of-type').style.background = 'var(--border)';
     }
 
     // --- ADMIN: CARGAR SECCIÓN DE CUOTAS ESPECIALES ---
@@ -6141,8 +6199,13 @@
           var porcentajeGlobal = ce.valor > 0 ? Math.round((ce.totalRecaudado / (ce.valor * ce.totalAptos)) * 100) : 0;
           var barClass = porcentajeGlobal >= 80 ? 'green' : porcentajeGlobal >= 40 ? 'yellow' : 'blue';
 
+          var exentosHtml = '';
+          if (ce.exenciones && ce.exenciones.length) {
+            exentosHtml = '<div style="font-size:11px;color:var(--warning);margin-top:3px;"><i class="fas fa-shield-alt"></i> Exentos: ' + ce.exenciones.join(', ') + '</div>';
+          }
+
           return '<tr>' +
-            '<td><strong>' + escapeHtml(ce.concepto) + '</strong></td>' +
+            '<td><strong>' + escapeHtml(ce.concepto) + '</strong>' + exentosHtml + '</td>' +
             '<td>$' + ce.valor.toLocaleString('es-CO') + '</td>' +
             '<td style="color:var(--success);font-weight:600;">$' + ce.totalRecaudado.toLocaleString('es-CO') + '</td>' +
             '<td>' +
@@ -6194,7 +6257,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 20;
+    const SW_VERSION = 21;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
