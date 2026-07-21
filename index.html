@@ -4226,7 +4226,7 @@
         if (esMultaLlamados && m.uuid) {
           soporteCol = '<span class="soporte-badge" onclick="verSoportesMultaLlamados(\'' + m.uuid + '\')" style="cursor:pointer;"><i class="fas fa-images"></i> 3 llamados</span>';
         } else if (m.soporte) {
-          soporteCol = '<a href="' + m.soporte + '" target="_blank"><img src="' + m.soporte + '" class="soporte-thumb" alt="Soporte"></a>';
+          soporteCol = '<span class="soporte-badge" onclick="window.open(\'' + m.soporte + '\',\'_blank\')" style="cursor:pointer;"><i class="fas fa-image"></i> Ver soporte</span>';
         } else {
           soporteCol = '<span class="sin-soporte">Sin soporte</span>';
         }
@@ -4331,7 +4331,7 @@
         tbody.innerHTML = data.map(function(r) {
           // r = [fila, fecha, apartamento, descripcion, uuid, idMulta, soporte]
           var soporteCol = r[6]
-            ? '<a href="' + r[6] + '" target="_blank"><img src="' + r[6] + '" class="soporte-thumb" alt="Soporte"></a>'
+            ? '<span class="soporte-badge" onclick="window.open(\'' + r[6] + '\',\'_blank\')" style="cursor:pointer;"><i class="fas fa-image"></i> Ver soporte</span>'
             : '<span class="sin-soporte">-</span>';
           var acc = state.esAdmin
             ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td>'
