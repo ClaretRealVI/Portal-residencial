@@ -1310,6 +1310,8 @@
     .acta-votacion-item.favor .val { color: var(--success); }
     .acta-votacion-item.contra .val { color: var(--danger); }
     .acta-votacion-item.blanco .val { color: var(--text-muted); }
+    .acta-votacion-item .val small { font-size: 11px; font-weight: 400; color: var(--text-muted); margin-left: 2px; }
+    .voto-indicador { font-size: 10px; color: var(--secondary); font-weight: 600; margin-top: 2px; min-height: 14px; }    
     .acta-compromisos-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -4521,16 +4523,19 @@
           '</div>' +
           '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
             '<div class="form-group">' +
-              '<label class="form-label" style="font-size:11px;">A favor (apartamentos)</label>' +
-              '<input type="text" class="form-control tema-favor" placeholder="Nro. aptos" onfocus="limpiarVoto(this)" onblur="formatearVoto(this,\'actaAsistentes\',\'actaRepresentados\')">' +
+              '<label class="form-label" style="font-size:11px;">A favor (apts)</label>' +
+              '<input type="number" min="0" class="form-control tema-favor" placeholder="0" oninput="calcularVotacionPreview(this, 'favor')">' +
+              '<div class="voto-indicador" id="votoInd-favor-' + num + '"></div>' +
             '</div>' +
             '<div class="form-group">' +
-              '<label class="form-label" style="font-size:11px;">En contra (apartamentos)</label>' +
-              '<input type="text" class="form-control tema-contra" placeholder="Nro. aptos" onfocus="limpiarVoto(this)" onblur="formatearVoto(this,\'actaAsistentes\',\'actaRepresentados\')">' +
+              '<label class="form-label" style="font-size:11px;">En contra (apts)</label>' +
+              '<input type="number" min="0" class="form-control tema-contra" placeholder="0" oninput="calcularVotacionPreview(this, 'contra')">' +
+              '<div class="voto-indicador" id="votoInd-contra-' + num + '"></div>' +
             '</div>' +
             '<div class="form-group">' +
-              '<label class="form-label" style="font-size:11px;">En blanco (apartamentos)</label>' +
-              '<input type="text" class="form-control tema-blanco" placeholder="Nro. aptos" onfocus="limpiarVoto(this)" onblur="formatearVoto(this,\'actaAsistentes\',\'actaRepresentados\')">' +
+              '<label class="form-label" style="font-size:11px;">En blanco (apts)</label>' +
+              '<input type="number" min="0" class="form-control tema-blanco" placeholder="0" oninput="calcularVotacionPreview(this, 'blanco')">' +
+              '<div class="voto-indicador" id="votoInd-blanco-' + num + '"></div>' +
             '</div>' +
           '</div>' +
         '</div>';
@@ -4558,9 +4563,9 @@
             titulo: t,
             descripcion: (block.querySelector(".tema-descripcion").value || "").trim(),
             decision: (block.querySelector(".tema-decision").value || "").trim(),
-            votoFavor: (block.querySelector(".tema-favor").value || "").trim(),
-            votoContra: (block.querySelector(".tema-contra").value || "").trim(),
-            votoBlanco: (block.querySelector(".tema-blanco").value || "").trim()
+            votoFavor: formatearVoto(block.querySelector(".tema-favor"), "actaAsistentes"),
+            votoContra: formatearVoto(block.querySelector(".tema-contra"), "actaAsistentes"),
+            votoBlanco: formatearVoto(block.querySelector(".tema-blanco"), "actaAsistentes"),
           });
         }
       });
@@ -4719,9 +4724,21 @@
             '<textarea class="form-control editar-tema-decision" rows="2" placeholder="Cual fue la decision?"></textarea>' +
           '</div>' +
           '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
-            '<div class="form-group"><label class="form-label" style="font-size:11px;">A favor (apartamentos)</label><input type="text" class="form-control editar-tema-favor" placeholder="Nro. aptos" onfocus="limpiarVoto(this)" onblur="formatearVoto(this,\'editarActaAsistentes\',\'editarActaRepresentados\')"></div>' +
-            '<div class="form-group"><label class="form-label" style="font-size:11px;">En contra (apartamentos)</label><input type="text" class="form-control editar-tema-contra" placeholder="Nro. aptos" onfocus="limpiarVoto(this)" onblur="formatearVoto(this,\'editarActaAsistentes\',\'editarActaRepresentados\')"></div>' +
-            '<div class="form-group"><label class="form-label" style="font-size:11px;">En blanco (apartamentos)</label><input type="text" class="form-control editar-tema-blanco" placeholder="Nro. aptos" onfocus="limpiarVoto(this)" onblur="formatearVoto(this,\'editarActaAsistentes\',\'editarActaRepresentados\')"></div>' +
+            '<div class="form-group">' +
+              '<label class="form-label" style="font-size:11px;">A favor (apts)</label>' +
+              '<input type="number" min="0" class="form-control editar-tema-favor" placeholder="0" oninput="calcularVotacionPreviewEditar(this, 'favor')">' +
+              '<div class="voto-indicador" id="editVotoInd-favor-' + num + '"></div>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label class="form-label" style="font-size:11px;">En contra (apts)</label>' +
+              '<input type="number" min="0" class="form-control editar-tema-contra" placeholder="0" oninput="calcularVotacionPreviewEditar(this, 'contra')">' +
+              '<div class="voto-indicador" id="editVotoInd-contra-' + num + '"></div>' +
+            '</div>' +
+            '<div class="form-group">' +
+              '<label class="form-label" style="font-size:11px;">En blanco (apts)</label>' +
+              '<input type="number" min="0" class="form-control editar-tema-blanco" placeholder="0" oninput="calcularVotacionPreviewEditar(this, 'blanco')">' +
+              '<div class="voto-indicador" id="editVotoInd-blanco-' + num + '"></div>' +
+            '</div>' +
           '</div>' +
         '</div>';
       container.appendChild(div);
@@ -4796,9 +4813,21 @@
                 '<div class="form-group"><label class="form-label">Descripcion / Desarrollo</label><textarea class="form-control editar-tema-descripcion" rows="3">' + (t.descripcion || "") + '</textarea></div>' +
                 '<div class="form-group"><label class="form-label">Decision tomada</label><textarea class="form-control editar-tema-decision" rows="2">' + (t.decision || "") + '</textarea></div>' +
                 '<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">' +
-                  '<div class="form-group"><label class="form-label" style="font-size:11px;">A favor (%)</label><input type="text" class="form-control editar-tema-favor" value="' + (t.votoFavor || "") + '"></div>' +
-                  '<div class="form-group"><label class="form-label" style="font-size:11px;">En contra (%)</label><input type="text" class="form-control editar-tema-contra" value="' + (t.votoContra || "") + '"></div>' +
-                  '<div class="form-group"><label class="form-label" style="font-size:11px;">En blanco (%)</label><input type="text" class="form-control editar-tema-blanco" value="' + (t.votoBlanco || "") + '"></div>' +
+                  '<div class="form-group">' +
+                    '<label class="form-label" style="font-size:11px;">A favor (apts)</label>' +
+                    '<input type="number" min="0" class="form-control editar-tema-favor" value="' + extraerNumApts(t.votoFavor) + '" oninput="calcularVotacionPreviewEditar(this, 'favor')">' +
+                    '<div class="voto-indicador" id="editVotoInd-favor-' + num + '">' + extraerPorcentaje(t.votoFavor) + '</div>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label class="form-label" style="font-size:11px;">En contra (apts)</label>' +
+                    '<input type="number" min="0" class="form-control editar-tema-contra" value="' + extraerNumApts(t.votoContra) + '" oninput="calcularVotacionPreviewEditar(this, 'contra')">' +
+                    '<div class="voto-indicador" id="editVotoInd-contra-' + num + '">' + extraerPorcentaje(t.votoContra) + '</div>' +
+                  '</div>' +
+                  '<div class="form-group">' +
+                    '<label class="form-label" style="font-size:11px;">En blanco (apts)</label>' +
+                    '<input type="number" min="0" class="form-control editar-tema-blanco" value="' + extraerNumApts(t.votoBlanco) + '" oninput="calcularVotacionPreviewEditar(this, 'blanco')">' +
+                    '<div class="voto-indicador" id="editVotoInd-blanco-' + num + '">' + extraerPorcentaje(t.votoBlanco) + '</div>' +
+                  '</div>' +
                 '</div>' +
               '</div>';
             temasContainer.appendChild(div);
@@ -4825,6 +4854,21 @@
         } else {
           soporteDiv.style.display = "none";
         }
+        // Funcion auxiliar: obtener numero de apartamentos asistentes
+        function obtenerTotalAsistentes() {
+          var asistentesVal = document.getElementById('actaAsistentes').value;
+          var aptos = asistentesVal.match(/\d{3,4}/g) || [];
+          return aptos.length;
+        }
+    
+        // Funcion auxiliar: obtener numero de apartamentos asistentes (edicion)
+        function obtenerTotalAsistentesEditar() {
+          var asistentesVal = document.getElementById('editarActaAsistentes').value;
+          var aptos = asistentesVal.match(/\d{3,4}/g) || [];
+          return aptos.length;
+        }
+
+        
         // Auto-calculo de coeficientes en editar
         function editarCalcularCoeficientes() {
           var asistentesVal = document.getElementById('editarActaAsistentes').value;
@@ -4872,9 +4916,9 @@
             titulo: t,
             descripcion: (block.querySelector(".editar-tema-descripcion").value || "").trim(),
             decision: (block.querySelector(".editar-tema-decision").value || "").trim(),
-            votoFavor: (block.querySelector(".editar-tema-favor").value || "").trim(),
-            votoContra: (block.querySelector(".editar-tema-contra").value || "").trim(),
-            votoBlanco: (block.querySelector(".editar-tema-blanco").value || "").trim()
+            votoFavor: formatearVoto(block.querySelector(".editar-tema-favor"), "editarActaAsistentes"),
+            votoContra: formatearVoto(block.querySelector(".editar-tema-contra"), "editarActaAsistentes"),
+            votoBlanco: formatearVoto(block.querySelector(".editar-tema-blanco"), "editarActaAsistentes")
           });
         }
       });
@@ -5023,10 +5067,9 @@
             if (t.votoFavor || t.votoContra || t.votoBlanco) {
               h += '<div class="acta-tema-field"><div class="acta-tema-field-label">Resultado de la Votacion</div>';
               h += '<div class="acta-votacion">';
-              h += '<div class="acta-votacion-item favor"><div class="lbl">A favor</div><div class="val">' + escapeHtml(t.votoFavor || "-") + '</div></div>';
-              h += '<div class="acta-votacion-item contra"><div class="lbl">En contra</div><div class="val">' + escapeHtml(t.votoContra || "-") + '</div></div>';
-              h += '<div class="acta-votacion-item blanco"><div class="lbl">En blanco</div><div class="val">' + escapeHtml(t.votoBlanco || "-") + '</div></div>';
-              h += '</div></div>';
+              h += '<div class="acta-votacion-item favor"><div class="lbl">A favor</div><div class="val">' + mostrarVotoFormateado(t.votoFavor) + '</div></div>';
+              h += '<div class="acta-votacion-item contra"><div class="lbl">En contra</div><div class="val">' + mostrarVotoFormateado(t.votoContra) + '</div></div>';
+              h += '<div class="acta-votacion-item blanco"><div class="lbl">En blanco</div><div class="val">' + mostrarVotoFormateado(t.votoBlanco) + '</div></div>';              h += '</div></div>';
             }
             h += '</div>';
           });
@@ -5209,6 +5252,98 @@
       document.getElementById('multaDirectaApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('llamadoApto').addEventListener('change', actualizarContadorLlamados);
 
+
+      // ========== VOTACION POR APARTAMENTOS ==========
+  
+      // Extraer numero de apartamentos del formato "X apts (Y%)" o solo "X" o "X%"
+      function extraerNumApts(val) {
+        if (!val) return '';
+        val = String(val).trim();
+        // Formato nuevo: "8 apts (50%)" -> extraer 8
+        var m = val.match(/^(\d+)\s*a/i);
+        if (m) return m[1];
+        // Formato antiguo solo %: "50%" -> no hay numero de apts, devolver vacio
+        if (val.match(/^\d+\.?\d*%?$/)) return '';
+        // Si es solo un numero, podria ser apts viejo
+        if (val.match(/^\d+$/)) return val;
+        return '';
+      }
+  
+      // Extraer el porcentaje del formato "X apts (Y%)" o devolver el valor original
+      function extraerPorcentaje(val) {
+        if (!val) return '';
+        val = String(val).trim();
+        var m = val.match(/\((\d+\.?\d*)%\)/);
+        if (m) return m[1] + '%';
+        return '';
+      }
+  
+      // Calcular % a partir de cantidad de apartamentos y total asistentes
+      function calcularPorcentajeVoto(cantApts, totalAsistentes) {
+        cantApts = parseInt(cantApts) || 0;
+        totalAsistentes = parseInt(totalAsistentes) || 0;
+        if (totalAsistentes === 0) return '0%';
+        var pct = (cantApts / totalAsistentes) * 100;
+        pct = Math.round(pct * 100) / 100;
+        return pct + '%';
+      }
+  
+      // Formatear voto para almacenar: "X apts (Y%)" o vacio si es 0
+      function formatearVoto(inputEl, asistentesFieldId) {
+        var cantApts = parseInt(inputEl.value) || 0;
+        if (cantApts === 0) return '';
+        var asistentesVal = document.getElementById(asistentesFieldId).value;
+        var aptos = asistentesVal.match(/\d{3,4}/g) || [];
+        var total = aptos.length;
+        if (total === 0) return cantApts + ' apts';
+        var pct = calcularPorcentajeVoto(cantApts, total);
+        return cantApts + ' apts (' + pct + ')';
+      }
+  
+      // Preview en tiempo real al crear
+      function calcularVotacionPreview(inputEl, tipo) {
+        var cant = parseInt(inputEl.value) || 0;
+        var total = obtenerTotalAsistentes();
+        // Encontrar el indicador correcto - buscar el hermano siguiente div.voto-indicador
+        var indicador = inputEl.parentElement.querySelector('.voto-indicador');
+        if (!indicador) return;
+        if (cant === 0 || total === 0) {
+          indicador.textContent = '';
+        } else {
+          indicador.textContent = calcularPorcentajeVoto(cant, total);
+        }
+      }
+  
+      // Preview en tiempo real al editar
+      function calcularVotacionPreviewEditar(inputEl, tipo) {
+        var cant = parseInt(inputEl.value) || 0;
+        var total = obtenerTotalAsistentesEditar();
+        var indicador = inputEl.parentElement.querySelector('.voto-indicador');
+        if (!indicador) return;
+        if (cant === 0 || total === 0) {
+          indicador.textContent = '';
+        } else {
+          indicador.textContent = calcularPorcentajeVoto(cant, total);
+        }
+      }
+  
+      // Formatear voto para mostrar en vista de detalle
+      function mostrarVotoFormateado(val) {
+        if (!val) return '-';
+        val = String(val).trim();
+        // Si ya tiene formato "X apts (Y%)", mostrarlo bonito
+        var m = val.match(/^(\d+)\s*a.*?\((\d+\.?\d*)%\)$/);
+        if (m) {
+          return escapeHtml(m[1]) + ' apts <small>(' + m[2] + '%)</small>';
+        }
+        // Formato antiguo (solo %)
+        if (val.match(/\d+\.?\d*%/)) {
+          return escapeHtml(val);
+        }
+        // Solo numero (apts sin %)
+        return escapeHtml(val);
+      }
+      
       // Auto-calculo de coeficientes representados
       function calcularCoeficientes() {
         var asistentesVal = document.getElementById('actaAsistentes').value;
