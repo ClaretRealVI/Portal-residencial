@@ -1398,6 +1398,68 @@
     .acta-soporte-card:hover .soporte-icon {
       transform: scale(1.08);
     }
+
+    .acta-asistencia-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 10px;
+    }
+    @media (max-width: 500px) {
+      .acta-asistencia-grid { grid-template-columns: 1fr; }
+    }
+    .acta-asistencia-col {
+      border-radius: 10px;
+      padding: 12px 14px;
+    }
+    .acta-asistencia-col.presentes {
+      background: rgba(5,150,105,0.06);
+      border: 1px solid rgba(5,150,105,0.15);
+    }
+    .acta-asistencia-col.ausentes {
+      background: rgba(220,38,38,0.04);
+      border: 1px solid rgba(220,38,38,0.12);
+    }
+    .acta-asistencia-col .col-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .acta-asistencia-col.presentes .col-title {
+      color: var(--success);
+    }
+    .acta-asistencia-col.ausentes .col-title {
+      color: var(--danger);
+    }
+    .acta-asistencia-col .aptos-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .acta-asistencia-col .aptos-list .apto-chip {
+      font-size: 12px;
+      font-weight: 600;
+      padding: 3px 10px;
+      border-radius: 6px;
+    }
+    .acta-asistencia-col.presentes .apto-chip {
+      background: rgba(5,150,105,0.12);
+      color: var(--success);
+    }
+    .acta-asistencia-col.ausentes .apto-chip {
+      background: rgba(220,38,38,0.08);
+      color: var(--danger);
+    }
+    .acta-asistencia-col .col-count {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-top: 6px;
+    }    
     .tema-tratado-block {
       background: #f8fafc;
       border: 1px solid var(--border-light);
@@ -5106,21 +5168,54 @@
         }
         h += '</div>';
 
-        // 1. QUÓRUM
+        // 1. ASISTENCIA
         h += '<div class="acta-doc-section">';
-        h += '<h3 class="acta-doc-section-title"><span class="num">1</span> Verificacion del Quorum</h3>';
-        if (acta.asistentes) {
-          h += '<p class="acta-doc-text"><strong>Apartamentos presentes:</strong> ' + acta.asistentes + '</p>';
+        h += '<h3 class="acta-doc-section-title"><span class="num">1</span> Asistencia</h3>';
+
+        // Calcular presentes y ausentes
+        var textoCompleto = (acta.asistentes || '') + ', ' + (acta.representados || '');
+        var aptosPresentes = (textoCompleto.match(/\d{3,4}/g) || []);
+        var presentesSet = {};
+        aptosPresentes.forEach(function(a) { presentesSet[a.trim()] = true; });
+        var ausentes = APARTAMENTOS.filter(function(a) { return !presentesSet[a]; });
+
+        h += '<div class="acta-asistencia-grid">';
+        // Columna presentes
+        h += '<div class="acta-asistencia-col presentes">';
+        h += '<div class="col-title"><i class="fas fa-check-circle"></i> Presentes (' + aptosPresentes.length + '/16)</div>';
+        h += '<div class="aptos-list">';
+        if (aptosPresentes.length > 0) {
+          aptosPresentes.forEach(function(a) {
+            a = a.trim();
+            if (a) h += '<span class="apto-chip">' + a + '</span>';
+          });
+        } else {
+          h += '<span style="font-size:12px;color:var(--text-muted);">Sin registro</span>';
         }
+        h += '</div>';
         if (acta.representados) {
-          h += '<p class="acta-doc-text"><strong>Representados mediante poder:</strong> ' + acta.representados + '</p>';
+          h += '<div class="col-count"><i class="fas fa-user-shield" style="margin-right:3px;"></i>Incluye representados: ' + acta.representados + '</div>';
         }
+        h += '</div>';
+        // Columna ausentes
+        h += '<div class="acta-asistencia-col ausentes">';
+        h += '<div class="col-title"><i class="fas fa-times-circle"></i> Ausentes (' + ausentes.length + '/16)</div>';
+        h += '<div class="aptos-list">';
+        if (ausentes.length > 0) {
+          ausentes.forEach(function(a) {
+            h += '<span class="apto-chip">' + a + '</span>';
+          });
+        } else {
+          h += '<span style="font-size:12px;color:var(--text-muted);">Asistencia completa</span>';
+        }
+        h += '</div>';
+        h += '</div>';
+        h += '</div>';
+
         if (acta.quorumPorcentaje) {
-          h += '<p class="acta-doc-text"><strong>Coeficientes representados:</strong> ' + acta.quorumPorcentaje + '</p>';
+          h += '<p class="acta-doc-text" style="margin-top:8px;text-align:center;"><strong>Coeficientes representados:</strong> ' + acta.quorumPorcentaje + '</p>';
         }
-        if (!acta.asistentes && !acta.representados && !acta.quorumPorcentaje) {
-          h += '<p class="acta-doc-text" style="color:var(--text-muted); font-style:italic;">No se registraron datos de quorum.</p>';
-        }
+
         h += '</div>';
 
         // 2. ORDEN DEL DÍA
