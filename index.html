@@ -3709,6 +3709,7 @@
     // ============================================
     function mostrarTablaAnual(anio) {
       try {
+        alert('Entró a mostrarTablaAnual: ' + anio);
         state.selectedYear = anio;
         document.getElementById('tituloModalAnual').innerHTML = '<i class="fas fa-calendar-alt" style="margin-right:8px;"></i> Balance Anual ' + anio;
         var meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
@@ -3758,7 +3759,7 @@
         document.getElementById('bodyModalAnual').innerHTML = h;
         abrirModal('modalBalanceAnual');
       } catch(e) {
-        alert('Error en balance anual: ' + e.message);
+        alert('ERROR: ' + e.message + ' en línea: ' + e.lineNumber);
       }
     }
 
