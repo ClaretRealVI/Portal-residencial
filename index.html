@@ -6250,23 +6250,17 @@
       var activo = document.getElementById('ceSwitchEdificio').checked;
       var info = document.getElementById('ceInfoAptos');
       var labelValor = document.querySelector('#modalCrearCuotaEspecial .modal-body .form-group:nth-child(2) .form-label');
-      var exencionesRow = document.querySelector('#modalCrearCuotaEspecial .modal-body div[style*="border-top"]');
 
       if (activo) {
         info.innerHTML = '<i class="fas fa-info-circle" style="color:#f59e0b;"></i> Este ingreso se registra como <strong>ingreso normal</strong>. No aparece a los residentes ni en la card Especiales.';
         if (labelValor) labelValor.innerHTML = 'Valor total <span style="color:var(--danger);">*</span>';
-        // Ocultar exenciones cuando es edificio
-        if (exencionesRow) exencionesRow.style.display = 'none';
-        document.getElementById('ceExencionesContainer').style.display = 'none';
-        document.getElementById('ceSwitchExenciones').checked = false;
-        resetSwitchCE();
       } else {
         info.innerHTML = '<i class="fas fa-info-circle" style="color:var(--secondary);"></i> Este valor aplica para cada uno de los 16 apartamentos. Los residentes podrán pagar por abonos parciales.';
         if (labelValor) labelValor.innerHTML = 'Valor por apartamento <span style="color:var(--danger);">*</span>';
-        if (exencionesRow) exencionesRow.style.display = '';
       }
     }
 
+    // --- ADMIN: CREAR CUOTA ESPECIAL ---
     // --- ADMIN: CREAR CUOTA ESPECIAL ---
     function crearCuotaEspecial() {
       var concepto = document.getElementById('ceNuevoConcepto').value.trim();
@@ -6278,7 +6272,7 @@
       if (!concepto) { mostrarNotificacion('Error', 'Ingresa el concepto', 'error'); return; }
       if (valor <= 0) { mostrarNotificacion('Error', 'Ingresa un valor válido', 'error'); return; }
 
-      // Recoger exenciones si el switch está activo (solo para Apartamento)
+      // Recoger exenciones (solo para tipo Apartamento)
       var exenciones = [];
       if (!esEdificio && document.getElementById('ceSwitchExenciones').checked) {
         var selectedExentos = document.querySelectorAll('#ceAptosExentos .apartment-btn.selected');
@@ -6313,6 +6307,7 @@
     }
 
     // --- ADMIN: CARGAR SECCIÓN DE CUOTAS ESPECIALES ---
+    // --- ADMIN: CARGAR SECCIÓN DE CUOTAS ESPECIALES ---
     function cargarCuotasEspecialesAdmin() {
       mostrarLoading('Cargando...');
       llamarGS('obtenerResumenCuotasEspeciales', [], function(data) {
@@ -6333,11 +6328,13 @@
 
         var html = data.map(function(ce) {
           var esEdificio = ce.tipo === 'Edificio';
+          var tieneExenciones = ce.exenciones && ce.exenciones.length > 0;
           totalRecaudado += ce.totalRecaudado;
 
           var porcentaje, barClass, aptosHTML, accionesHTML;
 
           if (esEdificio) {
+            // Cuota 100% edificio
             porcentaje = ce.valor > 0 ? Math.round((ce.totalRecaudado / ce.valor) * 100) : 0;
             barClass = porcentaje >= 100 ? 'green' : 'yellow';
             if (ce.totalRecaudado >= ce.valor) totalAptsCompletos++;
@@ -6350,7 +6347,9 @@
               accionesHTML += '<span style="color:var(--success);font-weight:600;font-size:12px;"><i class="fas fa-check-circle"></i> Completo</span> ';
             }
             accionesHTML += '<button class="btn btn-sm btn-danger" onclick="eliminarCuotaEspecialAdmin(\'' + ce.uuid + '\',\'' + escapeHtml(ce.concepto) + '\')" title="Eliminar"><i class="fas fa-trash"></i></button></td>';
+
           } else {
+            // Cuota por apartamento
             totalAptsCompletos += ce.aptosCompletos;
             porcentaje = ce.totalAptos > 0 ? Math.round((ce.totalRecaudado / (ce.valor * ce.totalAptos)) * 100) : 0;
             barClass = porcentaje >= 80 ? 'green' : porcentaje >= 40 ? 'yellow' : 'blue';
@@ -6367,13 +6366,13 @@
 
           // Exenciones badge
           var exentosHtml = '';
-          if (ce.exenciones && ce.exenciones.length) {
+          if (tieneExenciones && !esEdificio) {
             exentosHtml = '<div style="font-size:11px;color:var(--warning);margin-top:3px;"><i class="fas fa-shield-alt"></i> Exentos: ' + ce.exenciones.join(', ') + '</div>';
           }
 
           return '<tr>' +
             '<td><strong>' + escapeHtml(ce.concepto) + '</strong>' + (esEdificio ? '<span class="ce-badge-edificio"><i class="fas fa-building"></i> Edificio</span>' : '') + exentosHtml + '</td>' +
-            '<td>$' + ce.valor.toLocaleString('es-CO') + '</td>' +
+            '<td>$' + ce.valor.toLocaleString('es-CO') + (tieneExenciones && !esEdificio ? '<div style="font-size:10px;color:var(--text-muted);">x ' + ce.totalAptos + ' aptos</div>' : '') + '</td>' +
             '<td style="color:var(--success);font-weight:600;">$' + ce.totalRecaudado.toLocaleString('es-CO') + '</td>' +
             '<td>' +
               '<div class="ce-table-progress"><div class="ce-table-progress-bar ' + barClass + '" style="width:' + porcentaje + '%"></div></div>' +
@@ -6509,7 +6508,7 @@
 
 
     // ── Registrar Service Worker ──
-    const SW_VERSION = 24;
+    const SW_VERSION = 25;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
