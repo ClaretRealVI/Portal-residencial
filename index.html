@@ -2974,6 +2974,16 @@
           <div style="margin-bottom:8px; font-size:13px; font-weight:600; color:var(--text-secondary);"><i class="fas fa-ban" style="color:var(--danger);"></i> Selecciona los apartamentos exentos:</div>
           <div class="apartment-grid" id="ceAptosExentos"></div>
         </div>
+        <!-- Switch Ingreso Normal -->
+        <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid var(--border-light); margin-top:8px;">
+          <div style="font-size:14px; font-weight:600; color:var(--text);"><i class="fas fa-exchange-alt" style="color:var(--accent); margin-right:6px;"></i>Ingreso Normal</div>
+          <div id="ceSwitchIngresoNormal" onclick="toggleIngresoNormalCE()" style="width:50px; height:28px; border-radius:14px; background:var(--border); cursor:pointer; position:relative; transition:all 0.3s;">
+            <div id="ceSwitchDot2" style="width:22px; height:22px; border-radius:50%; background:white; position:absolute; top:3px; left:3px; transition:all 0.3s; box-shadow:0 1px 3px rgba(0,0,0,0.2);"></div>
+          </div>
+        </div>
+        <div id="ceIngresoNormalHint" style="display:none; font-size:12px; color:var(--text-muted); margin-bottom:8px; padding:8px 12px; background:var(--bg); border-radius:8px; border-left:3px solid var(--accent);">
+          <i class="fas fa-info-circle" style="color:var(--accent);"></i> Los pagos se registrarán como <strong>ingreso normal</strong> (tipo "Pago") y entrarán al saldo disponible del edificio.
+        </div>        
 
       </div>
       <div class="modal-footer">
@@ -6117,36 +6127,44 @@
       var concepto = document.getElementById('ceNuevoConcepto').value.trim();
       var valorStr = (document.getElementById('ceNuevoValor').value || '').replace(/\D/g, '');
       var valor = parseInt(valorStr, 10) || 0;
-
+    
       if (!concepto) { mostrarNotificacion('Error', 'Ingresa el concepto', 'error'); return; }
       if (valor <= 0) { mostrarNotificacion('Error', 'Ingresa un valor válido', 'error'); return; }
-
+    
       // Recoger exenciones si el switch está activo
       var exenciones = [];
       if (document.getElementById('ceSwitchExenciones').checked) {
         var selectedExentos = document.querySelectorAll('#ceAptosExentos .apartment-btn.selected');
         exenciones = Array.from(selectedExentos).map(function(btn) { return btn.textContent.trim(); });
       }
-
+    
+      // ✅ Recoger tipo de registro (ingreso normal)
+      var tipoRegistro = "";
+      if (document.getElementById('ceSwitchIngresoNormal').dataset.active === 'true') {
+        tipoRegistro = "normal";
+      }
+    
       mostrarLoading('Creando cuota especial...');
-      llamarGS('agregarCuotaEspecial', [concepto, valor, exenciones], function(res) {
+      llamarGS('agregarCuotaEspecial', [concepto, valor, exenciones, tipoRegistro], function(res) {
         ocultarLoading();
-
+    
         if (res.ok === false || res.status === 'error') {
           mostrarNotificacion('Error', (res.mensaje || res.message || 'Error al crear'), 'error');
           return;
         }
-
+    
         cerrarModal('modalCrearCuotaEspecial');
         document.getElementById('ceNuevoConcepto').value = '';
         document.getElementById('ceNuevoValor').value = '';
         document.getElementById('ceSwitchExenciones').checked = false;
         document.getElementById('ceExencionesContainer').style.display = 'none';
         resetSwitchCE();
-
+        resetSwitchIngresoNormal();
+    
         cargarCuotasEspecialesAdmin();
         var msg = 'Cuota especial "' + concepto + '" creada por $' + valor.toLocaleString('es-CO') + ' por apartamento';
         if (exenciones.length) msg += ' (' + exenciones.length + ' exentos)';
+        if (tipoRegistro) msg += ' — Se registra como ingreso normal';
         mostrarNotificacion('Éxito', msg, 'success');
       });
     }
@@ -6173,6 +6191,33 @@
       }
     }
 
+    function toggleIngresoNormalCE() {
+      var on = document.getElementById('ceSwitchIngresoNormal');
+      var dot = document.getElementById('ceSwitchDot2');
+      var hint = document.getElementById('ceIngresoNormalHint');
+      var isActive = on.dataset.active === 'true';
+      
+      if (!isActive) {
+        on.dataset.active = 'true';
+        on.style.background = 'var(--accent)';
+        dot.style.left = '25px';
+        hint.style.display = 'block';
+      } else {
+        on.dataset.active = 'false';
+        on.style.background = 'var(--border)';
+        dot.style.left = '3px';
+        hint.style.display = 'none';
+      }
+    }
+    
+    function resetSwitchIngresoNormal() {
+      var sw = document.getElementById('ceSwitchIngresoNormal');
+      sw.dataset.active = 'false';
+      sw.style.background = 'var(--border)';
+      document.getElementById('ceSwitchDot2').style.left = '3px';
+      document.getElementById('ceIngresoNormalHint').style.display = 'none';
+    }
+    
     function resetSwitchCE() {
       var dot = document.getElementById('ceSwitchDot');
       dot.style.left = '3px';
@@ -6209,9 +6254,15 @@
           if (ce.exenciones && ce.exenciones.length) {
             exentosHtml = '<div style="font-size:11px;color:var(--warning);margin-top:3px;"><i class="fas fa-shield-alt"></i> Exentos: ' + ce.exenciones.join(', ') + '</div>';
           }
-
+          
+          // ✅ BADGE TIPO DE REGISTRO
+          var tipoBadge = '';
+          if (ce.tipoRegistro === 'normal') {
+            tipoBadge = '<div style="font-size:11px;color:var(--accent);margin-top:3px;"><i class="fas fa-exchange-alt"></i> Ingreso Normal</div>';
+          }
+          
           return '<tr>' +
-            '<td><strong>' + escapeHtml(ce.concepto) + '</strong>' + exentosHtml + '</td>' +
+            '<td><strong>' + escapeHtml(ce.concepto) + '</strong>' + exentosHtml + tipoBadge + '</td>' +
             '<td>$' + ce.valor.toLocaleString('es-CO') + '</td>' +
             '<td style="color:var(--success);font-weight:600;">$' + ce.totalRecaudado.toLocaleString('es-CO') + '</td>' +
             '<td>' +
@@ -6263,7 +6314,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 29;
+    const SW_VERSION = 30;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
