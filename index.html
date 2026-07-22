@@ -2660,28 +2660,20 @@
       <div class="modal-body">
         <input type="hidden" id="firmaActaFila" value="">
         <input type="hidden" id="firmaApto" value="">
-
-        <!-- Tabs -->
         <div class="firma-modal-tabs">
           <button class="firma-modal-tab active" onclick="cambiarModoFirma('dibujar')" id="tabFirmaDibujar"><i class="fas fa-pen-nib"></i> Dibujar firma</button>
           <button class="firma-modal-tab" onclick="cambiarModoFirma('escribir')" id="tabFirmaEscribir"><i class="fas fa-keyboard"></i> Escribir nombre</button>
         </div>
-
-        <!-- Modo Dibujar -->
         <div id="firmaModoDibujar">
           <div class="firma-canvas-wrap" id="firmaCanvasWrap">
             <canvas id="firmaCanvas" width="350" height="120"></canvas>
           </div>
           <p style="font-size:11px; color:var(--text-muted); text-align:center; margin:0 0 8px 0;">Dibuja tu firma con el mouse o el dedo</p>
         </div>
-
-        <!-- Modo Escribir -->
         <div id="firmaModoEscribir" class="firma-typed-section">
           <input type="text" id="firmaNombreInput" class="form-control firma-typed-input" placeholder="Escribe tu nombre completo" oninput="actualizarVistaPreviaFirma()">
           <div class="firma-typed-preview"><span id="firmaNombrePreview">Tu nombre aqui</span></div>
         </div>
-
-        <!-- Botones -->
         <div class="firma-actions">
           <button class="btn btn-light" onclick="limpiarFirma()"><i class="fas fa-eraser"></i> Limpiar</button>
           <button class="btn btn-primary" onclick="guardarFirma()"><i class="fas fa-check"></i> Guardar Firma</button>
@@ -2734,7 +2726,7 @@
       <div class="modal-header"><h3 class="modal-title" id="tituloModalEgreso">Nuevo Egreso</h3><button class="modal-close" onclick="cerrarModal('modalEgreso')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
         <input type="hidden" id="filaEgresoEditando">
-        <div class="form-group"><label class="form-label">Tipo</label><select id="tipoEgreso" class="form-control"><option value="">Selecciona</option><option>SEGURIDAD</option><option>ASEO</option><option>INTERNET</option><option>SERVICIO AGUA</option><option>SERVICIO LUZ</option><option>INSUMOS ASEO</option><option>NOMINA</option><option>IMPUESTO GMF</option><option>EGRESO EXTRAORDINARIO</option><option>EGRESO ESPECIALES</option><option>EGRESO ALQUILER SALÓN</option><option>OTROS</option></select>
+        <div class="form-group"><label class="form-label">Tipo</label><select id="tipoEgreso" class="form-control"><option value="">Selecciona</option><option>SEGURIDAD</option><option>ASEO</option><option>INTERNET</option><option>SERVICIO AGUA</option><option>SERVICIO LUZ</option><option>INSUMOS ASEO</option><option>NOMINA</option><option>IMPUESTO GMF</option><option>EGRESO EXTRAORDINARIO</option><option>EGRESO ESPECIALES</option><option>EGRESO ALQUILER SALÓN</option><option>OTROS</option></select></div>
         <div class="form-group"><label class="form-label">Descripción</label><input type="text" id="descripcionEgreso" class="form-control"></div>
         <div class="form-group"><label class="form-label">Valor</label><input type="text" id="valorEgreso" class="form-control currency-input" placeholder="$0"></div>
         <div class="form-group"><label class="form-label">Soporte</label><input type="file" id="soporteEgreso" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
@@ -2744,6 +2736,22 @@
         <button class="btn btn-danger" onclick="guardarEgreso()"><i class="fas fa-save"></i> Guardar</button>
         <button class="btn btn-light" onclick="cerrarModal('modalEgreso')">Cancelar</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Modal Balance Anual -->
+  <div id="modalBalanceAnual" class="modal">
+    <div class="modal-content" style="max-width:640px; max-height:85vh; overflow-y:auto;">
+      <div class="modal-header"><h3 class="modal-title" id="tituloModalAnual">Balance Anual</h3><button class="modal-close" onclick="cerrarModal('modalBalanceAnual')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body" id="bodyModalAnual" style="padding:0;"></div>
+    </div>
+  </div>
+
+  <!-- Modal Balance Mes -->
+  <div id="modalBalanceMes" class="modal">
+    <div class="modal-content" style="max-width:780px; max-height:85vh; overflow-y:auto;">
+      <div class="modal-header"><h3 class="modal-title" id="tituloModalMes">Balance</h3><button class="modal-close" onclick="cerrarModal('modalBalanceMes')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-body" id="bodyModalMes"></div>
     </div>
   </div>
 
@@ -2921,23 +2929,6 @@
     </div>
   </div>
 
-
-  <!-- Modal Balance Anual -->
-  <div id="modalBalanceAnual" class="modal">
-    <div class="modal-content" style="max-width:640px; max-height:85vh; overflow-y:auto;">
-      <div class="modal-header"><h3 class="modal-title" id="tituloModalAnual">Balance Anual</h3><button class="modal-close" onclick="cerrarModal('modalBalanceAnual')"><i class="fas fa-times"></i></button></div>
-      <div class="modal-body" id="bodyModalAnual" style="padding:0;"></div>
-    </div>
-  </div>
-
-  <!-- Modal Balance Mes -->
-  <div id="modalBalanceMes" class="modal">
-    <div class="modal-content" style="max-width:780px; max-height:85vh; overflow-y:auto;">
-      <div class="modal-header"><h3 class="modal-title" id="tituloModalMes">Balance</h3><button class="modal-close" onclick="cerrarModal('modalBalanceMes')"><i class="fas fa-times"></i></button></div>
-      <div class="modal-body" id="bodyModalMes"></div>
-    </div>
-  </div>
-
   <!-- Modal Crear Cuota Especial -->
   <div id="modalCrearCuotaEspecial" class="modal">
     <div class="modal-content" style="max-width: 440px;">
@@ -2958,7 +2949,6 @@
             Este valor aplica para cada uno de los 16 apartamentos. Los residentes podrán pagar por abonos parciales.
           </div>
         </div>
-
         <!-- Switch Exenciones -->
         <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid var(--border-light); margin-top:4px;">
           <div>
@@ -2985,7 +2975,6 @@
         <div id="ceIngresoNormalHint" style="display:none; font-size:12px; color:var(--text-muted); margin-bottom:8px; padding:8px 12px; background:var(--bg); border-radius:8px; border-left:3px solid var(--accent);">
           <i class="fas fa-info-circle" style="color:var(--accent);"></i> Los pagos se registrarán como <strong>ingreso normal</strong> (tipo "Pago") y entrarán al saldo disponible del edificio.
         </div>        
-
       </div>
       <div class="modal-footer">
         <button class="btn btn-primary" onclick="crearCuotaEspecial()"><i class="fas fa-save"></i> Crear Cuota Especial</button>
@@ -3004,7 +2993,6 @@
           <div style="text-align:center;"><div style="font-size:10.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Apartamento</div><div style="font-size:14px;font-weight:600;" id="cePagoApto">-</div></div>
           <div style="text-align:center;"><div style="font-size:10.5px;text-transform:uppercase;color:var(--text-muted);margin-bottom:4px;">Saldo Restante</div><div style="font-size:14px;font-weight:600;color:var(--danger);" id="cePagoRestante">$0</div></div>
         </div>
-
         <!-- Barra de progreso -->
         <div style="margin:16px 0;">
           <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text-muted);margin-bottom:6px;">
@@ -3019,7 +3007,6 @@
             <span>Total: <strong id="cePagoTotal">$0</strong></span>
           </div>
         </div>
-
         <!-- Campo monto a pagar -->
         <div class="form-group">
           <label class="form-label">¿Cuánto vas a pagar? <span style="color:var(--danger);">*</span></label>
@@ -3032,7 +3019,6 @@
             <span class="ce-monto-max" id="cePagoMaxBtn" onclick="document.getElementById('cePagoMonto').value = document.getElementById('cePagoMonto').getAttribute('data-max')">Pagar todo</span>
           </div>
         </div>
-
         <!-- QR y datos transferencia -->
         <div class="qr-container"><img src="https://i.imgur.com/G2pDQyY.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')"></div>
         <div style="text-align:center;margin-top:8px;color:var(--text-muted);font-size:12px;"><i class="fas fa-download"></i> Click para descargar QR</div>
