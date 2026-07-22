@@ -6202,7 +6202,7 @@
           totalRecaudado += ce.totalRecaudado;
           totalAptsCompletos += ce.aptosCompletos;
 
-          var porcentajeGlobal = ce.valor > 0 ? Math.round((ce.totalRecaudado / (ce.valor * ce.totalAptos)) * 100) : 0;
+          var porcentajeGlobal = ce.totalAptos > 0 ? Math.round((ce.totalRecaudado / (ce.valor * ce.totalAptos)) * 100) : 0;
           var barClass = porcentajeGlobal >= 80 ? 'green' : porcentajeGlobal >= 40 ? 'yellow' : 'blue';
 
           var exentosHtml = '';
@@ -6263,7 +6263,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 28;
+    const SW_VERSION = 29;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
