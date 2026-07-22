@@ -3553,15 +3553,18 @@
     // ============================================
     // BALANCE POR MES (desde datos globales)
     // ============================================
+    // ============================================
+    // BALANCE POR MES (desde datos globales)
+    // ============================================
     function calcularBalanceMes(mesIdx, anio) {
       var data = state.resumenAllData;
       if (!data) return null;
-
+    
       var totalIngresos = 0, totalEgresos = 0;
-      var totalPago = 0, totalExtraordinario = 0, totalMultas = 0, totalAlquileres = 0, totalMora = 0;
+      var totalPago = 0, totalExtraordinario = 0, totalMultas = 0, totalAlquileres = 0, totalMora = 0, totalEspeciales = 0;
       var egresosPorTipo = {};
-      var totalEgresosExtraordinario = 0, totalEgresosEspeciales = 0, totalEgresosAlquiler = 0;
-
+      var totalEgresosRegulares = 0, totalEgresosExtraordinario = 0, totalEgresosEspeciales = 0, totalEgresosAlquiler = 0;
+    
       // Filter ingresos for this month/year
       (data.detalleIngresos || []).forEach(function(r) {
         var fechaStr = r[0] || '';
@@ -3570,15 +3573,18 @@
         var rMes = parseInt(parts[1], 10) - 1;
         var rAnio = parseInt(parts[2], 10);
         if (rMes !== mesIdx || rAnio !== anio) return;
-
+    
         var valor = r[3] || 0;
         var tipo = (r[1] || '').toLowerCase();
         var desc = r[2] || '';
         var descLower = desc.toLowerCase();
         var descSin = descLower.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
         totalIngresos += valor;
-
-        if (tipo.indexOf('multa') !== -1) {
+    
+        // DETECTAR CUOTA ESPECIAL (fondo especiales)
+        if (tipo.indexOf('cuota especial') !== -1) {
+          totalEspeciales += valor;
+        } else if (tipo.indexOf('multa') !== -1) {
           totalMultas += valor;
         } else if (tipo.indexOf('alquiler') !== -1 && (descSin.indexOf('salon') !== -1 || descSin.indexOf('silla') !== -1) && descSin.indexOf('bbq') === -1) {
           totalAlquileres += valor;
@@ -3606,8 +3612,8 @@
           }
         }
       });
-
-      // Filter egresos for this month/year
+    
+      // Filter egresos for this month/year — separar por fondo
       (data.detalleEgresos || []).forEach(function(r) {
         var fechaStr = r[0] || '';
         var parts = fechaStr.split('/');
@@ -3615,27 +3621,31 @@
         var rMes = parseInt(parts[1], 10) - 1;
         var rAnio = parseInt(parts[2], 10);
         if (rMes !== mesIdx || rAnio !== anio) return;
-
+    
         var valor = r[3] || 0;
         var tipo = (r[1] || '').toUpperCase();
         totalEgresos += valor;
         if (!egresosPorTipo[tipo]) egresosPorTipo[tipo] = 0;
         egresosPorTipo[tipo] += valor;
-
-        // Separar egresos de fondos especiales
+    
+        // Separar egresos por tipo de fondo
         if (tipo === 'EGRESO EXTRAORDINARIO') {
           totalEgresosExtraordinario += valor;
         } else if (tipo === 'EGRESO ESPECIALES') {
           totalEgresosEspeciales += valor;
-        } else if (tipo.indexOf('EGRESO ALQUILER') !== -1) {
+        } else if (tipo === 'EGRESO ALQUILER SALÓN' || tipo === 'EGRESO ALQUILER SALON') {
           totalEgresosAlquiler += valor;
+        } else {
+          totalEgresosRegulares += valor;
         }
       });
-
-      // Saldo del edificio = pagos normales + mora + multas - egresos regulares (sin los de fondos especiales)
-      var egresosRegulares = totalEgresos - totalEgresosExtraordinario - totalEgresosEspeciales - totalEgresosAlquiler;
-      var saldoEdificio = totalPago + totalMora + totalMultas - egresosRegulares;
-
+    
+      // Saldos netos por fondo
+      var saldoEdificio = totalPago + totalMora + totalMultas - totalEgresosRegulares;
+      var saldoExtraordinario = totalExtraordinario - totalEgresosExtraordinario;
+      var saldoEspeciales = totalEspeciales - totalEgresosEspeciales;
+      var saldoAlquileres = totalAlquileres - totalEgresosAlquiler;
+    
       return {
         totalIngresos: totalIngresos,
         totalEgresos: totalEgresos,
@@ -3644,21 +3654,26 @@
         totalMultas: totalMultas,
         totalAlquileres: totalAlquileres,
         totalMora: totalMora,
+        totalEspeciales: totalEspeciales,
         egresosPorTipo: egresosPorTipo,
+        totalEgresosRegulares: totalEgresosRegulares,
         totalEgresosExtraordinario: totalEgresosExtraordinario,
         totalEgresosEspeciales: totalEgresosEspeciales,
         totalEgresosAlquiler: totalEgresosAlquiler,
-        saldoEdificio: saldoEdificio
+        saldoEdificio: saldoEdificio,
+        saldoExtraordinario: saldoExtraordinario,
+        saldoEspeciales: saldoEspeciales,
+        saldoAlquileres: saldoAlquileres
       };
     }
-
+    
     // ============================================
     // YEAR OVERVIEW - CARDS DE AÑOS
     // ============================================
     function renderizarYearOverview(data) {
       var container = document.getElementById('yearCardsContainer');
       if (!container) return;
-
+    
       var years = {};
       (data.detalleIngresos || []).forEach(function(r) {
         var fechaStr = r[0] || '';
@@ -3676,10 +3691,10 @@
           years[anio] = true;
         }
       });
-
+    
       var yearList = Object.keys(years).map(Number).sort(function(a, b) { return b - a; });
       if (yearList.length === 0) return;
-
+    
       var h = '<div class="year-cards-grid">';
       yearList.forEach(function(anio) {
         h += '<div class="year-card" onclick="mostrarTablaAnual(' + anio + ')">';
@@ -3690,66 +3705,65 @@
       h += '</div>';
       container.innerHTML = h;
     }
-
+    
     // ============================================
     // TABLA ANUAL POR AÑO (MODAL)
     // ============================================
     function mostrarTablaAnual(anio) {
-      try {
-        alert('Entró a mostrarTablaAnual: ' + anio);
-        state.selectedYear = anio;
-        document.getElementById('tituloModalAnual').innerHTML = '<i class="fas fa-calendar-alt" style="margin-right:8px;"></i> Balance Anual ' + anio;
-        var meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
-        var totalEdificio = 0, totalExtra = 0, totalSalon = 0;
-
-        function fmtCol(v) {
-          if (v === 0) return '<span class="mv zero">$ 0</span>';
-          var cls = v > 0 ? 'pos' : 'neg';
-          var sign = v < 0 ? '-$ ' : '$ ';
-          return '<span class="mv ' + cls + '">' + sign + Math.abs(v).toLocaleString('es-CO') + '</span>';
-        }
-
-        var h = '<table class="annual-table"><thead><tr>';
-        h += '<th>MES</th><th>EDIFICIO</th><th>EXTRAORDINARIO</th><th>SALON COMUNAL</th>';
-        h += '</tr></thead><tbody>';
-
-        for (var m = 0; m < 12; m++) {
-          var bal = calcularBalanceMes(m, anio);
-          var ed = bal ? bal.saldoEdificio : 0;
-          var ex = bal ? bal.totalExtraordinario : 0;
-          var sa = bal ? bal.totalAlquileres : 0;
-          totalEdificio += ed;
-          totalExtra += ex;
-          totalSalon += sa;
-          h += '<tr class="annual-month-row" onclick="mostrarBalanceMes(' + m + ',' + anio + ')">';
-          h += '<td>' + meses[m] + '</td>';
-          h += '<td>' + fmtCol(ed) + '</td>';
-          h += '<td><span class="mv-ext">$ ' + ex.toLocaleString('es-CO') + '</span></td>';
-          h += '<td><span class="mv-sal">$ ' + sa.toLocaleString('es-CO') + '</span></td>';
-          h += '</tr>';
-        }
-
-        h += '<tr class="annual-total-row">';
-        h += '<td>TOTAL</td>';
-        h += '<td>' + fmtCol(totalEdificio) + '</td>';
-        h += '<td><span class="mv-ext" style="font-weight:700">$ ' + totalExtra.toLocaleString('es-CO') + '</span></td>';
-        h += '<td><span class="mv-sal" style="font-weight:700">$ ' + totalSalon.toLocaleString('es-CO') + '</span></td>';
-        h += '</tr>';
-        h += '</tbody></table>';
-
-        var granTotal = totalEdificio + totalExtra + totalSalon;
-        h += '<div class="annual-grand-total">';
-        h += '<span class="gt-label">TOTAL GENERAL</span>';
-        h += '<span class="gt-value" style="color:' + (granTotal < 0 ? 'var(--danger)' : 'var(--success)') + ';">' + (granTotal < 0 ? '-$ ' : '$ ') + Math.abs(granTotal).toLocaleString('es-CO') + '</span>';
-        h += '</div>';
-
-        document.getElementById('bodyModalAnual').innerHTML = h;
-        abrirModal('modalBalanceAnual');
-      } catch(e) {
-        alert('ERROR: ' + e.message + ' en línea: ' + e.lineNumber);
+      state.selectedYear = anio;
+      document.getElementById('tituloModalAnual').innerHTML = '<i class="fas fa-calendar-alt" style="margin-right:8px;"></i> Balance Anual ' + anio;
+      var meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
+      var totalEdificio = 0, totalExtra = 0, totalEspeciales = 0, totalSalon = 0;
+    
+      function fmtCol(v) {
+        if (v === 0) return '<span class="mv zero">$ 0</span>';
+        var cls = v > 0 ? 'pos' : 'neg';
+        var sign = v < 0 ? '-$ ' : '$ ';
+        return '<span class="mv ' + cls + '">' + sign + Math.abs(v).toLocaleString('es-CO') + '</span>';
       }
+    
+      var h = '<table class="annual-table"><thead><tr>';
+      h += '<th>MES</th><th>EDIFICIO</th><th>EXTRAORDINARIO</th><th>ESPECIALES</th><th>SALÓN</th>';
+      h += '</tr></thead><tbody>';
+    
+      for (var m = 0; m < 12; m++) {
+        var bal = calcularBalanceMes(m, anio);
+        var ed = bal ? bal.saldoEdificio : 0;
+        var ex = bal ? bal.saldoExtraordinario : 0;
+        var es = bal ? bal.saldoEspeciales : 0;
+        var sa = bal ? bal.saldoAlquileres : 0;
+        totalEdificio += ed;
+        totalExtra += ex;
+        totalEspeciales += es;
+        totalSalon += sa;
+        h += '<tr class="annual-month-row" onclick="mostrarBalanceMes(' + m + ',' + anio + ')">';
+        h += '<td>' + meses[m] + '</td>';
+        h += '<td>' + fmtCol(ed) + '</td>';
+        h += '<td>' + fmtCol(ex) + '</td>';
+        h += '<td>' + fmtCol(es) + '</td>';
+        h += '<td>' + fmtCol(sa) + '</td>';
+        h += '</tr>';
+      }
+    
+      h += '<tr class="annual-total-row">';
+      h += '<td>TOTAL</td>';
+      h += '<td>' + fmtCol(totalEdificio) + '</td>';
+      h += '<td><span class="mv-ext" style="font-weight:700">' + fmtCol(totalExtra) + '</span></td>';
+      h += '<td><span class="mv-esp" style="font-weight:700">' + fmtCol(totalEspeciales) + '</span></td>';
+      h += '<td><span class="mv-sal" style="font-weight:700">' + fmtCol(totalSalon) + '</span></td>';
+      h += '</tr>';
+      h += '</tbody></table>';
+    
+      var granTotal = totalEdificio + totalExtra + totalEspeciales + totalSalon;
+      h += '<div class="annual-grand-total">';
+      h += '<span class="gt-label">TOTAL GENERAL</span>';
+      h += '<span class="gt-value" style="color:' + (granTotal < 0 ? 'var(--danger)' : 'var(--success)') + ';">' + (granTotal < 0 ? '-$ ' : '$ ') + Math.abs(granTotal).toLocaleString('es-CO') + '</span>';
+      h += '</div>';
+    
+      document.getElementById('bodyModalAnual').innerHTML = h;
+      abrirModal('modalBalanceAnual');
     }
-
+    
     // ============================================
     // BALANCE DETALLADO POR MES (MODAL)
     // ============================================
@@ -3758,70 +3772,78 @@
       if (!bal) return;
       var meses = ['ENERO', 'FEBRERO', 'MARZO', 'ABRIL', 'MAYO', 'JUNIO', 'JULIO', 'AGOSTO', 'SEPTIEMBRE', 'OCTUBRE', 'NOVIEMBRE', 'DICIEMBRE'];
       document.getElementById('tituloModalMes').textContent = meses[mesIdx] + ' ' + anio;
-
+    
       function fmt(v) {
         return (v < 0 ? '-$ ' : '$ ') + Math.abs(v).toLocaleString('es-CO', {minimumFractionDigits: 0, maximumFractionDigits: 0});
       }
       function colRow(label, valor, color) {
         return '<div class="bal-col-row"><span class="bl">' + label + '</span><span class="bv"' + (color ? ' style="color:' + color + ';"' : '') + '>' + fmt(valor) + '</span></div>';
       }
-
+    
       var h = '<div class="bal-columns">';
-
-      // LEFT: EGRESOS (solo regulares, sin fondos especiales)
+    
+      // LEFT: EGRESOS (solo regulares del edificio)
       h += '<div class="bal-col-card">';
       h += '<div class="bal-col-header egresos-h">EGRESOS EDIFICIO</div>';
       var tiposOrden = ['SEGURIDAD', 'ASEO', 'INTERNET', 'SERVICIO AGUA', 'SERVICIO LUZ', 'INSUMOS ASEO', 'NOMINA', 'IMPUESTO GMF', 'OTROS'];
-      var tiposEspeciales = ['EGRESO EXTRAORDINARIO', 'EGRESO ESPECIALES', 'EGRESO ALQUILER SALÓN', 'EGRESO ALQUILER SALON'];
-      var egresosRegulares = bal.totalEgresos - bal.totalEgresosExtraordinario - bal.totalEgresosEspeciales - bal.totalEgresosAlquiler;
+      var tiposFondo = ['EGRESO EXTRAORDINARIO', 'EGRESO ESPECIALES', 'EGRESO ALQUILER SALÓN', 'EGRESO ALQUILER SALON'];
+      var tieneEgresosReg = false;
       tiposOrden.forEach(function(tipo) {
         var v = bal.egresosPorTipo[tipo] || 0;
-        if (v > 0) h += colRow(tipo, v, '');
+        if (v > 0) { h += colRow(tipo, v, ''); tieneEgresosReg = true; }
       });
       Object.keys(bal.egresosPorTipo).forEach(function(tipo) {
-        if (tiposOrden.indexOf(tipo) === -1 && tiposEspeciales.indexOf(tipo) === -1 && bal.egresosPorTipo[tipo] > 0) {
+        if (tiposOrden.indexOf(tipo) === -1 && tiposFondo.indexOf(tipo) === -1 && bal.egresosPorTipo[tipo] > 0) {
           h += colRow(tipo, bal.egresosPorTipo[tipo], '');
+          tieneEgresosReg = true;
         }
       });
-      h += '<div class="bal-col-row total-row"><span class="bl">TOTAL EGRESOS EDIFICIO</span><span class="bv" style="color:var(--danger);">' + fmt(egresosRegulares) + '</span></div>';
+      if (!tieneEgresosReg) h += '<div class="bal-col-row"><span class="bl" style="opacity:.5">Sin egresos</span><span class="bv">$ 0</span></div>';
+      h += '<div class="bal-col-row total-row"><span class="bl">TOTAL EDIFICIO</span><span class="bv" style="color:var(--danger);">' + fmt(bal.totalEgresosRegulares) + '</span></div>';
       h += '</div>';
-
-      // RIGHT: INGRESOS
+    
+      // RIGHT: INGRESOS + EGRESOS FONDOS
       h += '<div class="bal-col-card">';
       h += '<div class="bal-col-header ingresos-h">INGRESOS</div>';
       if (bal.totalPago > 0) h += colRow('PAGO', bal.totalPago, '');
-      if (bal.totalExtraordinario > 0) h += colRow('EXTRAORDINARIO', bal.totalExtraordinario, 'var(--primary-light)');
       if (bal.totalMora > 0) h += colRow('MORA', bal.totalMora, '#d97706');
       if (bal.totalMultas > 0) h += colRow('MULTAS', bal.totalMultas, '#7c3aed');
+      if (bal.totalExtraordinario > 0) h += colRow('EXTRAORDINARIO', bal.totalExtraordinario, '#d97706');
+      if (bal.totalEspeciales > 0) h += colRow('ESPECIALES', bal.totalEspeciales, '#7c3aed');
       if (bal.totalAlquileres > 0) h += colRow('ALQUILERES', bal.totalAlquileres, '#2563eb');
       h += '<div class="bal-col-row total-row"><span class="bl">TOTAL INGRESOS</span><span class="bv" style="color:var(--success);">' + fmt(bal.totalIngresos) + '</span></div>';
+    
+      // Sub-sección: Egresos por Fondo
+      var tieneEgresosFondo = (bal.totalEgresosExtraordinario + bal.totalEgresosEspeciales + bal.totalEgresosAlquiler) > 0;
+      if (tieneEgresosFondo) {
+        h += '<div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">';
+        h += '<div class="bal-col-header" style="background:rgba(217,119,6,.1);color:#d97706;">EGRESOS FONDOS</div>';
+        if (bal.totalEgresosExtraordinario > 0) h += colRow('EXT. EXTRAORDINARIO', bal.totalEgresosExtraordinario, '#d97706');
+        if (bal.totalEgresosEspeciales > 0) h += colRow('EXT. ESPECIALES', bal.totalEgresosEspeciales, '#7c3aed');
+        if (bal.totalEgresosAlquiler > 0) h += colRow('EXT. ALQUILER SALÓN', bal.totalEgresosAlquiler, '#2563eb');
+        h += '</div>';
+      }
       h += '</div>';
-
+    
       h += '</div>';
-
-      // BOTTOM CENTERED: SALDO + DISPONIBLE POR FONDO
+    
+      // BOTTOM: SALDO EDIFICIO + DISPONIBLE POR FONDO (NETO)
       h += '<div class="bal-bottom">';
       h += '<div class="bal-saldo-card">';
       h += '<div class="saldo-label">SALDO EDIFICIO</div>';
       h += '<div class="saldo-value ' + (bal.saldoEdificio >= 0 ? 'pos' : 'neg') + '">' + fmt(bal.saldoEdificio) + '</div>';
       h += '</div>';
-
+    
       h += '<div class="bal-disp-card">';
-      h += '<div class="disp-header">DISPONIBLE POR FONDO</div>';
-      // Fondos netos (ingreso - egreso del fondo)
-      var netExt = bal.totalExtraordinario - bal.totalEgresosExtraordinario;
-      var netAlq = bal.totalAlquileres - bal.totalEgresosAlquiler;
-      var netEsp = 0; // Las cuotas especiales se manejan por separado
-      h += '<div class="bal-disp-row"><span class="dl">EXTRAORDINARIO</span><span class="dv" style="color:' + (netExt >= 0 ? 'var(--primary-light)' : 'var(--danger)') + ';">' + fmt(netExt) + '</span></div>';
-      h += '<div class="bal-disp-row"><span class="dl">SALON SOCIAL</span><span class="dv" style="color:' + (netAlq >= 0 ? '#2563eb' : 'var(--danger)') + ';">' + fmt(netAlq) + '</span></div>';
-      if (bal.totalEgresosEspeciales > 0) {
-        h += '<div class="bal-disp-row"><span class="dl">EGRESOS ESPECIALES</span><span class="dv" style="color:var(--danger);">-$ ' + bal.totalEgresosEspeciales.toLocaleString('es-CO') + '</span></div>';
-      }
+      h += '<div class="disp-header">DISPONIBLE POR FONDO (NETO)</div>';
+      h += '<div class="bal-disp-row"><span class="dl">EXTRAORDINARIO</span><span class="dv" style="color:' + (bal.saldoExtraordinario >= 0 ? '#d97706' : 'var(--danger)') + ';">' + fmt(bal.saldoExtraordinario) + '</span></div>';
+      h += '<div class="bal-disp-row"><span class="dl">ESPECIALES</span><span class="dv" style="color:' + (bal.saldoEspeciales >= 0 ? '#7c3aed' : 'var(--danger)') + ';">' + fmt(bal.saldoEspeciales) + '</span></div>';
+      h += '<div class="bal-disp-row"><span class="dl">SALÓN SOCIAL</span><span class="dv" style="color:' + (bal.saldoAlquileres >= 0 ? '#2563eb' : 'var(--danger)') + ';">' + fmt(bal.saldoAlquileres) + '</span></div>';
       h += '<div class="bal-disp-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;"><span class="dl" style="font-weight:700;color:var(--text);">EDIFICIO</span><span class="dv" style="font-size:16px;color:' + (bal.saldoEdificio >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + fmt(bal.saldoEdificio) + '</span></div>';
       h += '</div>';
-
+    
       h += '</div>';
-
+    
       document.getElementById('bodyModalMes').innerHTML = h;
       abrirModal('modalBalanceMes');
     }
@@ -6328,7 +6350,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 34;
+    const SW_VERSION = 35;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
