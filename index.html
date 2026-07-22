@@ -1016,7 +1016,7 @@
        MODAL BALANCE ANUAL
        ============================================ */
     
-    #modalBalanceAnual .modal-content { max-width: 640px; max-height: 90vh; overflow-y: auto; }
+    #modalBalanceAnual .modal-content { max-width: 640px; max-height: 85vh; overflow-y: auto; }
     .annual-table {
       width: 100%;
       border-collapse: collapse;
@@ -2924,7 +2924,7 @@
 
   <!-- Modal Balance Anual -->
   <div id="modalBalanceAnual" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width:640px; max-height:85vh; overflow-y:auto;">
       <div class="modal-header"><h3 class="modal-title" id="tituloModalAnual">Balance Anual</h3><button class="modal-close" onclick="cerrarModal('modalBalanceAnual')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body" id="bodyModalAnual" style="padding:0;"></div>
     </div>
@@ -2932,7 +2932,7 @@
 
   <!-- Modal Balance Mes -->
   <div id="modalBalanceMes" class="modal">
-    <div class="modal-content">
+    <div class="modal-content" style="max-width:780px; max-height:85vh; overflow-y:auto;">
       <div class="modal-header"><h3 class="modal-title" id="tituloModalMes">Balance</h3><button class="modal-close" onclick="cerrarModal('modalBalanceMes')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body" id="bodyModalMes"></div>
     </div>
@@ -6342,7 +6342,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 33;
+    const SW_VERSION = 34;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
