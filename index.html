@@ -2733,7 +2733,7 @@
       <div class="modal-header"><h3 class="modal-title" id="tituloModalEgreso">Nuevo Egreso</h3><button class="modal-close" onclick="cerrarModal('modalEgreso')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
         <input type="hidden" id="filaEgresoEditando">
-        <div class="form-group"><label class="form-label">Tipo</label><select id="tipoEgreso" class="form-control"><option value="">Selecciona</option><option>SEGURIDAD</option><option>ASEO</option><option>INTERNET</option><option>SERVICIO AGUA</option><option>SERVICIO LUZ</option><option>INSUMOS ASEO</option><option>NOMINA</option><option>IMPUESTO GMF</option><option>OTROS</option></select></div>
+        <div class="form-group"><label class="form-label">Tipo</label><select id="tipoEgreso" class="form-control"><option value="">Selecciona</option><option>SEGURIDAD</option><option>ASEO</option><option>INTERNET</option><option>SERVICIO AGUA</option><option>SERVICIO LUZ</option><option>INSUMOS ASEO</option><option>NOMINA</option><option>IMPUESTO GMF</option><option>EGRESO EXTRAORDINARIO</option><option>EGRESO ESPECIALES</option><option>EGRESO ALQUILER SALÓN</option><option>OTROS</option></select>
         <div class="form-group"><label class="form-label">Descripción</label><input type="text" id="descripcionEgreso" class="form-control"></div>
         <div class="form-group"><label class="form-label">Valor</label><input type="text" id="valorEgreso" class="form-control currency-input" placeholder="$0"></div>
         <div class="form-group"><label class="form-label">Soporte</label><input type="file" id="soporteEgreso" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
@@ -3526,27 +3526,25 @@
 
     function cargarResumen() {
       mostrarLoading('Cargando resumen...');
-      // Call WITHOUT filter to get ALL data
       llamarGS('obtenerResumen', [null, null], function(data) {
-        // Store all-time data for year/month navigation
         state.resumenAllData = data;
 
         var ingresos = data.totalIngresos || 0;
         var egresos = data.totalEgresos || 0;
-        var extraordinarios = data.totalExtraordinarios || 0;
-        var alquileres = data.totalAlquileres || 0;
-
         var balance = ingresos - egresos;
-        var disponible = balance - extraordinarios - alquileres;
+
+        // Valores netos para las cards (ingreso - egreso de ese fondo)
+        var netExtraordinarios = (data.totalExtraordinarios || 0) - (data.totalEgresosExtraordinario || 0);
+        var netAlquileres = (data.totalAlquileres || 0) - (data.totalEgresosAlquiler || 0);
+        var netEspeciales = (data.totalCuotasEspeciales || 0) - (data.totalEgresosEspeciales || 0);
 
         document.getElementById('ingresosTotal').textContent = '$' + ingresos.toLocaleString('es-CO');
         document.getElementById('egresosTotal').textContent = '$' + egresos.toLocaleString('es-CO');
-        document.getElementById('extraordinariosTotal').textContent = '$' + extraordinarios.toLocaleString('es-CO');
-        document.getElementById('alquileresTotal').textContent = '$' + alquileres.toLocaleString('es-CO');
-        if (data.totalCuotasEspeciales !== undefined) {
-          document.getElementById('cuotasEspecialesTotal').textContent = '$' + data.totalCuotasEspeciales.toLocaleString('es-CO');
-        }        
+        document.getElementById('extraordinariosTotal').textContent = '$' + netExtraordinarios.toLocaleString('es-CO');
+        document.getElementById('alquileresTotal').textContent = '$' + netAlquileres.toLocaleString('es-CO');
+        document.getElementById('cuotasEspecialesTotal').textContent = '$' + netEspeciales.toLocaleString('es-CO');
 
+        var disponible = balance - netExtraordinarios - netAlquileres - netEspeciales;
         var disponibleEl = document.getElementById('disponibleEdificio');
         disponibleEl.textContent = '$' + disponible.toLocaleString('es-CO');
         disponibleEl.style.color = disponible >= 0 ? '#00838f' : '#c62828';
@@ -3575,6 +3573,7 @@
       var totalIngresos = 0, totalEgresos = 0;
       var totalPago = 0, totalExtraordinario = 0, totalMultas = 0, totalAlquileres = 0, totalMora = 0;
       var egresosPorTipo = {};
+      var totalEgresosExtraordinario = 0, totalEgresosEspeciales = 0, totalEgresosAlquiler = 0;
 
       // Filter ingresos for this month/year
       (data.detalleIngresos || []).forEach(function(r) {
@@ -3635,9 +3634,20 @@
         totalEgresos += valor;
         if (!egresosPorTipo[tipo]) egresosPorTipo[tipo] = 0;
         egresosPorTipo[tipo] += valor;
+
+        // Separar egresos de fondos especiales
+        if (tipo === 'EGRESO EXTRAORDINARIO') {
+          totalEgresosExtraordinario += valor;
+        } else if (tipo === 'EGRESO ESPECIALES') {
+          totalEgresosEspeciales += valor;
+        } else if (tipo.indexOf('EGRESO ALQUILER') !== -1) {
+          totalEgresosAlquiler += valor;
+        }
       });
 
-      var saldoEdificio = totalPago + totalMora + totalMultas - totalEgresos;
+      // Saldo del edificio = pagos normales + mora + multas - egresos regulares (sin los de fondos especiales)
+      var egresosRegulares = totalEgresos - totalEgresosExtraordinario - totalEgresosEspeciales - totalEgresosAlquiler;
+      var saldoEdificio = totalPago + totalMora + totalMultas - egresosRegulares;
 
       return {
         totalIngresos: totalIngresos,
@@ -3648,6 +3658,9 @@
         totalAlquileres: totalAlquileres,
         totalMora: totalMora,
         egresosPorTipo: egresosPorTipo,
+        totalEgresosExtraordinario: totalEgresosExtraordinario,
+        totalEgresosEspeciales: totalEgresosEspeciales,
+        totalEgresosAlquiler: totalEgresosAlquiler,
         saldoEdificio: saldoEdificio
       };
     }
@@ -3763,20 +3776,22 @@
 
       var h = '<div class="bal-columns">';
 
-      // LEFT: EGRESOS
+      // LEFT: EGRESOS (solo regulares, sin fondos especiales)
       h += '<div class="bal-col-card">';
-      h += '<div class="bal-col-header egresos-h">EGRESOS</div>';
+      h += '<div class="bal-col-header egresos-h">EGRESOS EDIFICIO</div>';
       var tiposOrden = ['SEGURIDAD', 'ASEO', 'INTERNET', 'SERVICIO AGUA', 'SERVICIO LUZ', 'INSUMOS ASEO', 'NOMINA', 'IMPUESTO GMF', 'OTROS'];
+      var tiposEspeciales = ['EGRESO EXTRAORDINARIO', 'EGRESO ESPECIALES', 'EGRESO ALQUILER SALÓN', 'EGRESO ALQUILER SALON'];
+      var egresosRegulares = bal.totalEgresos - bal.totalEgresosExtraordinario - bal.totalEgresosEspeciales - bal.totalEgresosAlquiler;
       tiposOrden.forEach(function(tipo) {
         var v = bal.egresosPorTipo[tipo] || 0;
         if (v > 0) h += colRow(tipo, v, '');
       });
       Object.keys(bal.egresosPorTipo).forEach(function(tipo) {
-        if (tiposOrden.indexOf(tipo) === -1 && bal.egresosPorTipo[tipo] > 0) {
+        if (tiposOrden.indexOf(tipo) === -1 && tiposEspeciales.indexOf(tipo) === -1 && bal.egresosPorTipo[tipo] > 0) {
           h += colRow(tipo, bal.egresosPorTipo[tipo], '');
         }
       });
-      h += '<div class="bal-col-row total-row"><span class="bl">TOTAL EGRESOS</span><span class="bv" style="color:var(--danger);">' + fmt(bal.totalEgresos) + '</span></div>';
+      h += '<div class="bal-col-row total-row"><span class="bl">TOTAL EGRESOS EDIFICIO</span><span class="bv" style="color:var(--danger);">' + fmt(egresosRegulares) + '</span></div>';
       h += '</div>';
 
       // RIGHT: INGRESOS
@@ -3792,7 +3807,7 @@
 
       h += '</div>';
 
-      // BOTTOM CENTERED: SALDO + DISPONIBLE
+      // BOTTOM CENTERED: SALDO + DISPONIBLE POR FONDO
       h += '<div class="bal-bottom">';
       h += '<div class="bal-saldo-card">';
       h += '<div class="saldo-label">SALDO EDIFICIO</div>';
@@ -3801,8 +3816,15 @@
 
       h += '<div class="bal-disp-card">';
       h += '<div class="disp-header">DISPONIBLE POR FONDO</div>';
-      h += '<div class="bal-disp-row"><span class="dl">EXTRAORDINARIO</span><span class="dv" style="color:var(--primary-light);">' + fmt(bal.totalExtraordinario) + '</span></div>';
-      h += '<div class="bal-disp-row"><span class="dl">SALON SOCIAL</span><span class="dv" style="color:#2563eb;">' + fmt(bal.totalAlquileres) + '</span></div>';
+      // Fondos netos (ingreso - egreso del fondo)
+      var netExt = bal.totalExtraordinario - bal.totalEgresosExtraordinario;
+      var netAlq = bal.totalAlquileres - bal.totalEgresosAlquiler;
+      var netEsp = 0; // Las cuotas especiales se manejan por separado
+      h += '<div class="bal-disp-row"><span class="dl">EXTRAORDINARIO</span><span class="dv" style="color:' + (netExt >= 0 ? 'var(--primary-light)' : 'var(--danger)') + ';">' + fmt(netExt) + '</span></div>';
+      h += '<div class="bal-disp-row"><span class="dl">SALON SOCIAL</span><span class="dv" style="color:' + (netAlq >= 0 ? '#2563eb' : 'var(--danger)') + ';">' + fmt(netAlq) + '</span></div>';
+      if (bal.totalEgresosEspeciales > 0) {
+        h += '<div class="bal-disp-row"><span class="dl">EGRESOS ESPECIALES</span><span class="dv" style="color:var(--danger);">-$ ' + bal.totalEgresosEspeciales.toLocaleString('es-CO') + '</span></div>';
+      }
       h += '<div class="bal-disp-row" style="border-top:2px solid var(--border);margin-top:4px;padding-top:12px;"><span class="dl" style="font-weight:700;color:var(--text);">EDIFICIO</span><span class="dv" style="font-size:16px;color:' + (bal.saldoEdificio >= 0 ? 'var(--success)' : 'var(--danger)') + ';">' + fmt(bal.saldoEdificio) + '</span></div>';
       h += '</div>';
 
@@ -6314,7 +6336,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 30;
+    const SW_VERSION = 31;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
