@@ -2212,45 +2212,41 @@
           <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Solicitudes</h2>
         </div>
 
-        <!-- Tabla de solicitudes antiguas -->
-        <div style="margin-bottom:24px;">
-          <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;"><i class="fas fa-history" style="margin-right:6px;"></i>Solicitudes Registradas</h3>
-          <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Solicitud</th><th>Fecha solicitada</th><th>Horario</th><th>Soporte</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaSolicitudesBody"></tbody></table></div>
-        </div>
-
         <!-- Formatos auto-generados -->
-        <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; padding-top:12px; border-top:1px solid var(--border);"><i class="fas fa-file-alt" style="margin-right:6px;"></i>Generar Formato</h3>
-        <div class="formato-selector-grid">
-          <div class="formato-card" onclick="abrirFormularioFormato('Obra')">
-            <div class="formato-card-icon" style="background:rgba(217,119,6,0.1); color:#d97706;"><i class="fas fa-hard-hat"></i></div>
-            <div class="formato-card-info">
-              <h4>Solicitud de Obra</h4>
-              <p>SO-AD — Solicitar obras o reparaciones en el apartamento</p>
+        <div style="margin-bottom:24px;">
+          <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px;"><i class="fas fa-file-alt" style="margin-right:6px;"></i>Generar Formato</h3>
+          <div class="formato-selector-grid">
+            <div class="formato-card" onclick="abrirFormularioFormato('Obra')">
+              <div class="formato-card-icon" style="background:rgba(217,119,6,0.1); color:#d97706;"><i class="fas fa-hard-hat"></i></div>
+              <div class="formato-card-info">
+                <h4>Solicitud de Obra</h4>
+                <p>SO-AD — Solicitar obras o reparaciones en el apartamento</p>
+              </div>
+              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
-            <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
-          </div>
-          <div class="formato-card" onclick="abrirFormularioFormato('Mudanza')">
-            <div class="formato-card-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fas fa-truck"></i></div>
-            <div class="formato-card-info">
-              <h4>Solicitud de Mudanza</h4>
-              <p>FM-AD — Solicitar autorización para mudarse o ingresar bienes</p>
+            <div class="formato-card" onclick="abrirFormularioFormato('Mudanza')">
+              <div class="formato-card-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fas fa-truck"></i></div>
+              <div class="formato-card-info">
+                <h4>Solicitud de Mudanza</h4>
+                <p>FM-AD — Solicitar autorización para mudarse o ingresar bienes</p>
+              </div>
+              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
-            <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
-          </div>
-          <div class="formato-card" onclick="abrirFormularioFormato('Alquiler')">
-            <div class="formato-card-icon" style="background:rgba(124,58,237,0.1); color:#7c3aed;"><i class="fas fa-users"></i></div>
-            <div class="formato-card-info">
-              <h4>Alquiler de Áreas Comunes</h4>
-              <p>AAC-AD — Solicitar uso de salón, terraza o zonas comunes</p>
+            <div class="formato-card" onclick="abrirFormularioFormato('Alquiler')">
+              <div class="formato-card-icon" style="background:rgba(124,58,237,0.1); color:#7c3aed;"><i class="fas fa-users"></i></div>
+              <div class="formato-card-info">
+                <h4>Alquiler de Áreas Comunes</h4>
+                <p>AAC-AD — Solicitar uso de salón, terraza o zonas comunes</p>
+              </div>
+              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
-            <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
         </div>
 
-        <!-- Tabla de formatos enviados -->
-        <div style="margin-top:20px;">
-          <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; padding-top:12px; border-top:1px solid var(--border);"><i class="fas fa-list" style="margin-right:6px;"></i>Formatos Enviados</h3>
-          <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Apartamento</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaFormatosGeneradosBody"><tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin formatos enviados</td></tr></tbody></table></div>
+        <!-- Tabla unificada de solicitudes y formatos -->
+        <div>
+          <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px; padding-top:12px; border-top:1px solid var(--border);"><i class="fas fa-history" style="margin-right:6px;"></i>Solicitudes</h3>
+          <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Solicitud</th><th>Fecha solicitada</th><th>Horario</th><th>Soporte</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaSolicitudesBody"></tbody></table></div>
         </div>
       </div>
 
@@ -3636,7 +3632,7 @@
         egresos: cargarEgresos,
         cuotasEspeciales: cargarCuotasEspecialesAdmin,
         activos: cargarActivos,
-        solicitudes: function() { cargarSolicitudes(); cargarFormatos(); },
+        solicitudes: cargarSolicitudes,
         multas: cargarMultas,
         actas: cargarActas
       };
@@ -4149,37 +4145,8 @@
     var firmaCanvasMud, firmaCtxMud, firmaDrawingMud = false;
     var firmaCanvasAlq, firmaCtxAlq, firmaDrawingAlq = false;
 
-    function cargarFormatos() {
-      mostrarLoading('Cargando...');
-      llamarGS('obtenerFormatosGenerados', [], function(data) {
-        ocultarLoading();
-        var tbody = document.getElementById('tablaFormatosGeneradosBody');
-        if (!data || !data.length) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin formatos enviados</td></tr>';
-          return;
-        }
-        tbody.innerHTML = data.map(function(f) {
-          var tipoIcon = f.tipo === 'Obra' ? 'fa-hard-hat' : f.tipo === 'Mudanza' ? 'fa-truck' : 'fa-users';
-          var tipoColor = f.tipo === 'Obra' ? '#d97706' : f.tipo === 'Mudanza' ? '#059669' : '#7c3aed';
-          var estadoBadge = '<span class="badge badge-warning">Pendiente</span>';
-          if (f.estado === 'Aprobado') estadoBadge = '<span class="badge badge-success">Aprobado</span>';
-          if (f.estado === 'Rechazado') estadoBadge = '<span class="badge badge-danger">Rechazado</span>';
-
-          var acciones = '<button class="btn btn-sm btn-primary" onclick="verDetalleFormato(' + f.fila + ')"><i class="fas fa-eye"></i></button>';
-          if (state.esAdmin) {
-            acciones += ' <button class="btn btn-sm btn-success" onclick="cambiarEstadoFormato(' + f.fila + ',\'Aprobado\')" title="Aprobar"><i class="fas fa-check"></i></button>';
-            acciones += ' <button class="btn btn-sm btn-danger" onclick="cambiarEstadoFormato(' + f.fila + ',\'Rechazado\')" title="Rechazar"><i class="fas fa-times"></i></button>';
-            acciones += ' <button class="btn btn-sm btn-light" onclick="eliminarFormatoSolicitud(' + f.fila + ')" title="Eliminar"><i class="fas fa-trash"></i></button>';
-          }
-          return '<tr>' +
-            '<td style="white-space:nowrap;">' + f.fecha + '</td>' +
-            '<td><i class="fas ' + tipoIcon + '" style="color:' + tipoColor + '; margin-right:4px;"></i>' + f.tipo + '</td>' +
-            '<td><strong>' + f.apartamento + '</strong></td>' +
-            '<td>' + estadoBadge + '</td>' +
-            '<td class="table-actions">' + acciones + '</td></tr>';
-        }).join('');
-      });
-    }
+    // cargarFormatos ya no se usa por separado, todo se carga en cargarSolicitudes()
+    function cargarFormatos() { cargarSolicitudes(); }
 
     // Abrir formulario según tipo
     function abrirFormularioFormato(tipo) {
@@ -4806,17 +4773,69 @@
 
     function cargarSolicitudes() {
       mostrarLoading('Cargando...');
-      llamarGS('obtenerSolicitudes', [], function(data) {
-        state.cache.solicitudes = data;
-        var tbody = document.getElementById('tablaSolicitudesBody');
-        tbody.innerHTML = data.length ? data.map(function(r) {
-          var estado = r[6] || 'Pendiente';
-          var badgeClass = estado === 'Aprobado' ? 'badge-success' : estado === 'Rechazado' ? 'badge-danger' : 'badge-warning';
-          var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
-          var acciones = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-success" onclick="actualizarEstadoSol(' + r[7] + ',\'Aprobado\')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger" onclick="actualizarEstadoSol(' + r[7] + ',\'Rechazado\')"><i class="fas fa-times"></i></button></td>' : '';
-          return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + soporte + '</td><td><span class="badge ' + badgeClass + '">' + estado + '</span></td>' + acciones + '</tr>';
-        }).join('') : '<tr><td colspan="8" style="text-align:center">Sin datos</td></tr>';
-        ocultarLoading();
+      llamarGS('obtenerSolicitudes', [], function(dataSol) {
+        state.cache.solicitudes = dataSol;
+        llamarGS('obtenerFormatosGenerados', [], function(dataFmt) {
+          var tbody = document.getElementById('tablaSolicitudesBody');
+
+          // Construir filas de solicitudes antiguas
+          var filasSol = dataSol.map(function(r) {
+            var estado = r[6] || 'Pendiente';
+            var badgeClass = estado === 'Aprobado' ? 'badge-success' : estado === 'Rechazado' ? 'badge-danger' : 'badge-warning';
+            var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
+            var acciones = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-success" onclick="actualizarEstadoSol(' + r[7] + ',\'Aprobado\')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger" onclick="actualizarEstadoSol(' + r[7] + ',\'Rechazado\')"><i class="fas fa-times"></i></button></td>' : '';
+            return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + soporte + '</td><td><span class="badge ' + badgeClass + '">' + estado + '</span></td>' + acciones + '</tr>';
+          });
+
+          // Construir filas de formatos generados
+          var filasFmt = dataFmt.map(function(f) {
+            var tipoIcon = f.tipo === 'Obra' ? 'fa-hard-hat' : f.tipo === 'Mudanza' ? 'fa-truck' : 'fa-users';
+            var tipoColor = f.tipo === 'Obra' ? '#d97706' : f.tipo === 'Mudanza' ? '#059669' : '#7c3aed';
+            var estadoBadge = '<span class="badge badge-warning">Pendiente</span>';
+            if (f.estado === 'Aprobado') estadoBadge = '<span class="badge badge-success">Aprobado</span>';
+            if (f.estado === 'Rechazado') estadoBadge = '<span class="badge badge-danger">Rechazado</span>';
+
+            // Extraer resumen según tipo
+            var resumen = '';
+            var fechaSol = '';
+            var horario = '';
+            var d = f.datos || {};
+            if (f.tipo === 'Obra') {
+              resumen = (d.descripcion || d.obraDescripcion || 'Solicitud de obra') + ' — ' + (d.torre || '') + ' ' + (d.apartamento || '');
+              fechaSol = d.fecha || d.obraFecha || '';
+              horario = (d.horaInicio || d.obraHoraInicio || '') + ' - ' + (d.horaFin || d.obraHoraFin || '');
+            } else if (f.tipo === 'Mudanza') {
+              resumen = 'Mudanza — ' + (d.propietario || d.mudPropietario || '') + ' (' + (d.apartamento || '') + ')';
+              fechaSol = d.fecha || d.mudFecha || '';
+              horario = '—';
+            } else if (f.tipo === 'Alquiler') {
+              resumen = (d.evento || d.alqEvento || 'Alquiler') + ' — ' + (d.area || d.alqArea || '') + ' (' + (d.apartamento || '') + ')';
+              var fechas = d.fechas || d.fechasAlquiler || [];
+              if (fechas.length) fechaSol = fechas.map(function(x) { return x.fecha || x; }).join(', ');
+              horario = d.horario || d.alqHorario || '';
+            }
+
+            var acciones = '<button class="btn btn-sm btn-primary" onclick="verDetalleFormato(' + f.fila + ')"><i class="fas fa-eye"></i></button>';
+            if (state.esAdmin) {
+              acciones += ' <button class="btn btn-sm btn-success" onclick="cambiarEstadoFormato(' + f.fila + ',\'Aprobado\')" title="Aprobar"><i class="fas fa-check"></i></button>';
+              acciones += ' <button class="btn btn-sm btn-danger" onclick="cambiarEstadoFormato(' + f.fila + ',\'Rechazado\')" title="Rechazar"><i class="fas fa-times"></i></button>';
+              acciones += ' <button class="btn btn-sm btn-light" onclick="eliminarFormatoSolicitud(' + f.fila + ')" title="Eliminar"><i class="fas fa-trash"></i></button>';
+            }
+
+            return '<tr><td style="white-space:nowrap;">' + f.fecha + '</td>' +
+              '<td><i class="fas ' + tipoIcon + '" style="color:' + tipoColor + '; margin-right:4px;"></i>' + f.tipo + '</td>' +
+              '<td>' + resumen + '</td>' +
+              '<td>' + fechaSol + '</td>' +
+              '<td>' + horario + '</td>' +
+              '<td><span class="badge badge-secondary" style="background:#e2e8f0; color:#475569;">Formato</span></td>' +
+              '<td>' + estadoBadge + '</td>' +
+              '<td class="table-actions">' + acciones + '</td></tr>';
+          });
+
+          var todas = filasSol.concat(filasFmt);
+          tbody.innerHTML = todas.length ? todas.join('') : '<tr><td colspan="8" style="text-align:center; color:var(--text-muted);">Sin solicitudes</td></tr>';
+          ocultarLoading();
+        });
       });
     }
 
@@ -7210,7 +7229,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 41;
+    const SW_VERSION = 43;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
