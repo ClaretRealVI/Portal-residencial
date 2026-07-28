@@ -1674,51 +1674,51 @@
     .firma-typed-preview { width: 100%; height: 80px; background: white; border: 1px solid var(--border-light); border-radius: 8px; margin-top: 10px; display: flex; align-items: center; justify-content: center; padding: 8px; }
     .firma-typed-preview span { font-size: 28px; font-family: 'Segoe Script', 'Dancing Script', cursive, serif; color: #1a1a2e; font-style: italic; }
     .firma-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 12px; }
-    
+
+    /* ============================================
+       FORMATOS AUTO-GENERADOS
+       ============================================ */
+    .formato-selector-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
+    @media (min-width: 600px) { .formato-selector-grid { grid-template-columns: 1fr 1fr 1fr; } }
+    .formato-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+      padding: 20px; cursor: pointer; transition: var(--transition); display: flex; align-items: center; gap: 14px;
+      position: relative; overflow: hidden;
+    }
+    .formato-card:hover { border-color: var(--primary); box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .formato-card:active { transform: translateY(0); }
+    .formato-card-icon {
+      width: 48px; height: 48px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+      font-size: 20px; flex-shrink: 0;
+    }
+    .formato-card-info { flex: 1; min-width: 0; }
+    .formato-card-info h4 { font-size: 14px; font-weight: 600; color: var(--text); margin: 0 0 3px 0; }
+    .formato-card-info p { font-size: 11.5px; color: var(--text-muted); margin: 0; line-height: 1.4; }
+    .formato-card-arrow { color: var(--text-muted); font-size: 12px; flex-shrink: 0; }
+
+    /* Trabajador / Ocupante rows */
+    .trabajador-row, .ocupante-row {
+      background: var(--bg); border: 1px solid var(--border-light); border-radius: var(--radius);
+      padding: 12px; margin-bottom: 8px; position: relative;
+    }
+    .trabajador-row .row-num, .ocupante-row .row-num {
+      position: absolute; top: -8px; left: 12px; background: var(--primary); color: white;
+      font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 10px;
+    }
+    .trabajador-row input, .ocupante-row input { font-size: 12px !important; }
+
+    /* Fecha alquiler row */
+    .fecha-alq-row {
+      display: flex; gap: 8px; align-items: center; margin-bottom: 8px;
+      background: var(--bg); border: 1px solid var(--border-light); border-radius: var(--radius); padding: 10px 12px;
+    }
+    .fecha-alq-row input { font-size: 12px !important; }
+    .fecha-alq-row .btn-remove { color: var(--danger); background: none; border: none; cursor: pointer; font-size: 14px; padding: 4px; }
+
     @media (max-width: 600px) {
       .firma-grid { grid-template-columns: repeat(2, 1fr); }
-    }    
+    }
 
-    /* ========== FORMATOS DOCUMENTO ========== */
-    .formato-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 16px; padding: 8px 0; }
-    .formato-card { background: var(--bg); border: 2px solid var(--border-light); border-radius: 12px; padding: 24px; text-align: center; cursor: pointer; transition: all 0.25s; }
-    .formato-card:hover { border-color: var(--secondary); box-shadow: 0 4px 16px rgba(5,150,105,0.12); transform: translateY(-2px); }
-    .formato-card i { font-size: 32px; color: var(--secondary); margin-bottom: 12px; display: block; }
-    .formato-card h3 { font-size: 14px; font-weight: 700; color: var(--text); margin: 0 0 6px; }
-    .formato-card p { font-size: 11px; color: var(--text-muted); margin: 0; }
-
-    .formato-doc { background: white; max-width: 800px; margin: 0 auto; border-radius: 10px; overflow: hidden; font-size: 13px; color: #1a1a2e; box-shadow: 0 2px 16px rgba(0,0,0,0.08); }
-    .formato-doc-header { background: #0f172a; color: white; padding: 20px; text-align: center; }
-    .formato-doc-header img { height: 50px; margin-bottom: 8px; }
-    .formato-doc-header h2 { margin: 0 0 4px; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; }
-    .formato-doc-header p { margin: 0; font-size: 10px; opacity: 0.6; }
-    .formato-doc-body { padding: 24px; }
-    .formato-doc-section { margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e2e8f0; }
-    .formato-doc-section:last-child { border-bottom: none; margin-bottom: 0; }
-    .formato-doc-section h3 { font-size: 13px; font-weight: 700; color: #0f172a; margin: 0 0 10px; }
-    .formato-doc-section p { font-size: 11px; line-height: 1.7; color: #334155; }
-    .formato-doc-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
-    .formato-doc-info-item { display: flex; flex-direction: column; gap: 2px; }
-    .formato-doc-info-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.3px; font-weight: 600; }
-    .formato-doc-info-value { font-size: 13px; color: #0f172a; font-weight: 600; }
-    .formato-doc-info-item.full { grid-column: 1 / -1; }
-    .formato-input { border: none; border-bottom: 1px solid #94a3b8; padding: 3px 2px; font-size: 13px; font-family: inherit; color: #0f172a; background: transparent; width: 100%; outline: none; }
-    .formato-input:focus { border-bottom-color: #059669; }
-    .formato-textarea { border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px; font-size: 12px; font-family: inherit; width: 100%; min-height: 80px; resize: vertical; outline: none; color: #0f172a; }
-    .formato-textarea:focus { border-color: #059669; }
-    .formato-table { width: 100%; border-collapse: collapse; margin: 8px 0; font-size: 11px; }
-    .formato-table th { background: #f1f5f9; padding: 6px 8px; text-align: left; font-weight: 600; font-size: 10px; text-transform: uppercase; letter-spacing: 0.3px; }
-    .formato-table td { padding: 4px 6px; border-bottom: 1px solid #f1f5f9; }
-    .formato-table input { width: 100%; border: none; border-bottom: 1px dashed #cbd5e1; padding: 3px 0; font-size: 11px; font-family: inherit; outline: none; background: transparent; }
-    .formato-table input:focus { border-bottom-color: #059669; }
-    .formato-checklist { list-style: none; padding: 0; margin: 8px 0; counter-reset: item; }
-    .formato-checklist li { font-size: 11px; line-height: 1.8; color: #334155; padding-left: 24px; position: relative; counter-increment: item; margin-bottom: 2px; }
-    .formato-checklist li::before { content: counter(item) "."; position: absolute; left: 0; font-weight: 700; color: #059669; font-size: 11px; }
-    .formato-firma-area { margin-top: 24px; text-align: center; padding-top: 20px; border-top: 2px dashed #e2e8f0; }
-    .formato-firma-line { border-top: 1px solid #0f172a; width: 220px; margin: 30px auto 8px; }
-    .formato-actions { display: flex; gap: 8px; justify-content: center; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e2e8f0; }
-    @media(max-width:600px) { .formato-doc-info { grid-template-columns: 1fr; } .formato-cards { grid-template-columns: 1fr; } }    
-    
     </style>
 </head>
 <body>
@@ -2226,24 +2226,39 @@
         </div>
 
         <div id="sfTabFormatos" class="hidden">
-          <div class="formato-cards">
-            <div class="formato-card" onclick="abrirFormato('obra')">
-              <i class="fas fa-hard-hat"></i>
-              <h3>Solicitud de Obra</h3>
-              <p>Solicitud para realizar obras o remodelaciones en el apartamento</p>
+          <!-- Selector de formatos -->
+          <div class="formato-selector-grid">
+            <div class="formato-card" onclick="abrirFormularioFormato('Obra')">
+              <div class="formato-card-icon" style="background:rgba(217,119,6,0.1); color:#d97706;"><i class="fas fa-hard-hat"></i></div>
+              <div class="formato-card-info">
+                <h4>Solicitud de Obra</h4>
+                <p>SO-AD — Solicitar obras o reparaciones en el apartamento</p>
+              </div>
+              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
-            <div class="formato-card" onclick="abrirFormato('mudanza')">
-              <i class="fas fa-truck-loading"></i>
-              <h3>Solicitud de Mudanza</h3>
-              <p>Autorización de ingreso de mudanza al conjunto residencial</p>
+            <div class="formato-card" onclick="abrirFormularioFormato('Mudanza')">
+              <div class="formato-card-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fas fa-truck"></i></div>
+              <div class="formato-card-info">
+                <h4>Solicitud de Mudanza</h4>
+                <p>FM-AD — Solicitar autorización para mudarse o ingresar bienes</p>
+              </div>
+              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
-            <div class="formato-card" onclick="abrirFormato('alquiler')">
-              <i class="fas fa-building"></i>
-              <h3>Alquiler de Áreas Comunes</h3>
-              <p>Solicitud de Salón Social, Zona BBQ o Terraza</p>
+            <div class="formato-card" onclick="abrirFormularioFormato('Alquiler')">
+              <div class="formato-card-icon" style="background:rgba(124,58,237,0.1); color:#7c3aed;"><i class="fas fa-users"></i></div>
+              <div class="formato-card-info">
+                <h4>Alquiler de Áreas Comunes</h4>
+                <p>AAC-AD — Solicitar uso de salón, terraza o zonas comunes</p>
+              </div>
+              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
             </div>
           </div>
-          <div id="formatoContenedor" style="display:none;"></div>
+
+          <!-- Lista de formatos generados -->
+          <div style="margin-top:20px;">
+            <h3 style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:12px;"><i class="fas fa-list" style="margin-right:6px; color:var(--text-muted);"></i>Formatos Enviados</h3>
+            <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Apartamento</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaFormatosGeneradosBody"><tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin formatos enviados</td></tr></tbody></table></div>
+          </div>
         </div>
       </div>
 
@@ -2733,7 +2748,247 @@
         </div>
       </div>
     </div>
-  </div>  
+  </div>
+
+  <!-- ============================================
+       MODAL SOLICITUD DE OBRA (SO-AD)
+       ============================================ -->
+  <div id="modalFormatoObra" class="modal">
+    <div class="modal-content" style="max-width:720px; max-height:92vh; overflow-y:auto;">
+      <div class="modal-header" style="background:var(--primary); border-bottom:3px solid #d97706;">
+        <div>
+          <h3 class="modal-title" style="color:white; font-size:15px;"><i class="fas fa-hard-hat" style="margin-right:8px; color:#d97706;"></i>Solicitud de Obra — SO-AD</h3>
+          <p style="color:rgba(255,255,255,0.65); font-size:11px; margin:0;">Formato para solicitar obras o reparaciones</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalFormatoObra')" style="color:white;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Descripción de la obra</label>
+          <textarea id="obraDescripcion" class="form-control" rows="3" placeholder="Describa detalladamente la obra a realizar..."></textarea>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group"><label class="form-label">Torre / Edificio</label><input type="text" id="obraTorre" class="form-control" placeholder="Ej: Torre A"></div>
+          <div class="form-group"><label class="form-label">Apartamento</label><input type="text" id="obraApto" class="form-control" value="" readonly style="background:var(--bg);"></div>
+        </div>
+        <div class="form-group"><label class="form-label">Fecha programada</label><input type="date" id="obraFecha" class="form-control"></div>
+
+        <!-- Registro de trabajadores -->
+        <div style="margin-top:8px;">
+          <label class="form-label" style="margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+            <span><i class="fas fa-users" style="margin-right:6px;"></i>Registro de Personal / Trabajadores</span>
+            <button type="button" class="btn btn-sm btn-light" onclick="agregarTrabajadorObra()"><i class="fas fa-plus"></i> Agregar</button>
+          </label>
+          <div id="trabajadoresObraContainer">
+            <!-- Se agregan dinámicamente -->
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Nombre completo, tipo y número de documento, EPS y ARL de cada trabajador</p>
+        </div>
+
+        <!-- Horario de trabajo -->
+        <div style="margin-top:16px;">
+          <label class="form-label"><i class="fas fa-clock" style="margin-right:6px;"></i>Horario de Trabajo</label>
+          <div style="background:var(--bg); border-radius:var(--radius); padding:12px; border:1px solid var(--border);">
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+              <div class="form-group"><label class="form-label" style="font-size:11px;">Hora inicio</label><input type="time" id="obraHoraInicio" class="form-control"></div>
+              <div class="form-group"><label class="form-label" style="font-size:11px;">Hora fin</label><input type="time" id="obraHoraFin" class="form-control"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Firma -->
+        <div style="margin-top:16px;">
+          <label class="form-label"><i class="fas fa-signature" style="margin-right:6px; color:var(--secondary);"></i>Firma del Solicitante</label>
+          <div class="firma-canvas-wrap" id="firmaCanvasWrapObra">
+            <canvas id="firmaCanvasObra" width="350" height="120"></canvas>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center;">
+            <div id="firmaModoEscribirObra">
+              <input type="text" id="firmaNombreObra" class="form-control" placeholder="O escriba su nombre aquí" oninput="actualizarVistaPreviaFirmaObra()" style="margin-bottom:8px;">
+              <div class="firma-typed-preview"><span id="firmaPreviewObra">Su nombre aquí</span></div>
+            </div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button class="btn btn-light" onclick="limpiarFirmaObra()"><i class="fas fa-eraser"></i> Limpiar</button>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Dibuje su firma con el mouse/dedo o escriba su nombre</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="enviarFormatoObra()"><i class="fas fa-paper-plane"></i> Enviar Solicitud</button>
+        <button class="btn btn-light" onclick="cerrarModal('modalFormatoObra')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       MODAL SOLICITUD DE MUDANZA (FM-AD)
+       ============================================ -->
+  <div id="modalFormatoMudanza" class="modal">
+    <div class="modal-content" style="max-width:720px; max-height:92vh; overflow-y:auto;">
+      <div class="modal-header" style="background:var(--primary); border-bottom:3px solid #059669;">
+        <div>
+          <h3 class="modal-title" style="color:white; font-size:15px;"><i class="fas fa-truck" style="margin-right:8px; color:#059669;"></i>Formato de Mudanza — FM-AD</h3>
+          <p style="color:rgba(255,255,255,0.65); font-size:11px; margin:0;">Autorización para mudanza o ingreso de bienes</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalFormatoMudanza')" style="color:white;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px;">
+          <div class="form-group"><label class="form-label">Torre / Edificio</label><input type="text" id="mudTorre" class="form-control" placeholder="Ej: Torre A"></div>
+          <div class="form-group"><label class="form-label">Apartamento</label><input type="text" id="mudApto" class="form-control" value="" readonly style="background:var(--bg);"></div>
+        </div>
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div class="form-group"><label class="form-label">Nombre Propietario</label><input type="text" id="mudPropietario" class="form-control" placeholder="Nombre completo"></div>
+          <div class="form-group"><label class="form-label">Cédula</label><input type="text" id="mudCedula" class="form-control" placeholder="No. de cédula"></div>
+          <div class="form-group"><label class="form-label">Fecha</label><input type="date" id="mudFecha" class="form-control"></div>
+        </div>
+
+        <!-- Ocupantes -->
+        <div style="margin-top:8px;">
+          <label class="form-label" style="margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+            <span><i class="fas fa-users" style="margin-right:6px;"></i>Personas que ingresan / Ocupantes</span>
+            <button type="button" class="btn btn-sm btn-light" onclick="agregarOcupanteMudanza()"><i class="fas fa-plus"></i> Agregar</button>
+          </label>
+          <div id="ocupantesMudanzaContainer"></div>
+        </div>
+
+        <!-- Observaciones -->
+        <div class="form-group" style="margin-top:12px;">
+          <label class="form-label">Observaciones adicionales</label>
+          <textarea id="mudObservaciones" class="form-control" rows="2" placeholder="Describa objetos, muebles, horarios especiales..."></textarea>
+        </div>
+
+        <!-- Firma -->
+        <div style="margin-top:16px;">
+          <label class="form-label"><i class="fas fa-signature" style="margin-right:6px; color:var(--secondary);"></i>Firma del Propietario</label>
+          <div class="firma-canvas-wrap" id="firmaCanvasWrapMud">
+            <canvas id="firmaCanvasMud" width="350" height="120"></canvas>
+          </div>
+          <div id="firmaModoEscribirMud">
+            <input type="text" id="firmaNombreMud" class="form-control" placeholder="O escriba su nombre aquí" oninput="actualizarVistaPreviaFirmaMud()" style="margin-bottom:8px;">
+            <div class="firma-typed-preview"><span id="firmaPreviewMud">Su nombre aquí</span></div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button class="btn btn-light" onclick="limpiarFirmaMud()"><i class="fas fa-eraser"></i> Limpiar</button>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Dibuje su firma con el mouse/dedo o escriba su nombre</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="enviarFormatoMudanza()"><i class="fas fa-paper-plane"></i> Enviar Formulario</button>
+        <button class="btn btn-light" onclick="cerrarModal('modalFormatoMudanza')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       MODAL ALQUILER ÁREAS COMUNES (AAC-AD)
+       ============================================ -->
+  <div id="modalFormatoAlquiler" class="modal">
+    <div class="modal-content" style="max-width:720px; max-height:92vh; overflow-y:auto;">
+      <div class="modal-header" style="background:var(--primary); border-bottom:3px solid #7c3aed;">
+        <div>
+          <h3 class="modal-title" style="color:white; font-size:15px;"><i class="fas fa-users" style="margin-right:8px; color:#7c3aed;"></i>Alquiler de Áreas Comunes — AAC-AD</h3>
+          <p style="color:rgba(255,255,255,0.65); font-size:11px; margin:0;">Solicitud de uso de zonas comunes</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalFormatoAlquiler')" style="color:white;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group"><label class="form-label">Nombre del evento</label><input type="text" id="alqEvento" class="form-control" placeholder="Ej: Cumpleaños de Juan"></div>
+        <div class="form-group"><label class="form-label">Persona responsable / Organizador</label><input type="text" id="alqOrganizador" class="form-control" placeholder="Nombre completo"></div>
+        <div class="form-group"><label class="form-label">Apartamento</label><input type="text" id="alqApto" class="form-control" value="" readonly style="background:var(--bg);"></div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px;">
+          <div class="form-group">
+            <label class="form-label">Área a utilizar</label>
+            <select id="alqArea" class="form-control">
+              <option value="">Selecciona</option>
+              <option value="Salón Comunal">Salón Comunal</option>
+              <option value="Zona BBQ">Zona BBQ</option>
+              <option value="Terraza">Terraza</option>
+              <option value="Salón + Terraza">Salón + Terraza</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Horario</label>
+            <select id="alqHorario" class="form-control">
+              <option value="">Selecciona</option>
+              <option value="Diurno">Diurno (8:00 AM - 6:00 PM)</option>
+              <option value="Nocturno">Nocturno (6:00 PM - 12:00 AM)</option>
+            </select>
+          </div>
+          <div class="form-group"><label class="form-label">Cantidad de personas</label><input type="number" id="alqPersonas" class="form-control" min="1" placeholder="Nro"></div>
+        </div>
+
+        <!-- Fechas -->
+        <div style="margin-top:8px;">
+          <label class="form-label" style="margin-bottom:8px; display:flex; align-items:center; justify-content:space-between;">
+            <span><i class="fas fa-calendar" style="margin-right:6px;"></i>Fechas solicitadas</span>
+            <button type="button" class="btn btn-sm btn-light" onclick="agregarFechaAlquiler()"><i class="fas fa-plus"></i> Agregar fecha</button>
+          </label>
+          <div id="fechasAlquilerContainer"></div>
+        </div>
+
+        <!-- Compromisos -->
+        <div style="margin-top:16px;">
+          <label class="form-label"><i class="fas fa-check-circle" style="margin-right:6px;"></i>Compromisos del solicitante</label>
+          <div style="background:var(--bg); border-radius:var(--radius); padding:14px; border:1px solid var(--border); font-size:12.5px; color:var(--text-secondary); line-height:1.7;">
+            <p style="margin:0 0 8px;">Al solicitar el uso de áreas comunes, me comprometo a:</p>
+            <ol style="margin:0; padding-left:20px;">
+              <li>Dejar el área limpia y en orden al finalizar el evento.</li>
+              <li>Respetar los horarios autorizados.</li>
+              <li>No exceder el número de personas permitidas.</li>
+              <li>Responder por los daños causados al mobiliario y/o infraestructura.</li>
+              <li>No utilizar equipos de sonido a alto volumen que perturbe a los vecinos.</li>
+              <li>Cumplir con las normas del reglamento interno de copropiedad.</li>
+            </ol>
+          </div>
+        </div>
+
+        <!-- Firma -->
+        <div style="margin-top:16px;">
+          <label class="form-label"><i class="fas fa-signature" style="margin-right:6px; color:var(--secondary);"></i>Firma del Solicitante</label>
+          <div class="firma-canvas-wrap" id="firmaCanvasWrapAlq">
+            <canvas id="firmaCanvasAlq" width="350" height="120"></canvas>
+          </div>
+          <div id="firmaModoEscribirAlq">
+            <input type="text" id="firmaNombreAlq" class="form-control" placeholder="O escriba su nombre aquí" oninput="actualizarVistaPreviaFirmaAlq()" style="margin-bottom:8px;">
+            <div class="firma-typed-preview"><span id="firmaPreviewAlq">Su nombre aquí</span></div>
+          </div>
+          <div style="display:flex; gap:8px; margin-top:8px;">
+            <button class="btn btn-light" onclick="limpiarFirmaAlq()"><i class="fas fa-eraser"></i> Limpiar</button>
+          </div>
+          <p style="font-size:11px; color:var(--text-muted); margin-top:4px;">Dibuje su firma con el mouse/dedo o escriba su nombre</p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-primary" onclick="enviarFormatoAlquiler()"><i class="fas fa-paper-plane"></i> Enviar Solicitud</button>
+        <button class="btn btn-light" onclick="cerrarModal('modalFormatoAlquiler')">Cancelar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================
+       MODAL VER DETALLE FORMATO (Vista documento)
+       ============================================ -->
+  <div id="modalDetalleFormato" class="modal">
+    <div class="modal-content" style="max-width:780px; max-height:92vh; overflow-y:auto;">
+      <div class="modal-header" style="background:var(--primary); border-bottom:3px solid var(--secondary);">
+        <div>
+          <h3 class="modal-title" style="color:white; font-size:16px; margin-bottom:2px;" id="detalleFormatoTitulo">-</h3>
+          <p style="color:rgba(255,255,255,0.7); font-size:12px; margin:0;" id="detalleFormatoSubtitulo">-</p>
+        </div>
+        <button class="modal-close" onclick="cerrarModal('modalDetalleFormato')" style="color:white;"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body" id="detalleFormatoBody" style="padding:0;">
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" onclick="cerrarModal('modalDetalleFormato')">Cerrar</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Cambio Clave -->
   <div id="modalCambioClave" class="modal">
     <div class="modal-content">
@@ -3929,25 +4184,655 @@
       });
     }
 
+    // ============================================
+    // FORMATOS AUTO-GENERADOS (Obra, Mudanza, Alquiler)
+    // ============================================
+
+    // --- Variables de firma para formatos ---
+    var firmaCanvasObra, firmaCtxObra, firmaDrawingObra = false;
+    var firmaCanvasMud, firmaCtxMud, firmaDrawingMud = false;
+    var firmaCanvasAlq, firmaCtxAlq, firmaDrawingAlq = false;
+
     function cargarFormatos() {
       mostrarLoading('Cargando...');
-      llamarGS('obtenerFormatos', [], function(formatos) {
-        var select = document.getElementById('listaFormatos');
-        select.innerHTML = '<option value="">-- Selecciona --</option>' + formatos.map(function(f) { return '<option value="' + f[1] + '">' + f[0] + '</option>'; }).join('');
+      llamarGS('obtenerFormatosGenerados', [], function(data) {
         ocultarLoading();
+        var tbody = document.getElementById('tablaFormatosGeneradosBody');
+        if (!data || !data.length) {
+          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin formatos enviados</td></tr>';
+          return;
+        }
+        tbody.innerHTML = data.map(function(f) {
+          var tipoIcon = f.tipo === 'Obra' ? 'fa-hard-hat' : f.tipo === 'Mudanza' ? 'fa-truck' : 'fa-users';
+          var tipoColor = f.tipo === 'Obra' ? '#d97706' : f.tipo === 'Mudanza' ? '#059669' : '#7c3aed';
+          var estadoBadge = '<span class="badge badge-warning">Pendiente</span>';
+          if (f.estado === 'Aprobado') estadoBadge = '<span class="badge badge-success">Aprobado</span>';
+          if (f.estado === 'Rechazado') estadoBadge = '<span class="badge badge-danger">Rechazado</span>';
+
+          var acciones = '<button class="btn btn-sm btn-primary" onclick="verDetalleFormato(' + f.fila + ')"><i class="fas fa-eye"></i></button>';
+          if (state.esAdmin) {
+            acciones += ' <button class="btn btn-sm btn-success" onclick="cambiarEstadoFormato(' + f.fila + ',\'Aprobado\')" title="Aprobar"><i class="fas fa-check"></i></button>';
+            acciones += ' <button class="btn btn-sm btn-danger" onclick="cambiarEstadoFormato(' + f.fila + ',\'Rechazado\')" title="Rechazar"><i class="fas fa-times"></i></button>';
+            acciones += ' <button class="btn btn-sm btn-light" onclick="eliminarFormatoSolicitud(' + f.fila + ')" title="Eliminar"><i class="fas fa-trash"></i></button>';
+          }
+          return '<tr>' +
+            '<td style="white-space:nowrap;">' + f.fecha + '</td>' +
+            '<td><i class="fas ' + tipoIcon + '" style="color:' + tipoColor + '; margin-right:4px;"></i>' + f.tipo + '</td>' +
+            '<td><strong>' + f.apartamento + '</strong></td>' +
+            '<td>' + estadoBadge + '</td>' +
+            '<td class="table-actions">' + acciones + '</td></tr>';
+        }).join('');
       });
     }
 
-    function mostrarFormato() {
-      var url = document.getElementById('listaFormatos').value;
-      var visor = document.getElementById('visorFormato');
-      if (url) {
-        document.getElementById('iframeFormato').src = url.includes('/edit') ? url.replace('/edit', '/preview') : url;
-        visor.style.display = 'block';
-      } else {
-        visor.style.display = 'none';
+    // Abrir formulario según tipo
+    function abrirFormularioFormato(tipo) {
+      var apto = state.apartamento || '';
+      var hoy = new Date().toISOString().split('T')[0];
+
+      if (tipo === 'Obra') {
+        document.getElementById('obraDescripcion').value = '';
+        document.getElementById('obraTorre').value = 'Torre A';
+        document.getElementById('obraApto').value = apto;
+        document.getElementById('obraFecha').value = '';
+        document.getElementById('obraHoraInicio').value = '08:00';
+        document.getElementById('obraHoraFin').value = '17:00';
+        document.getElementById('trabajadoresObraContainer').innerHTML = '';
+        document.getElementById('firmaNombreObra').value = '';
+        document.getElementById('firmaPreviewObra').textContent = 'Su nombre aquí';
+        agregarTrabajadorObra();
+        abrirModal('modalFormatoObra');
+        setTimeout(function() { initCanvasFirma('obra'); }, 300);
+      } else if (tipo === 'Mudanza') {
+        document.getElementById('mudTorre').value = 'Torre A';
+        document.getElementById('mudApto').value = apto;
+        document.getElementById('mudPropietario').value = '';
+        document.getElementById('mudCedula').value = '';
+        document.getElementById('mudFecha').value = hoy;
+        document.getElementById('mudObservaciones').value = '';
+        document.getElementById('ocupantesMudanzaContainer').innerHTML = '';
+        document.getElementById('firmaNombreMud').value = '';
+        document.getElementById('firmaPreviewMud').textContent = 'Su nombre aquí';
+        agregarOcupanteMudanza();
+        abrirModal('modalFormatoMudanza');
+        setTimeout(function() { initCanvasFirma('mud'); }, 300);
+      } else if (tipo === 'Alquiler') {
+        document.getElementById('alqEvento').value = '';
+        document.getElementById('alqOrganizador').value = '';
+        document.getElementById('alqApto').value = apto;
+        document.getElementById('alqArea').value = '';
+        document.getElementById('alqHorario').value = '';
+        document.getElementById('alqPersonas').value = '';
+        document.getElementById('fechasAlquilerContainer').innerHTML = '';
+        document.getElementById('firmaNombreAlq').value = '';
+        document.getElementById('firmaPreviewAlq').textContent = 'Su nombre aquí';
+        agregarFechaAlquiler();
+        abrirModal('modalFormatoAlquiler');
+        setTimeout(function() { initCanvasFirma('alq'); }, 300);
       }
     }
+
+    // --- Canvas firma para formatos ---
+    function initCanvasFirma(tipo) {
+      var canvasId = 'firmaCanvas' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+      var canvas = document.getElementById(canvasId);
+      if (!canvas) return;
+      var ctx = canvas.getContext('2d');
+      var wrapId = 'firmaCanvasWrap' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+      var wrap = document.getElementById(wrapId);
+
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.strokeStyle = '#1a1a2e';
+      ctx.lineWidth = 2;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      function getPos(e) {
+        var rect = canvas.getBoundingClientRect();
+        var x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+        var y = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+        return { x: x * (canvas.width / rect.width), y: y * (canvas.height / rect.height) };
+      }
+
+      function startDraw(e) {
+        e.preventDefault();
+        if (wrap) wrap.classList.add('active-drawing');
+        ctx.beginPath();
+        var p = getPos(e);
+        ctx.moveTo(p.x, p.y);
+      }
+      function draw(e) {
+        e.preventDefault();
+        var p = getPos(e);
+        ctx.lineTo(p.x, p.y);
+        ctx.stroke();
+      }
+      function stopDraw() {
+        if (wrap) wrap.classList.remove('active-drawing');
+      }
+
+      canvas.addEventListener('mousedown', startDraw);
+      canvas.addEventListener('mousemove', draw);
+      canvas.addEventListener('mouseup', stopDraw);
+      canvas.addEventListener('mouseleave', stopDraw);
+      canvas.addEventListener('touchstart', startDraw, { passive: false });
+      canvas.addEventListener('touchmove', draw, { passive: false });
+      canvas.addEventListener('touchend', stopDraw);
+    }
+
+    function generarImagenFirmaTipo(tipo) {
+      var id = 'firmaCanvas' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+      var canvas = document.getElementById(id);
+      if (!canvas) return null;
+      var ctx = canvas.getContext('2d');
+      var imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+      var hasDrawing = false;
+      for (var i = 0; i < imageData.length; i += 4) {
+        if (imageData[i] < 250 || imageData[i+1] < 250 || imageData[i+2] < 250) { hasDrawing = true; break; }
+      }
+
+      var nombreId = 'firmaNombre' + tipo.charAt(0).toUpperCase() + tipo.slice(1);
+      var nombre = document.getElementById(nombreId) ? document.getElementById(nombreId).value.trim() : '';
+
+      if (hasDrawing) {
+        return canvas.toDataURL('image/jpeg', 0.5);
+      } else if (nombre) {
+        var c = document.createElement('canvas');
+        c.width = 350; c.height = 100;
+        var cx = c.getContext('2d');
+        cx.fillStyle = '#ffffff'; cx.fillRect(0, 0, c.width, c.height);
+        cx.font = 'italic 32px "Segoe Script", "Dancing Script", cursive, serif';
+        cx.fillStyle = '#1a1a2e'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+        cx.fillText(nombre, c.width / 2, c.height / 2);
+        return c.toDataURL('image/jpeg', 0.5);
+      }
+      return null;
+    }
+
+    function limpiarFirmaObra() {
+      var c = document.getElementById('firmaCanvasObra');
+      if (c) { var ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); }
+      document.getElementById('firmaNombreObra').value = '';
+      document.getElementById('firmaPreviewObra').textContent = 'Su nombre aquí';
+    }
+    function limpiarFirmaMud() {
+      var c = document.getElementById('firmaCanvasMud');
+      if (c) { var ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); }
+      document.getElementById('firmaNombreMud').value = '';
+      document.getElementById('firmaPreviewMud').textContent = 'Su nombre aquí';
+    }
+    function limpiarFirmaAlq() {
+      var c = document.getElementById('firmaCanvasAlq');
+      if (c) { var ctx = c.getContext('2d'); ctx.fillStyle = '#ffffff'; ctx.fillRect(0, 0, c.width, c.height); }
+      document.getElementById('firmaNombreAlq').value = '';
+      document.getElementById('firmaPreviewAlq').textContent = 'Su nombre aquí';
+    }
+
+    function actualizarVistaPreviaFirmaObra() { document.getElementById('firmaPreviewObra').textContent = document.getElementById('firmaNombreObra').value || 'Su nombre aquí'; }
+    function actualizarVistaPreviaFirmaMud() { document.getElementById('firmaPreviewMud').textContent = document.getElementById('firmaNombreMud').value || 'Su nombre aquí'; }
+    function actualizarVistaPreviaFirmaAlq() { document.getElementById('firmaPreviewAlq').textContent = document.getElementById('firmaNombreAlq').value || 'Su nombre aquí'; }
+
+    // --- Trabajadores (Obra) ---
+    function agregarTrabajadorObra() {
+      var container = document.getElementById('trabajadoresObraContainer');
+      var count = container.querySelectorAll('.trabajador-row').length + 1;
+      var div = document.createElement('div');
+      div.className = 'trabajador-row';
+      div.innerHTML = '<span class="row-num">Trabajador ' + count + '</span>' +
+        '<div style="display:flex; gap:8px; margin-bottom:6px;">' +
+          '<input type="text" class="form-control" placeholder="Nombre completo" style="flex:1;">' +
+          '<button type="button" class="btn-remove" onclick="this.closest(\'.trabajador-row\').remove()" title="Eliminar"><i class="fas fa-times"></i></button>' +
+        '</div>' +
+        '<div style="display:grid; grid-template-columns:1fr 1fr 1fr 1fr; gap:6px;">' +
+          '<input type="text" class="form-control" placeholder="Tipo doc">' +
+          '<input type="text" class="form-control" placeholder="No. documento">' +
+          '<input type="text" class="form-control" placeholder="EPS">' +
+          '<input type="text" class="form-control" placeholder="ARL">' +
+        '</div>';
+      container.appendChild(div);
+    }
+
+    // --- Ocupantes (Mudanza) ---
+    function agregarOcupanteMudanza() {
+      var container = document.getElementById('ocupantesMudanzaContainer');
+      var count = container.querySelectorAll('.ocupante-row').length + 1;
+      var div = document.createElement('div');
+      div.className = 'ocupante-row';
+      div.innerHTML = '<span class="row-num">Persona ' + count + '</span>' +
+        '<div style="display:flex; gap:8px;">' +
+          '<input type="text" class="form-control" placeholder="Nombre completo" style="flex:1;">' +
+          '<input type="text" class="form-control" placeholder="Cédula" style="width:120px;">' +
+          '<input type="number" class="form-control" placeholder="Edad" style="width:70px;" min="0">' +
+          '<button type="button" class="btn-remove" onclick="this.closest(\'.ocupante-row\').remove()" title="Eliminar"><i class="fas fa-times"></i></button>' +
+        '</div>';
+      container.appendChild(div);
+    }
+
+    // --- Fechas (Alquiler) ---
+    function agregarFechaAlquiler() {
+      var container = document.getElementById('fechasAlquilerContainer');
+      var count = container.querySelectorAll('.fecha-alq-row').length + 1;
+      var div = document.createElement('div');
+      div.className = 'fecha-alq-row';
+      div.innerHTML = '<span style="font-size:11px; font-weight:700; color:var(--text-muted); min-width:40px;">' + count + '.</span>' +
+        '<input type="date" class="form-control" placeholder="Fecha" style="flex:1;">' +
+        '<input type="time" class="form-control" placeholder="Entrada" style="width:110px;">' +
+        '<input type="time" class="form-control" placeholder="Salida" style="width:110px;">' +
+        '<button type="button" class="btn-remove" onclick="this.parentElement.remove()" title="Eliminar"><i class="fas fa-times"></i></button>';
+      container.appendChild(div);
+    }
+
+    // --- Recoger datos y enviar ---
+    function recogerTrabajadores() {
+      var rows = document.querySelectorAll('#trabajadoresObraContainer .trabajador-row');
+      var trabajadores = [];
+      rows.forEach(function(row) {
+        var inputs = row.querySelectorAll('input');
+        var nombre = inputs[0] ? inputs[0].value.trim() : '';
+        if (nombre) {
+          trabajadores.push({
+            nombre: nombre,
+            tipoDoc: inputs[1] ? inputs[1].value.trim() : '',
+            numDoc: inputs[2] ? inputs[2].value.trim() : '',
+            eps: inputs[3] ? inputs[3].value.trim() : '',
+            arl: inputs[4] ? inputs[4].value.trim() : ''
+          });
+        }
+      });
+      return trabajadores;
+    }
+
+    function recogerOcupantes() {
+      var rows = document.querySelectorAll('#ocupantesMudanzaContainer .ocupante-row');
+      var ocupantes = [];
+      rows.forEach(function(row) {
+        var inputs = row.querySelectorAll('input');
+        var nombre = inputs[0] ? inputs[0].value.trim() : '';
+        if (nombre) {
+          ocupantes.push({
+            nombre: nombre,
+            cedula: inputs[1] ? inputs[1].value.trim() : '',
+            edad: inputs[2] ? inputs[2].value.trim() : ''
+          });
+        }
+      });
+      return ocupantes;
+    }
+
+    function recogerFechasAlquiler() {
+      var rows = document.querySelectorAll('#fechasAlquilerContainer .fecha-alq-row');
+      var fechas = [];
+      rows.forEach(function(row) {
+        var inputs = row.querySelectorAll('input');
+        var fecha = inputs[0] ? inputs[0].value : '';
+        if (fecha) {
+          fechas.push({ fecha: fecha, entrada: inputs[1] ? inputs[1].value : '', salida: inputs[2] ? inputs[2].value : '' });
+        }
+      });
+      return fechas;
+    }
+
+    // --- Enviar Obra ---
+    function enviarFormatoObra() {
+      var desc = document.getElementById('obraDescripcion').value.trim();
+      if (!desc) { mostrarNotificacion('Error', 'La descripción de la obra es obligatoria', 'error'); return; }
+
+      var firma = generarImagenFirmaTipo('obra');
+      if (!firma) { mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
+
+      var datos = {
+        tipo: 'Obra',
+        apartamento: document.getElementById('obraApto').value,
+        descripcion: desc,
+        torre: document.getElementById('obraTorre').value.trim(),
+        fecha: document.getElementById('obraFecha').value,
+        horaInicio: document.getElementById('obraHoraInicio').value,
+        horaFin: document.getElementById('obraHoraFin').value,
+        trabajadores: JSON.stringify(recogerTrabajadores()),
+        firma: firma
+      };
+
+      mostrarLoading('Enviando solicitud de obra...');
+      llamarGS('registrarFormato', [datos], function(res) {
+        ocultarLoading();
+        if (res && res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+          cerrarModal('modalFormatoObra');
+          cargarFormatos();
+        } else {
+          mostrarNotificacion('Error', (res && res.mensaje) || 'Error al enviar', 'error');
+        }
+      });
+    }
+
+    // --- Enviar Mudanza ---
+    function enviarFormatoMudanza() {
+      var prop = document.getElementById('mudPropietario').value.trim();
+      if (!prop) { mostrarNotificacion('Error', 'El nombre del propietario es obligatorio', 'error'); return; }
+
+      var firma = generarImagenFirmaTipo('mud');
+      if (!firma) { mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
+
+      var datos = {
+        tipo: 'Mudanza',
+        apartamento: document.getElementById('mudApto').value,
+        torre: document.getElementById('mudTorre').value.trim(),
+        propietario: prop,
+        cedula: document.getElementById('mudCedula').value.trim(),
+        fecha: document.getElementById('mudFecha').value,
+        ocupantes: JSON.stringify(recogerOcupantes()),
+        observaciones: document.getElementById('mudObservaciones').value.trim(),
+        firma: firma
+      };
+
+      mostrarLoading('Enviando formato de mudanza...');
+      llamarGS('registrarFormato', [datos], function(res) {
+        ocultarLoading();
+        if (res && res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+          cerrarModal('modalFormatoMudanza');
+          cargarFormatos();
+        } else {
+          mostrarNotificacion('Error', (res && res.mensaje) || 'Error al enviar', 'error');
+        }
+      });
+    }
+
+    // --- Enviar Alquiler ---
+    function enviarFormatoAlquiler() {
+      var evento = document.getElementById('alqEvento').value.trim();
+      var area = document.getElementById('alqArea').value;
+      var horario = document.getElementById('alqHorario').value;
+      if (!evento || !area || !horario) { mostrarNotificacion('Error', 'Complete todos los campos principales', 'error'); return; }
+
+      var firma = generarImagenFirmaTipo('alq');
+      if (!firma) { mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
+
+      var datos = {
+        tipo: 'Alquiler',
+        apartamento: document.getElementById('alqApto').value,
+        evento: evento,
+        organizador: document.getElementById('alqOrganizador').value.trim(),
+        area: area,
+        horario: horario,
+        personas: document.getElementById('alqPersonas').value,
+        fechas: JSON.stringify(recogerFechasAlquiler()),
+        firma: firma
+      };
+
+      mostrarLoading('Enviando solicitud de alquiler...');
+      llamarGS('registrarFormato', [datos], function(res) {
+        ocultarLoading();
+        if (res && res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+          cerrarModal('modalFormatoAlquiler');
+          cargarFormatos();
+        } else {
+          mostrarNotificacion('Error', (res && res.mensaje) || 'Error al enviar', 'error');
+        }
+      });
+    }
+
+    // --- Ver detalle del formato (documento) ---
+    function verDetalleFormato(fila) {
+      mostrarLoading('Cargando formato...');
+      llamarGS('obtenerFormatosGenerados', [], function(data) {
+        ocultarLoading();
+        if (!data || !data.length) { mostrarNotificacion('Error', 'No se encontraron formatos', 'error'); return; }
+        var fmt = null;
+        for (var i = 0; i < data.length; i++) { if (data[i].fila === fila) { fmt = data[i]; break; } }
+        if (!fmt) { mostrarNotificacion('Error', 'Formato no encontrado', 'error'); return; }
+
+        var d = fmt.datos || {};
+        var tipoTitle = fmt.tipo === 'Obra' ? 'SOLICITUD DE OBRA — SO-AD' : fmt.tipo === 'Mudanza' ? 'FORMATO DE MUDANZA — FM-AD' : 'ALQUILER DE ÁREAS COMUNES — AAC-AD';
+        var tipoIcon = fmt.tipo === 'Obra' ? 'fa-hard-hat' : fmt.tipo === 'Mudanza' ? 'fa-truck' : 'fa-users';
+
+        document.getElementById('detalleFormatoTitulo').innerHTML = '<i class="fas ' + tipoIcon + '" style="margin-right:8px;"></i>' + tipoTitle;
+        document.getElementById('detalleFormatoSubtitulo').textContent = 'Apto ' + fmt.apartamento + ' | ' + fmt.fecha;
+
+        var body = document.getElementById('detalleFormatoBody');
+        var h = '<div class="acta-doc">';
+
+        // Header
+        h += '<div class="acta-doc-header">';
+        h += '<h2>' + escapeHtml(tipoTitle) + '</h2>';
+        h += '<p>Edificio: Claret Real 6 | Apto: ' + escapeHtml(fmt.apartamento) + '</p>';
+        h += '<p>Fecha: ' + escapeHtml(fmt.fecha) + '</p>';
+        var estadoIcon = fmt.estado === 'Aprobado' ? 'fa-check-circle' : fmt.estado === 'Rechazado' ? 'fa-times-circle' : 'fa-clock';
+        var estadoColor = fmt.estado === 'Aprobado' ? 'success' : fmt.estado === 'Rechazado' ? 'danger' : 'warning';
+        h += '<p><span class="badge badge-' + estadoColor + '"><i class="fas ' + estadoIcon + '"></i> ' + fmt.estado + '</span></p>';
+        h += '</div>';
+
+        // Contenido según tipo
+        if (fmt.tipo === 'Obra') { h += generarDocumentoObra(d); }
+        else if (fmt.tipo === 'Mudanza') { h += generarDocumentoMudanza(d); }
+        else if (fmt.tipo === 'Alquiler') { h += generarDocumentoAlquiler(d); }
+
+        // Firma
+        if (d.firma) {
+          h += '<div class="acta-doc-section">';
+          h += '<h3 class="acta-doc-section-title"><span class="num">*</span> Firma del Solicitante</h3>';
+          h += '<div style="text-align:center; padding:16px;">';
+          h += '<img src="' + d.firma + '" style="max-width:300px; max-height:120px; border-bottom:2px solid var(--text); padding-bottom:8px;" alt="Firma">';
+          h += '<p style="margin-top:8px; font-size:12px; color:var(--text-muted);">Apto ' + escapeHtml(fmt.apartamento) + '</p>';
+          h += '</div></div>';
+        }
+
+        h += '</div>';
+        body.innerHTML = h;
+        abrirModal('modalDetalleFormato');
+      });
+    }
+
+    // --- Generar documento HTML para cada tipo ---
+    function generarDocumentoObra(d) {
+      var h = '';
+      // Info
+      h += '<div class="acta-doc-info">';
+      h += infoItem('Torre / Edificio', d.torre || '-');
+      h += infoItem('Apartamento', d.apartamento || '-');
+      h += infoItem('Fecha programada', d.fecha || '-');
+      h += infoItem('Horario', (d.horaInicio || '-') + ' - ' + (d.horaFin || '-'));
+      h += '</div>';
+
+      // Descripción
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">1</span> Descripción de la Obra</h3>';
+      h += '<p class="acta-doc-text">' + escapeHtml(d.descripcion || '') + '</p>';
+      h += '</div>';
+
+      // Trabajadores
+      var trabajadores = [];
+      try { trabajadores = JSON.parse(d.trabajadores || '[]'); } catch(e) {}
+      if (trabajadores.length > 0) {
+        h += '<div class="acta-doc-section">';
+        h += '<h3 class="acta-doc-section-title"><span class="num">2</span> Personal / Trabajadores</h3>';
+        h += '<div class="table-container"><table class="table" style="font-size:12px;"><thead><tr><th>No.</th><th>Nombre</th><th>Tipo Doc</th><th>No. Doc</th><th>EPS</th><th>ARL</th></tr></thead><tbody>';
+        trabajadores.forEach(function(t, i) {
+          h += '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml(t.nombre) + '</td><td>' + escapeHtml(t.tipoDoc) + '</td><td>' + escapeHtml(t.numDoc) + '</td><td>' + escapeHtml(t.eps) + '</td><td>' + escapeHtml(t.arl) + '</td></tr>';
+        });
+        h += '</tbody></table></div>';
+        h += '</div>';
+      }
+
+      // Reglas horario
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">3</span> Normas de Horario</h3>';
+      h += '<ol class="acta-doc-list">' +
+        '<li>Las obras deberán realizarse estrictamente dentro del horario autorizado.</li>' +
+        '<li>Los ruidos fuertes están prohibidos antes de las 8:00 AM y después de las 5:00 PM.</li>' +
+        '<li>El residente debe garantizar el acceso de los trabajadores al edificio.</li>' +
+        '<li>Los trabajadores deben portar identificación visible en todo momento.</li>' +
+        '<li>El residuo de obra debe ser retirado diariamente por el contratista.</li>' +
+      '</ol>';
+      h += '</div>';
+
+      // Declaraciones
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">4</span> Declaraciones del Solicitante</h3>';
+      h += '<ol class="acta-doc-list">' +
+        '<li>Me comprometo a realizar la obra según las normas del reglamento de copropiedad.</li>' +
+        '<li>Asumo responsabilidad total por los daños que cause la obra a áreas comunes.</li>' +
+        '<li>Garantizo que el personal contratado cuenta con EPS y ARL vigentes.</li>' +
+        '<li>No se realizarán modificaciones a la estructura del edificio sin autorización previa.</li>' +
+        '<li>Los materiales de construcción deben almacenarse dentro del apartamento.</li>' +
+        '<li>Mantendré el área de trabajo limpia y ordenada durante y después de la obra.</li>' +
+        '<li>Informaré a la administración sobre cualquier novedad o incidente.</li>' +
+        '<li>Los trabajadores no podrán hacer uso de áreas comunes del edificio.</li>' +
+        '<li>La obra no causará molestias excesivas a los demás copropietarios.</li>' +
+        '<li>Me comprometo a entregar el apartamento en las mismas condiciones si aplica.</li>' +
+      '</ol>';
+      h += '</div>';
+
+      return h;
+    }
+
+    function generarDocumentoMudanza(d) {
+      var h = '';
+      h += '<div class="acta-doc-info">';
+      h += infoItem('Torre / Edificio', d.torre || '-');
+      h += infoItem('Apartamento', d.apartamento || '-');
+      h += infoItem('Propietario', d.propietario || '-');
+      h += infoItem('Cédula', d.cedula || '-');
+      h += infoItem('Fecha', d.fecha || '-');
+      h += '</div>';
+
+      // Ocupantes
+      var ocupantes = [];
+      try { ocupantes = JSON.parse(d.ocupantes || '[]'); } catch(e) {}
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">1</span> Personas que ingresan / Ocupantes</h3>';
+      if (ocupantes.length > 0) {
+        h += '<div class="table-container"><table class="table" style="font-size:12px;"><thead><tr><th>No.</th><th>Nombre</th><th>Cédula</th><th>Edad</th></tr></thead><tbody>';
+        ocupantes.forEach(function(o, i) {
+          h += '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml(o.nombre) + '</td><td>' + escapeHtml(o.cedula) + '</td><td>' + escapeHtml(o.edad) + '</td></tr>';
+        });
+        h += '</tbody></table></div>';
+      } else {
+        h += '<p class="acta-doc-text" style="color:var(--text-muted); font-style:italic;">No se registraron ocupantes.</p>';
+      }
+      h += '</div>';
+
+      // Observaciones
+      if (d.observaciones) {
+        h += '<div class="acta-doc-section">';
+        h += '<h3 class="acta-doc-section-title"><span class="num">2</span> Observaciones</h3>';
+        h += '<p class="acta-doc-text">' + escapeHtml(d.observaciones) + '</p>';
+        h += '</div>';
+      }
+
+      // Recomendaciones
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">3</span> Recomendaciones</h3>';
+      h += '<ol class="acta-doc-list">' +
+        '<li>La mudanza debe realizarse en horario diurno (8:00 AM a 5:00 PM).</li>' +
+        '<li>Se debe proteger las áreas comunes (paredes, ascensores, pasillos) durante el traslado.</li>' +
+        '<li>Los residuos y empaques deben ser dispuestos adecuadamente.</li>' +
+        '<li>El personal de mudanza debe portar identificación visible.</li>' +
+        '<li>Se debe coordinar con portería el ingreso y salida de vehículos.</li>' +
+      '</ol>';
+      h += '</div>';
+
+      // Uso adecuado
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">4</span> Uso Adecuado del Inmueble</h3>';
+      h += '<p class="acta-doc-text">El propietario se compromete a hacer uso adecuado del inmueble conforme a las normas del reglamento de copropiedad, la Ley 675 de 2001 y las disposiciones de la administración del conjunto.</p>';
+      h += '</div>';
+
+      return h;
+    }
+
+    function generarDocumentoAlquiler(d) {
+      var h = '';
+      h += '<div class="acta-doc-info">';
+      h += infoItem('Evento', d.evento || '-');
+      h += infoItem('Organizador', d.organizador || '-');
+      h += infoItem('Apartamento', d.apartamento || '-');
+      h += infoItem('Área', d.area || '-');
+      h += infoItem('Horario', d.horario || '-');
+      h += infoItem('Cantidad de personas', d.personas || '-');
+      h += '</div>';
+
+      // Fechas
+      var fechas = [];
+      try { fechas = JSON.parse(d.fechas || '[]'); } catch(e) {}
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">1</span> Fechas Solicitadas</h3>';
+      if (fechas.length > 0) {
+        h += '<div class="table-container"><table class="table" style="font-size:12px;"><thead><tr><th>No.</th><th>Fecha</th><th>Entrada</th><th>Salida</th></tr></thead><tbody>';
+        fechas.forEach(function(f, i) {
+          h += '<tr><td>' + (i + 1) + '</td><td>' + escapeHtml(f.fecha) + '</td><td>' + escapeHtml(f.entrada) + '</td><td>' + escapeHtml(f.salida) + '</td></tr>';
+        });
+        h += '</tbody></table></div>';
+      } else {
+        h += '<p class="acta-doc-text" style="color:var(--text-muted);">Sin fechas registradas.</p>';
+      }
+      h += '</div>';
+
+      // Compromisos
+      h += '<div class="acta-doc-section">';
+      h += '<h3 class="acta-doc-section-title"><span class="num">2</span> Compromisos del Solicitante</h3>';
+      h += '<ol class="acta-doc-list">' +
+        '<li>Dejar el área limpia y en orden al finalizar el evento.</li>' +
+        '<li>Respetar los horarios autorizados por la administración.</li>' +
+        '<li>No exceder el número de personas permitidas para el área.</li>' +
+        '<li>Responder por los daños causados al mobiliario y/o infraestructura del área.</li>' +
+        '<li>No utilizar equipos de sonido a alto volumen que perturbe a los vecinos.</li>' +
+        '<li>Cumplir con todas las normas del reglamento interno de copropiedad.</li>' +
+        '<li>Retirar la basura y residuos generados durante el evento.</li>' +
+        '<li>No realizar modificaciones al área sin autorización previa.</li>' +
+      '</ol>';
+      h += '</div>';
+
+      // Nota terraza
+      if (d.area && d.area.indexOf('Terraza') !== -1) {
+        h += '<div class="acta-doc-section" style="border-left:3px solid #dc2626;">';
+        h += '<h3 class="acta-doc-section-title" style="color:#dc2626;"><span class="num" style="background:#dc2626;">!</span> Formulario de Exoneración de Terraza</h3>';
+        h += '<p class="acta-doc-text" style="margin-bottom:8px;">Al utilizar la terraza, el solicitante declara conocer y aceptar los siguientes riesgos:</p>';
+        h += '<ol class="acta-doc-list">' +
+          '<li>La terraza es un área abierta con bordes elevados; se debe tener precaución especial.</li>' +
+          '<li>En caso de lluvia, el área puede mojarse y volverse resbaladiza.</li>' +
+          '<li>Los menores de edad deben estar supervisados por un adulto responsable en todo momento.</li>' +
+          '<li>El solicitante exime a la administración de cualquier responsabilidad por accidentes.</li>' +
+          '<li>No se permite arrojar objetos desde la terraza bajo ninguna circunstancia.</li>' +
+        '</ol>';
+        h += '</div>';
+      }
+
+      return h;
+    }
+
+    // --- Acciones admin ---
+    function cambiarEstadoFormato(fila, estado) {
+      mostrarLoading('Actualizando...');
+      llamarGS('actualizarEstadoFormato', [fila, estado], function(res) {
+        ocultarLoading();
+        if (res && res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+          cargarFormatos();
+        } else {
+          mostrarNotificacion('Error', (res && res.mensaje) || 'Error al actualizar', 'error');
+        }
+      });
+    }
+
+    function eliminarFormatoSolicitud(fila) {
+      if (!confirm('¿Eliminar este formato?')) return;
+      mostrarLoading('Eliminando...');
+      llamarGS('eliminarFormato', [fila], function(res) {
+        ocultarLoading();
+        if (res && res.ok) {
+          mostrarNotificacion('Éxito', res.mensaje, 'success');
+          cargarFormatos();
+        } else {
+          mostrarNotificacion('Error', (res && res.mensaje) || 'Error al eliminar', 'error');
+        }
+      });
+    }
+
+    // Placeholder para mostrarFormato (ya no se usa con iframe)
+    function mostrarFormato() { return; }
 
     function cargarSolicitudes() {
       mostrarLoading('Cargando...');
@@ -3958,9 +4843,7 @@
           var estado = r[6] || 'Pendiente';
           var badgeClass = estado === 'Aprobado' ? 'badge-success' : estado === 'Rechazado' ? 'badge-danger' : 'badge-warning';
           var soporte = r[5] ? '<a href="' + r[5] + '" target="_blank"><i class="fas fa-file-pdf"></i></a>' : '';
-          var esFormato = r[1] === 'Formato';
-          var verBtn = esFormato ? '<button class="btn btn-sm btn-primary" onclick="verFormatoEnviado(' + r[7] + ')" title="Ver formato"><i class="fas fa-eye"></i></button>' : '';
-          var acciones = state.esAdmin ? '<td class="table-actions">' + verBtn + '<button class="btn btn-sm btn-success" onclick="actualizarEstadoSol(' + r[7] + ',\'Aprobado\')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger" onclick="actualizarEstadoSol(' + r[7] + ',\'Rechazado\')"><i class="fas fa-times"></i></button></td>' : (verBtn ? '<td>' + verBtn + '</td>' : '<td></td>');
+          var acciones = state.esAdmin ? '<td class="table-actions"><button class="btn btn-sm btn-success" onclick="actualizarEstadoSol(' + r[7] + ',\'Aprobado\')"><i class="fas fa-check"></i></button><button class="btn btn-sm btn-danger" onclick="actualizarEstadoSol(' + r[7] + ',\'Rechazado\')"><i class="fas fa-times"></i></button></td>' : '';
           return '<tr><td>' + r[0] + '</td><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td>' + r[4] + '</td><td>' + soporte + '</td><td><span class="badge ' + badgeClass + '">' + estado + '</span></td>' + acciones + '</tr>';
         }).join('') : '<tr><td colspan="8" style="text-align:center">Sin datos</td></tr>';
         ocultarLoading();
@@ -6397,339 +7280,6 @@
       });
     }
 
-    // ============================================
-    // FORMATOS Y DOCUMENTOS (Generador dinámico)
-    // ============================================
-    var fmtCanvas, fmtCtx, fmtDibujando = false;
-
-    function initFmtCanvas() {
-      fmtCanvas = document.getElementById('formatoFirmaCanvas');
-      if (!fmtCanvas) return;
-      fmtCtx = fmtCanvas.getContext('2d');
-      fmtCtx.fillStyle = '#ffffff';
-      fmtCtx.fillRect(0, 0, fmtCanvas.width, fmtCanvas.height);
-      fmtCanvas.removeEventListener && fmtCanvas.removeEventListener;
-      fmtCanvas.addEventListener('mousedown', function(e) { fmtDibujando = true; fmtCtx.beginPath(); fmtCtx.moveTo(e.offsetX, e.offsetY); });
-      fmtCanvas.addEventListener('mousemove', function(e) { if (!fmtDibujando) return; fmtCtx.lineTo(e.offsetX, e.offsetY); fmtCtx.strokeStyle = '#1a1a2e'; fmtCtx.lineWidth = 2; fmtCtx.lineCap = 'round'; fmtCtx.lineJoin = 'round'; fmtCtx.stroke(); });
-      fmtCanvas.addEventListener('mouseup', function() { fmtDibujando = false; });
-      fmtCanvas.addEventListener('mouseleave', function() { fmtDibujando = false; });
-      fmtCanvas.addEventListener('touchstart', function(e) { e.preventDefault(); fmtDibujando = true; var t = e.touches[0]; var r = fmtCanvas.getBoundingClientRect(); fmtCtx.beginPath(); fmtCtx.moveTo(t.clientX - r.left, t.clientY - r.top); }, {passive: false});
-      fmtCanvas.addEventListener('touchmove', function(e) { e.preventDefault(); if (!fmtDibujando) return; var t = e.touches[0]; var r = fmtCanvas.getBoundingClientRect(); fmtCtx.lineTo(t.clientX - r.left, t.clientY - r.top); fmtCtx.strokeStyle = '#1a1a2e'; fmtCtx.lineWidth = 2.5; fmtCtx.lineCap = 'round'; fmtCtx.stroke(); }, {passive: false});
-      fmtCanvas.addEventListener('touchend', function() { fmtDibujando = false; });
-    }
-
-    function limpiarCanvasFmt() {
-      if (!fmtCtx) return;
-      fmtCtx.fillStyle = '#ffffff';
-      fmtCtx.fillRect(0, 0, fmtCanvas.width, fmtCanvas.height);
-    }
-
-    function abrirFormato(tipo) {
-      var contenedor = document.getElementById('formatoContenedor');
-      document.querySelectorAll('.formato-card').forEach(function(c) { c.style.display = 'none'; });
-      contenedor.style.display = 'block';
-
-      if (tipo === 'obra') contenedor.innerHTML = generarFormatoObra(true) + '<div class="formato-actions"><button class="btn btn-light" onclick="cerrarFormato()"><i class="fas fa-times"></i> Cancelar</button><button class="btn btn-primary" onclick="enviarFormato(\'obra\')"><i class="fas fa-paper-plane"></i> Enviar Solicitud</button></div>';
-      else if (tipo === 'mudanza') contenedor.innerHTML = generarFormatoMudanza(true) + '<div class="formato-actions"><button class="btn btn-light" onclick="cerrarFormato()"><i class="fas fa-times"></i> Cancelar</button><button class="btn btn-primary" onclick="enviarFormato(\'mudanza\')"><i class="fas fa-paper-plane"></i> Enviar Solicitud</button></div>';
-      else if (tipo === 'alquiler') contenedor.innerHTML = generarFormatoAlquiler(true) + '<div class="formato-actions"><button class="btn btn-light" onclick="cerrarFormato()"><i class="fas fa-times"></i> Cancelar</button><button class="btn btn-primary" onclick="enviarFormato(\'alquiler\')"><i class="fas fa-paper-plane"></i> Enviar Solicitud</button></div>';
-      setTimeout(initFmtCanvas, 100);
-    }
-
-    function cerrarFormato() {
-      document.getElementById('formatoContenedor').style.display = 'none';
-      document.querySelectorAll('.formato-card').forEach(function(c) { c.style.display = ''; });
-    }
-
-    function verFormatoEnviado(fila) {
-      mostrarLoading('Cargando formato...');
-      llamarGS('obtenerDetallesFormatoSolicitud', [fila], function(det) {
-        ocultarLoading();
-        var contenedor = document.getElementById('formatoContenedor');
-        document.querySelectorAll('.formato-card').forEach(function(c) { c.style.display = 'none'; });
-        contenedor.style.display = 'block';
-        var datos = det.datos || {};
-        var tipo = (det.solicitud || '').toLowerCase().indexOf('obra') !== -1 ? 'obra' : (det.solicitud || '').toLowerCase().indexOf('mudanza') !== -1 ? 'mudanza' : 'alquiler';
-        var html = '';
-        if (tipo === 'obra') html = generarFormatoObra(false, datos);
-        else if (tipo === 'mudanza') html = generarFormatoMudanza(false, datos);
-        else html = generarFormatoAlquiler(false, datos);
-        if (datos.firmaUrl) html = html.replace('class="formato-firma-img"', 'src="' + datos.firmaUrl + '" class="formato-firma-img"');
-        contenedor.innerHTML = html + '<div class="formato-actions"><button class="btn btn-light" onclick="cerrarFormato()"><i class="fas fa-times"></i> Cerrar</button><button class="btn btn-success" onclick="actualizarEstadoSol(' + fila + ',\'Aprobado\')"><i class="fas fa-check"></i> Aprobar</button><button class="btn btn-danger" onclick="actualizarEstadoSol(' + fila + ',\'Rechazado\')"><i class="fas fa-times"></i> Rechazar</button></div>';
-      });
-    }
-
-    function enviarFormato(tipo) {
-      var datos = recopilarDatosFormato(tipo);
-      if (!datos) return;
-      var firmaImg = fmtCanvas ? fmtCanvas.toDataURL('image/jpeg', 0.5) : '';
-      var firmaB64 = firmaImg ? firmaImg.split(',')[1] : '';
-      mostrarLoading('Enviando formato...');
-      llamarGS('agregarFormatoSolicitud', [tipo, datos, firmaB64, state.apartamento], function(res) {
-        ocultarLoading();
-        cerrarFormato();
-        cargarSolicitudes();
-        mostrarNotificacion('Éxito', res.mensaje, 'success');
-      });
-    }
-
-    function recopilarDatosFormato(tipo) {
-      var g = function(id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
-      if (tipo === 'obra') {
-        var propietario = g('fmt_propietario'); var cedula = g('fmt_cedula');
-        if (!propietario || !cedula) { mostrarNotificacion('Error', 'Completa nombre y cédula del propietario', 'error'); return null; }
-        var personal = [];
-        document.querySelectorAll('#fmtPersonalBody tr').forEach(function(tr) {
-          var inputs = tr.querySelectorAll('input');
-          if (inputs.length >= 5 && inputs[0].value.trim()) {
-            personal.push({ nombre: inputs[0].value.trim(), tipoDoc: inputs[1].value.trim(), numDoc: inputs[2].value.trim(), eps: inputs[3].value.trim(), arl: inputs[4].value.trim() });
-          }
-        });
-        return JSON.stringify({ propietario: propietario, cedula: cedula, fechaInicio: g('fmt_fechaInicio'), descripcion: g('fmt_descripcion'), personal: personal });
-      } else if (tipo === 'mudanza') {
-        var propietario = g('fmt_propietario'); var cedula = g('fmt_cedula');
-        if (!propietario || !cedula) { mostrarNotificacion('Error', 'Completa nombre y cédula del propietario', 'error'); return null; }
-        var ocupantes = [];
-        document.querySelectorAll('#fmtOcupantesBody tr').forEach(function(tr) {
-          var inputs = tr.querySelectorAll('input');
-          if (inputs.length >= 3 && inputs[0].value.trim()) {
-            ocupantes.push({ nombre: inputs[0].value.trim(), id: inputs[1].value.trim(), edad: inputs[2].value.trim() });
-          }
-        });
-        return JSON.stringify({ propietario: propietario, cedula: cedula, fechaTrasteo: g('fmt_fechaTrasteo'), horaIngreso: g('fmt_horaIngreso'), ocupadoPor: g('fmt_ocupadoPor'), ocupantes: ocupantes });
-      } else {
-        var nombre = g('fmt_nombre'); var cedula = g('fmt_cedula');
-        if (!nombre || !cedula) { mostrarNotificacion('Error', 'Completa nombre y cédula', 'error'); return null; }
-        return JSON.stringify({ nombre: nombre, cedula: cedula, motivo: g('fmt_motivo'), area: g('fmt_area') || '', fechaEvento: g('fmt_fechaEvento'), horario: g('fmt_horario'), numPersonas: g('fmt_numPersonas'), piso: g('fmt_piso'), horaDesde: g('fmt_horaDesde'), horaHasta: g('fmt_horaHasta') });
-      }
-    }
-
-    function agregarFilaPersonal() {
-      var tbody = document.getElementById('fmtPersonalBody');
-      var tr = document.createElement('tr');
-      tr.innerHTML = '<td><input></td><td><input style="width:80px"></td><td><input></td><td><input></td><td><input></td><td><button class="btn btn-sm btn-danger" onclick="this.closest(\'tr\').remove()"><i class="fas fa-trash"></i></button></td>';
-      tbody.appendChild(tr);
-    }
-    function agregarFilaOcupante() {
-      var tbody = document.getElementById('fmtOcupantesBody');
-      var tr = document.createElement('tr');
-      tr.innerHTML = '<td><input></td><td><input></td><td><input style="width:60px"></td><td><button class="btn btn-sm btn-danger" onclick="this.closest(\'tr\').remove()"><i class="fas fa-trash"></i></button></td>';
-      tbody.appendChild(tr);
-    }
-
-    // ============================================
-    // GENERADORES DE FORMATO
-    // ============================================
-    function fmtH(ed, campo, valor) {
-      return ed ? '<input type="text" class="formato-input" id="fmt_' + campo + '" value="' + escapeHtml(valor || '') + '">' : '<strong>' + escapeHtml(valor || '_____________') + '</strong>';
-    }
-
-    // --- SOLICITUD DE OBRA ---
-    function generarFormatoObra(ed, d) {
-      d = d || {};
-      var h = '<div class="formato-doc">';
-      h += '<div class="formato-doc-header"><img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo"><h2>SO-AD SOLICITUD DE OBRA</h2><p>Vigente desde: 03/09/2025 | Versión: 01 | Administración</p></div>';
-      h += '<div class="formato-doc-body">';
-      h += '<div class="formato-doc-section"><h3>Información del Propietario</h3><div class="formato-doc-info">';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Edificio</div><div class="formato-doc-info-value">Claret Real VI P.H.</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Apartamento</div><div class="formato-doc-info-value">' + (ed ? escapeHtml(state.apartamento || '') : escapeHtml(d.apto || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Fecha</div><div class="formato-doc-info-value">' + (ed ? new Date().toLocaleDateString('es-CO') : escapeHtml(d.fechaRegistro || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Propietario</div><div class="formato-doc-info-value">' + fmtH(ed, 'propietario', d.propietario) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Cédula No.</div><div class="formato-doc-info-value">' + fmtH(ed, 'cedula', d.cedula) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Fecha Inicio de Obra</div><div class="formato-doc-info-value">' + fmtH(ed, 'fechaInicio', d.fechaInicio) + '</div></div>';
-      h += '</div></div>';
-
-      h += '<div class="formato-doc-section"><h3>Descripción de la Obra</h3>';
-      h += '<p style="font-size:10px; color:#64748b; margin-bottom:8px;">Describa detalladamente las obras a realizar. Tenga en cuenta que el personal de vigilancia pasará a revisar el cumplimiento de los protocolos exigidos. Si se observan actividades no registradas, es motivo de suspensión de la obra.</p>';
-      if (ed) h += '<textarea class="formato-textarea" id="fmt_descripcion" placeholder="Describa las obras a realizar...">' + escapeHtml(d.descripcion || '') + '</textarea>';
-      else h += '<p>' + escapeHtml(d.descripcion || 'Sin descripción registrada') + '</p>';
-      h += '</div>';
-
-      h += '<div class="formato-doc-section"><h3>Personal Autorizado para el Ingreso</h3>';
-      h += '<p style="font-size:10px; color:#dc2626; font-weight:600; margin-bottom:8px;">EL PERSONAL QUE NO SE ENCUENTRE REGISTRADO NO PUEDE INGRESAR</p>';
-      var personal = d.personal || (ed ? [{nombre:'',tipoDoc:'',numDoc:'',eps:'',arl:''}] : []);
-      h += '<table class="formato-table"><thead><tr><th>Nombre</th><th>Tipo Doc.</th><th>No. Documento</th><th>EPS</th><th>ARL</th>';
-      if (ed) h += '<th style="width:36px"></th>';
-      h += '</tr></thead><tbody id="fmtPersonalBody">';
-      personal.forEach(function(p, i) {
-        h += '<tr>';
-        h += '<td>' + (ed ? '<input id="fmt_pN_' + i + '" value="' + escapeHtml(p.nombre || '') + '">' : escapeHtml(p.nombre || '')) + '</td>';
-        h += '<td>' + (ed ? '<input style="width:70px" id="fmt_pTD_' + i + '" value="' + escapeHtml(p.tipoDoc || '') + '">' : escapeHtml(p.tipoDoc || '')) + '</td>';
-        h += '<td>' + (ed ? '<input id="fmt_pND_' + i + '" value="' + escapeHtml(p.numDoc || '') + '">' : escapeHtml(p.numDoc || '')) + '</td>';
-        h += '<td>' + (ed ? '<input style="width:70px" id="fmt_pE_' + i + '" value="' + escapeHtml(p.eps || '') + '">' : escapeHtml(p.eps || '')) + '</td>';
-        h += '<td>' + (ed ? '<input style="width:70px" id="fmt_pA_' + i + '" value="' + escapeHtml(p.arl || '') + '">' : escapeHtml(p.arl || '')) + '</td>';
-        if (ed) h += '<td>' + (i === 0 ? '<button class="btn btn-sm btn-light" onclick="agregarFilaPersonal()" style="margin-top:2px"><i class="fas fa-plus"></i></button>' : '<button class="btn btn-sm btn-danger" onclick="this.closest(\'tr\').remove()"><i class="fas fa-trash"></i></button>') + '</td>';
-        h += '</tr>';
-      });
-      h += '</tbody></table></div>';
-
-      h += '<div class="formato-doc-section"><h3>Horarios Autorizados</h3><ol class="formato-checklist">';
-      h += '<li>Obras: LUNES a VIERNES de 8:00 a.m. a 5:00 p.m. y SÁBADOS de 8:00 a.m. a 1:00 p.m.</li>';
-      h += '<li>Ingreso de material: LUNES A SÁBADO de 9:00 a.m. a 11:00 a.m.</li>';
-      h += '<li>Retiro de basura (NO ESCOMBROS): MARTES, JUEVES Y SÁBADOS a partir de las 9:00 a.m.</li>';
-      h += '<li>El retiro de escombros se coordina por cuenta del propietario (Línea 110 o CAU). Los escombros deben permanecer dentro del apartamento. No está permitido dejarlos en áreas comunes.</li>';
-      h += '<li>DOMINGOS Y FESTIVOS: No se permite realizar labores de obra. El incumplimiento es motivo de suspensión.</li>';
-      h += '</ol></div>';
-
-      h += '<div class="formato-doc-section"><h3>Declaro y acepto bajo mi responsabilidad:</h3><ol class="formato-checklist">';
-      h += '<li>Informar a la persona encargada de la vigilancia de la salida de elementos o materiales de obra.</li>';
-      h += '<li>Las obras no afectarán la estructura, placas, muros estructurales, divisorios ni áreas comunes.</li>';
-      h += '<li>No haré cambios en balcones, puertas de acceso, vidrios que afecten las fachadas.</li>';
-      h += '<li>Recibir materiales en el horario estipulado, sacar escombros al lugar asignado, segregados y marcados con torre y apartamento. Mantendré las áreas comunes en perfecto estado.</li>';
-      h += '<li>La seguridad de mi inmueble, herramientas y materiales del contratista es mi responsabilidad.</li>';
-      h += '<li>Me responsabilizo del comportamiento y honradez del personal contratado. La administración se entenderá directamente conmigo como propietario.</li>';
-      h += '<li>Verificar que el personal realice uso adecuado de sifones y tuberías. En caso de taponamiento, el costo de reparación se dividirá entre los apartamentos en obra de esa línea.</li>';
-      h += '<li>He sido informado de la política de privacidad del EDIFICIO CLARET REAL VI P.H.</li>';
-      h += '<li>No es permitido el uso de parqueaderos ajenos para personal de obra o contratistas.</li>';
-      h += '<li>Incumplimiento reiterado será sancionado con vetado de ingreso a la copropiedad.</li>';
-      h += '</ol></div>';
-
-      h += '<div class="formato-doc-section formato-firma-area">';
-      if (ed) { h += '<p style="font-size:11px; color:#64748b; margin-bottom:8px;">Firme con su dedo o mouse:</p><div class="firma-canvas-wrap" id="formatoFirmaCanvasWrap"><canvas id="formatoFirmaCanvas" width="350" height="120"></canvas></div><button class="btn btn-light btn-sm" onclick="limpiarCanvasFmt()" style="margin-top:8px"><i class="fas fa-eraser"></i> Limpiar</button>'; }
-      else { h += '<img class="formato-firma-img" style="max-width:220px; height:70px; object-fit:contain; display:block; margin:0 auto 8px;" alt="Firma">'; }
-      h += '<div class="formato-firma-line"></div>';
-      h += '<p style="font-size:11px; color:#64748b;">Propietario: <strong>' + escapeHtml(d.propietario || '_____________') + '</strong></p>';
-      h += '<p style="font-size:11px; color:#64748b;">C.C.: <strong>' + escapeHtml(d.cedula || '_____________') + '</strong></p>';
-      h += '</div></div></div>';
-      return h;
-    }
-
-    // --- SOLICITUD DE MUDANZA ---
-    function generarFormatoMudanza(ed, d) {
-      d = d || {};
-      var h = '<div class="formato-doc">';
-      h += '<div class="formato-doc-header"><img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo"><h2>FM-AD FORMATO DE MUDANZA</h2><p>Vigente desde: 03/09/2025 | Versión: 01 | Administración</p></div>';
-      h += '<div class="formato-doc-body">';
-      h += '<p style="font-size:10px; color:#dc2626; margin-bottom:12px;">Este documento debe presentarlo previamente en la página debidamente diligenciado y firmado por el propietario, para que sea firmado y autorizado por la administración, de lo contrario no se permite realizar la mudanza.</p>';
-
-      h += '<div class="formato-doc-section"><h3>Información del Propietario</h3><div class="formato-doc-info">';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Edificio</div><div class="formato-doc-info-value">Claret Real VI P.H.</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Apartamento</div><div class="formato-doc-info-value">' + (ed ? escapeHtml(state.apartamento || '') : escapeHtml(d.apto || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Fecha</div><div class="formato-doc-info-value">' + (ed ? new Date().toLocaleDateString('es-CO') : escapeHtml(d.fechaRegistro || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Propietario</div><div class="formato-doc-info-value">' + fmtH(ed, 'propietario', d.propietario) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Cédula No.</div><div class="formato-doc-info-value">' + fmtH(ed, 'cedula', d.cedula) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Fecha Trasteo</div><div class="formato-doc-info-value">' + fmtH(ed, 'fechaTrasteo', d.fechaTrasteo) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Hora de Ingreso</div><div class="formato-doc-info-value">' + (ed ? '<select class="formato-input" id="fmt_horaIngreso"><option value="">Seleccionar</option><option>7:00 am</option><option>8:00 am</option><option>9:00 am</option><option>10:00 am</option><option>11:00 am</option><option>12:00 pm</option><option>1:00 pm</option><option>2:00 pm</option><option>3:00 pm</option><option>4:00 pm</option><option>5:00 pm</option></select>' : escapeHtml(d.horaIngreso || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Ocupado por</div><div class="formato-doc-info-value">' + (ed ? '<select class="formato-input" id="fmt_ocupadoPor"><option value="Propietarios">Propietarios</option><option value="Arrendatarios">Arrendatarios</option></select>' : escapeHtml(d.ocupadoPor || '')) + '</div></div>';
-      h += '</div></div>';
-
-      h += '<div class="formato-doc-section"><h3>Datos de los Ocupantes del Inmueble</h3>';
-      h += '<p style="font-size:10px; color:#64748b; margin-bottom:8px;">Describa los datos de las personas que ocuparán el inmueble:</p>';
-      var ocupantes = d.ocupantes || (ed ? [{nombre:'',id:'',edad:''}] : []);
-      h += '<table class="formato-table"><thead><tr><th>Nombre</th><th>Identificación</th><th>Edad</th>';
-      if (ed) h += '<th style="width:36px"></th>';
-      h += '</tr></thead><tbody id="fmtOcupantesBody">';
-      ocupantes.forEach(function(o, i) {
-        h += '<tr>';
-        h += '<td>' + (ed ? '<input id="fmt_oN_' + i + '" value="' + escapeHtml(o.nombre || '') + '">' : escapeHtml(o.nombre || '')) + '</td>';
-        h += '<td>' + (ed ? '<input id="fmt_oI_' + i + '" value="' + escapeHtml(o.id || '') + '">' : escapeHtml(o.id || '')) + '</td>';
-        h += '<td>' + (ed ? '<input style="width:60px" id="fmt_oE_' + i + '" value="' + escapeHtml(o.edad || '') + '">' : escapeHtml(o.edad || '')) + '</td>';
-        if (ed) h += '<td>' + (i === 0 ? '<button class="btn btn-sm btn-light" onclick="agregarFilaOcupante()" style="margin-top:2px"><i class="fas fa-plus"></i></button>' : '<button class="btn btn-sm btn-danger" onclick="this.closest(\'tr\').remove()"><i class="fas fa-trash"></i></button>') + '</td>';
-        h += '</tr>';
-      });
-      h += '</tbody></table></div>';
-
-      h += '<div class="formato-doc-section"><h3>Inventario de Áreas Comunes</h3>';
-      h += '<p>Para el ingreso de mudanza, se realizará un inventario de las áreas de circulación. Este debe ser firmado por el residente al inicio y terminación. En caso de daño o eventualidad, el personal de vigilancia registrará los daños en el inventario.</p></div>';
-
-      h += '<div class="formato-doc-section"><h3>Recomendaciones de Seguridad</h3><ul class="formato-checklist">';
-      h += '<li>Revise la seguridad de puertas y ventanas. Instale-refuerce puerta de entrada sin modificar el diseño.</li>';
-      h += '<li>Cambie las guardas de las cerraduras, al igual si se le extravían las llaves.</li>';
-      h += '<li>Utilice proveedores que no permanezcan alrededor del conjunto.</li>';
-      h += '<li>Si su apartamento queda en pisos bajos instale rejas internas en las ventanas.</li>';
-      h += '<li>Instale dispositivos de alarma conectados a su celular.</li>';
-      h += '<li>Programe luces y aparatos electrónicos con relojes para simular presencia.</li>';
-      h += '<li>Restrinja la posesión de llaves. Está prohibido dejarlas con el personal de vigilancia.</li>';
-      h += '<li>No acepte entrada de extraños. Por seguridad, guardas revisarán baúles al ingreso y salida.</li>';
-      h += '<li>Evite tener grandes cantidades de dinero, joyas, cámaras o artículos electrónicos pequeños.</li>';
-      h += '</ul></div>';
-
-      h += '<div class="formato-doc-section"><h3>Uso Adecuado del Inmueble</h3>';
-      h += '<p>Los inmuebles son exclusivos de uso residencial. No está permitido adecuarlos o arrendarlos para destinación comercial, bodegaje o vitrina de obras. Al firmar esta acta se deja constancia del compromiso a cumplir con lo anteriormente descrito.</p>';
-      h += '<p style="font-size:11px; color:#64748b; margin-top:8px;"><strong>ARRENDATARIOS:</strong> Si la autorización es para arrendatarios, debe suministrar la presente acta diligenciada y firmada por el propietario, anexando la primera y última copia del contrato.</p></div>';
-
-      h += '<div class="formato-doc-section formato-firma-area">';
-      if (ed) { h += '<p style="font-size:11px; color:#64748b; margin-bottom:8px;">Firme con su dedo o mouse:</p><div class="firma-canvas-wrap" id="formatoFirmaCanvasWrap"><canvas id="formatoFirmaCanvas" width="350" height="120"></canvas></div><button class="btn btn-light btn-sm" onclick="limpiarCanvasFmt()" style="margin-top:8px"><i class="fas fa-eraser"></i> Limpiar</button>'; }
-      else { h += '<img class="formato-firma-img" style="max-width:220px; height:70px; object-fit:contain; display:block; margin:0 auto 8px;" alt="Firma">'; }
-      h += '<div class="formato-firma-line"></div>';
-      h += '<p style="font-size:11px; color:#64748b;">Propietario: <strong>' + escapeHtml(d.propietario || '_____________') + '</strong></p>';
-      h += '<p style="font-size:11px; color:#64748b;">C.C.: <strong>' + escapeHtml(d.cedula || '_____________') + '</strong></p>';
-      h += '</div></div></div>';
-      return h;
-    }
-
-    // --- ALQUILER DE ÁREAS COMUNES ---
-    function generarFormatoAlquiler(ed, d) {
-      d = d || {};
-      var h = '<div class="formato-doc">';
-      h += '<div class="formato-doc-header"><img src="https://i.postimg.cc/s2YfdY8Q/image-Picsart-Background-Remover.png" alt="Logo"><h2>AAC-AD ALQUILER DE ÁREAS COMUNES</h2><p>Vigente desde: 03/09/2025 | Versión: 01 | Administración</p></div>';
-      h += '<div class="formato-doc-body">';
-
-      // PARTE 1: SOLICITUD DE USO DE ÁREA SOCIAL
-      h += '<div class="formato-doc-section" style="border-bottom:2px solid #e2e8f0; padding-bottom:20px;">';
-      h += '<h3 style="font-size:14px; text-align:center; text-transform:uppercase; letter-spacing:0.5px;">Solicitud de Uso de Área Social</h3>';
-      h += '<div class="formato-doc-info">';
-      h += '<div class="formato-doc-info-item full"><div class="formato-doc-info-label">Edificio</div><div class="formato-doc-info-value">Claret Real VI P.H.</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Nombre</div><div class="formato-doc-info-value">' + fmtH(ed, 'nombre', d.nombre) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Cédula No.</div><div class="formato-doc-info-value">' + fmtH(ed, 'cedula', d.cedula) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Apartamento</div><div class="formato-doc-info-value">' + (ed ? escapeHtml(state.apartamento || '') : escapeHtml(d.apto || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Fecha</div><div class="formato-doc-info-value">' + (ed ? new Date().toLocaleDateString('es-CO') : escapeHtml(d.fechaRegistro || '')) + '</div></div>';
-      h += '</div>';
-
-      h += '<div style="margin-top:12px;"><p style="font-size:11px; color:#334155;">Solicita formalmente el uso del Área Social para la siguiente actividad:</p>';
-      if (ed) h += '<textarea class="formato-textarea" id="fmt_motivo" placeholder="Describa el motivo del evento...">' + escapeHtml(d.motivo || '') + '</textarea>';
-      else h += '<p>' + escapeHtml(d.motivo || 'No registrado') + '</p>';
-      h += '</div>';
-
-      h += '<div class="formato-doc-info" style="margin-top:12px;">';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Área</div><div class="formato-doc-info-value">' + (ed ? '<select class="formato-input" id="fmt_area"><option value="Salón Social">Salón Social</option><option value="Zona BBQ">Zona BBQ</option><option value="Terraza">Terraza</option></select>' : escapeHtml(d.area || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Fecha del Evento</div><div class="formato-doc-info-value">' + (ed ? '<input type="date" class="formato-input" id="fmt_fechaEvento" value="' + escapeHtml(d.fechaEvento || '') + '">' : escapeHtml(d.fechaEvento || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Horario</div><div class="formato-doc-info-value">' + (ed ? '<select class="formato-input" id="fmt_horario"><option value="">Seleccionar</option><option>Diurno (8 am - 5 pm)</option><option>Nocturno (6 pm - 2:30 am)</option></select>' : escapeHtml(d.horario || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">No. Personas</div><div class="formato-doc-info-value">' + fmtH(ed, 'numPersonas', d.numPersonas) + '</div></div>';
-      h += '</div>';
-
-      h += '<p style="font-size:10px; color:#64748b; margin-top:10px;"><strong>Horarios:</strong> DIURNO 8 am – 5 pm (dom-dom), Nocturno 6 pm – 2:30 am (V-S, si es festivo domingos aplica)</p>';
-
-      h += '<div style="margin-top:12px;"><h4 style="font-size:12px; margin-bottom:8px;">Me comprometo a:</h4><ol class="formato-checklist">';
-      h += '<li>Cumplir con el reglamento interno de uso del Área Social.</li>';
-      h += '<li>Responder por cualquier daño ocasionado durante el evento.</li>';
-      h += '<li>Dejar el área en las mismas condiciones de aseo y orden en que fue entregada.</li>';
-      h += '</ol></div>';
-
-      h += '<div class="formato-firma-area">';
-      if (ed) { h += '<p style="font-size:11px; color:#64748b; margin-bottom:8px;">Firme con su dedo o mouse:</p><div class="firma-canvas-wrap" id="formatoFirmaCanvasWrap"><canvas id="formatoFirmaCanvas" width="350" height="120"></canvas></div><button class="btn btn-light btn-sm" onclick="limpiarCanvasFmt()" style="margin-top:8px"><i class="fas fa-eraser"></i> Limpiar</button>'; }
-      else { h += '<img class="formato-firma-img" style="max-width:220px; height:70px; object-fit:contain; display:block; margin:0 auto 8px;" alt="Firma">'; }
-      h += '<div class="formato-firma-line"></div>';
-      h += '<p style="font-size:11px; color:#64748b;">Solicitante: <strong>' + escapeHtml(d.nombre || '_____________') + '</strong></p>';
-      h += '<p style="font-size:11px; color:#64748b;">C.C.: <strong>' + escapeHtml(d.cedula || '_____________') + '</strong></p>';
-      h += '<p style="font-size:11px; color:#64748b;">Fecha: <strong>' + (ed ? new Date().toLocaleDateString('es-CO') : escapeHtml(d.fechaRegistro || '')) + '</strong></p>';
-      h += '</div></div>';
-
-      // PARTE 2: EXONERACIÓN TERRAZA (si seleccionó terraza)
-      h += '<div class="formato-doc-section">';
-      h += '<h3 style="font-size:14px; text-align:center; text-transform:uppercase; letter-spacing:0.5px;">Formulario de Exoneración de Responsabilidad</h3>';
-      h += '<p style="font-size:12px; text-align:center; color:#64748b; margin-bottom:12px;">Uso de Terraza</p>';
-
-      h += '<div class="formato-doc-info">';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Edificio</div><div class="formato-doc-info-value">Claret Real VI P.H.</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Apartamento</div><div class="formato-doc-info-value">' + (ed ? escapeHtml(state.apartamento || '') : escapeHtml(d.apto || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Piso Terraza</div><div class="formato-doc-info-value">' + fmtH(ed, 'piso', d.piso) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Fecha</div><div class="formato-doc-info-value">' + (ed ? '<input type="date" class="formato-input" id="fmt_fechaEvento2" value="' + escapeHtml(d.fechaEvento || '') + '">' : escapeHtml(d.fechaEvento || '')) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Hora Desde</div><div class="formato-doc-info-value">' + fmtH(ed, 'horaDesde', d.horaDesde) + '</div></div>';
-      h += '<div class="formato-doc-info-item"><div class="formato-doc-info-label">Hora Hasta</div><div class="formato-doc-info-value">' + fmtH(ed, 'horaHasta', d.horaHasta) + '</div></div>';
-      h += '</div>';
-
-      h += '<h4 style="font-size:12px; margin:16px 0 8px;">Declaro que:</h4><ol class="formato-checklist">';
-      h += '<li>Conozco y acepto que la terraza cuenta con: escalera de acceso a tanques de agua, cuarto de bombas y luces generales, y bancas de concreto cerca al borde con vista al vacío.</li>';
-      h += '<li>Reconozco los posibles riesgos: caídas desde altura, manipulación indebida de bombas e instalaciones eléctricas, accidentes por uso de estructuras no destinadas.</li>';
-      h += '<li>Me comprometo a: supervisar a todos los asistentes (especialmente menores), evitar acceso a áreas restringidas (escalera de tanques, botones), no permitir subir sobre muros, bancas o bordes.</li>';
-      h += '<li>Exonero expresamente a la administración, al edificio y a su representante legal de toda responsabilidad civil, penal, administrativa o económica por cualquier accidente, daño, lesión o pérdida durante el uso de la terraza.</li>';
-      h += '<li>Asumo total responsabilidad por daños a instalaciones, bienes comunes o terceros durante el tiempo de uso del espacio.</li>';
-      h += '</ol></div>';
-
-      h += '</div></div>';
-      return h;
-    }
-
     // --- UTILIDAD: Escape HTML ---
     function escapeHtml(text) {
       if (!text) return '';
@@ -6738,7 +7288,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 36;
+    const SW_VERSION = 37;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
