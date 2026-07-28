@@ -3617,7 +3617,9 @@
       var secciones = ["bienvenidaSection", "resumenSection", "ingresosSection", "egresosSection", "cuotasEspecialesSection", "activosSection", "solicitudesFormatosSection", "multasSection", "actasSection"];
       secciones.forEach(function(id) { document.getElementById(id).classList.add("hidden"); });
 
-      document.getElementById(seccion + "Section").classList.remove("hidden");
+      var idMap = { solicitudes: 'solicitudesFormatosSection' };
+      var targetId = idMap[seccion] || (seccion + 'Section');
+      document.getElementById(targetId).classList.remove("hidden");
 
       document.querySelectorAll(".sidebar-nav a").forEach(function(link) {
         link.classList.remove("active");
@@ -7208,7 +7210,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 35;
+    const SW_VERSION = 41;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
