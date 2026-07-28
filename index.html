@@ -2246,7 +2246,7 @@
         <!-- Tabla unificada de solicitudes y formatos -->
         <div>
           <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px; padding-top:12px; border-top:1px solid var(--border);"><i class="fas fa-history" style="margin-right:6px;"></i>Solicitudes</h3>
-          <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Solicitud</th><th>Fecha solicitada</th><th>Horario</th><th>Soporte</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaSolicitudesBody"></tbody></table></div>
+          <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Solicitud</th><th>Fecha solicitada</th><th>Horario</th><th>Soporte</th><th>Estado</th><th>Acciones</th></tr></thead><tbody id="tablaSolicitudesBody"></tbody></table></div>
         </div>
       </div>
 
@@ -7251,7 +7251,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 45;
+    const SW_VERSION = 48;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
