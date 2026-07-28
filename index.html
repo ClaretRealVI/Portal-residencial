@@ -2206,59 +2206,51 @@
         <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Código</th><th>Descripción</th><th>Asignado a</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaActivosBody"></tbody></table></div>
       </div>
 
-      <!-- Solicitudes & Formatos (Merged) -->
+      <!-- Solicitudes -->
       <div id="solicitudesFormatosSection" class="card hidden">
         <div class="card-header">
-          <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Solicitudes & Formatos</h2>
-          <button class="btn btn-primary btn-sm" onclick="abrirModal('modalSolicitud')"><i class="fas fa-plus"></i> Nueva Solicitud</button>
-        </div>
-        <div class="section-tabs">
-          <button class="section-tab active" id="tabBtnSolicitudes" onclick="mostrarTabSF('solicitudes')">
-            <i class="fas fa-clipboard-list"></i> Solicitudes
-          </button>
-          <button class="section-tab" id="tabBtnFormatos" onclick="mostrarTabSF('formatos')">
-            <i class="fas fa-file-alt"></i> Formatos y Documentos
-          </button>
+          <h2 class="card-title"><i class="fas fa-clipboard-list"></i> Solicitudes</h2>
         </div>
 
-        <div id="sfTabSolicitudes">
+        <!-- Tabla de solicitudes antiguas -->
+        <div style="margin-bottom:24px;">
+          <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:10px; text-transform:uppercase; letter-spacing:0.5px;"><i class="fas fa-history" style="margin-right:6px;"></i>Solicitudes Registradas</h3>
           <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Solicitud</th><th>Fecha solicitada</th><th>Horario</th><th>Soporte</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaSolicitudesBody"></tbody></table></div>
         </div>
 
-        <div id="sfTabFormatos" class="hidden">
-          <!-- Selector de formatos -->
-          <div class="formato-selector-grid">
-            <div class="formato-card" onclick="abrirFormularioFormato('Obra')">
-              <div class="formato-card-icon" style="background:rgba(217,119,6,0.1); color:#d97706;"><i class="fas fa-hard-hat"></i></div>
-              <div class="formato-card-info">
-                <h4>Solicitud de Obra</h4>
-                <p>SO-AD — Solicitar obras o reparaciones en el apartamento</p>
-              </div>
-              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
+        <!-- Formatos auto-generados -->
+        <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; padding-top:12px; border-top:1px solid var(--border);"><i class="fas fa-file-alt" style="margin-right:6px;"></i>Generar Formato</h3>
+        <div class="formato-selector-grid">
+          <div class="formato-card" onclick="abrirFormularioFormato('Obra')">
+            <div class="formato-card-icon" style="background:rgba(217,119,6,0.1); color:#d97706;"><i class="fas fa-hard-hat"></i></div>
+            <div class="formato-card-info">
+              <h4>Solicitud de Obra</h4>
+              <p>SO-AD — Solicitar obras o reparaciones en el apartamento</p>
             </div>
-            <div class="formato-card" onclick="abrirFormularioFormato('Mudanza')">
-              <div class="formato-card-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fas fa-truck"></i></div>
-              <div class="formato-card-info">
-                <h4>Solicitud de Mudanza</h4>
-                <p>FM-AD — Solicitar autorización para mudarse o ingresar bienes</p>
-              </div>
-              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
-            </div>
-            <div class="formato-card" onclick="abrirFormularioFormato('Alquiler')">
-              <div class="formato-card-icon" style="background:rgba(124,58,237,0.1); color:#7c3aed;"><i class="fas fa-users"></i></div>
-              <div class="formato-card-info">
-                <h4>Alquiler de Áreas Comunes</h4>
-                <p>AAC-AD — Solicitar uso de salón, terraza o zonas comunes</p>
-              </div>
-              <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
-            </div>
+            <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
           </div>
+          <div class="formato-card" onclick="abrirFormularioFormato('Mudanza')">
+            <div class="formato-card-icon" style="background:rgba(5,150,105,0.1); color:#059669;"><i class="fas fa-truck"></i></div>
+            <div class="formato-card-info">
+              <h4>Solicitud de Mudanza</h4>
+              <p>FM-AD — Solicitar autorización para mudarse o ingresar bienes</p>
+            </div>
+            <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+          <div class="formato-card" onclick="abrirFormularioFormato('Alquiler')">
+            <div class="formato-card-icon" style="background:rgba(124,58,237,0.1); color:#7c3aed;"><i class="fas fa-users"></i></div>
+            <div class="formato-card-info">
+              <h4>Alquiler de Áreas Comunes</h4>
+              <p>AAC-AD — Solicitar uso de salón, terraza o zonas comunes</p>
+            </div>
+            <div class="formato-card-arrow"><i class="fas fa-chevron-right"></i></div>
+          </div>
+        </div>
 
-          <!-- Lista de formatos generados -->
-          <div style="margin-top:20px;">
-            <h3 style="font-size:14px; font-weight:600; color:var(--text); margin-bottom:12px;"><i class="fas fa-list" style="margin-right:6px; color:var(--text-muted);"></i>Formatos Enviados</h3>
-            <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Apartamento</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaFormatosGeneradosBody"><tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin formatos enviados</td></tr></tbody></table></div>
-          </div>
+        <!-- Tabla de formatos enviados -->
+        <div style="margin-top:20px;">
+          <h3 style="font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:12px; text-transform:uppercase; letter-spacing:0.5px; padding-top:12px; border-top:1px solid var(--border);"><i class="fas fa-list" style="margin-right:6px;"></i>Formatos Enviados</h3>
+          <div class="table-container"><table class="table"><thead><tr><th>Fecha</th><th>Tipo</th><th>Apartamento</th><th>Estado</th><th class="admin-only">Acciones</th></tr></thead><tbody id="tablaFormatosGeneradosBody"><tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin formatos enviados</td></tr></tbody></table></div>
         </div>
       </div>
 
@@ -3063,24 +3055,6 @@
     </div>
   </div>
 
-  <!-- Modal Solicitud -->
-  <div id="modalSolicitud" class="modal">
-    <div class="modal-content">
-      <div class="modal-header"><h3 class="modal-title">Nueva Solicitud</h3><button class="modal-close" onclick="cerrarModal('modalSolicitud')"><i class="fas fa-times"></i></button></div>
-      <div class="modal-body">
-        <div class="form-group"><label class="form-label">Tipo</label><select id="tipoSolicitud" class="form-control" onchange="actualizarOpcionesSolicitud()"><option value="">Selecciona</option><option value="Alquiler">Alquiler Zonas</option><option value="Solicitud">Obra/Mudanza</option><option value="Queja">Queja</option><option value="Sugerencia">Sugerencia</option></select></div>
-        <div class="form-group"><label class="form-label">Solicitud</label><select id="solicitud" class="form-control"><option value="">Primero selecciona tipo</option></select></div>
-        <div class="form-group"><label class="form-label">Fecha</label><input type="date" id="fechaSolicitud" class="form-control"></div>
-        <div class="form-group"><label class="form-label">Horario</label><select id="horarioSolicitud" class="form-control"><option value="">Selecciona</option><option>Diurno</option><option>Nocturno</option></select></div>
-        <div class="form-group"><label class="form-label">Soporte</label><input type="file" id="soporteSolicitud" class="form-control" accept=".pdf,.jpg,.jpeg,.png"></div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-primary" onclick="guardarSolicitud()"><i class="fas fa-paper-plane"></i> Enviar</button>
-        <button class="btn btn-light" onclick="cerrarModal('modalSolicitud')">Cancelar</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Modal Fechas -->
   <div id="modalFechas" class="modal">
     <div class="modal-content">
@@ -3636,19 +3610,6 @@
     }
 
     // ============================================
-    // SECTION TABS (Solicitudes & Formatos)
-    // ============================================
-    function mostrarTabSF(tab) {
-      document.getElementById('sfTabSolicitudes').classList.toggle('hidden', tab !== 'solicitudes');
-      document.getElementById('sfTabFormatos').classList.toggle('hidden', tab !== 'formatos');
-      document.getElementById('tabBtnSolicitudes').classList.toggle('active', tab === 'solicitudes');
-      document.getElementById('tabBtnFormatos').classList.toggle('active', tab === 'formatos');
-
-      if (tab === 'formatos') { cargarFormatos(); }
-      if (tab === 'solicitudes') { cargarSolicitudes(); }
-    }
-
-    // ============================================
     // MOSTRAR SECCIÓN
     // ============================================
     function mostrarSeccion(seccion) {
@@ -3656,13 +3617,7 @@
       var secciones = ["bienvenidaSection", "resumenSection", "ingresosSection", "egresosSection", "cuotasEspecialesSection", "activosSection", "solicitudesFormatosSection", "multasSection", "actasSection"];
       secciones.forEach(function(id) { document.getElementById(id).classList.add("hidden"); });
 
-      if (seccion === "solicitudes" || seccion === "formatos") {
-        document.getElementById("solicitudesFormatosSection").classList.remove("hidden");
-        if (seccion === "formatos") { mostrarTabSF("formatos"); }
-        else { mostrarTabSF("solicitudes"); }
-      } else {
-        document.getElementById(seccion + "Section").classList.remove("hidden");
-      }
+      document.getElementById(seccion + "Section").classList.remove("hidden");
 
       document.querySelectorAll(".sidebar-nav a").forEach(function(link) {
         link.classList.remove("active");
@@ -3679,8 +3634,7 @@
         egresos: cargarEgresos,
         cuotasEspeciales: cargarCuotasEspecialesAdmin,
         activos: cargarActivos,
-        solicitudes: cargarSolicitudes,
-        formatos: cargarFormatos,
+        solicitudes: function() { cargarSolicitudes(); cargarFormatos(); },
         multas: cargarMultas,
         actas: cargarActas
       };
@@ -4549,6 +4503,9 @@
       var firma = generarImagenFirmaTipo('alq');
       if (!firma) { mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
 
+      var fechasArr = recogerFechasAlquiler();
+      if (fechasArr.length === 0) { mostrarNotificacion('Error', 'Agregue al menos una fecha', 'error'); return; }
+
       var datos = {
         tipo: 'Alquiler',
         apartamento: document.getElementById('alqApto').value,
@@ -4557,20 +4514,31 @@
         area: area,
         horario: horario,
         personas: document.getElementById('alqPersonas').value,
-        fechas: JSON.stringify(recogerFechasAlquiler()),
+        fecha: fechasArr[0].fecha || '',
+        horaInicio: fechasArr[0].entrada || '',
+        horaFin: fechasArr[0].salida || '',
+        fechas: JSON.stringify(fechasArr),
         firma: firma
       };
 
-      mostrarLoading('Enviando solicitud de alquiler...');
-      llamarGS('registrarFormato', [datos], function(res) {
-        ocultarLoading();
-        if (res && res.ok) {
-          mostrarNotificacion('Éxito', res.mensaje, 'success');
-          cerrarModal('modalFormatoAlquiler');
-          cargarFormatos();
-        } else {
-          mostrarNotificacion('Error', (res && res.mensaje) || 'Error al enviar', 'error');
+      // Validar disponibilidad: no cruzar alquileres en misma fecha+horario
+      mostrarLoading('Verificando disponibilidad...');
+      llamarGS('validarDisponibilidadAlquiler', [area, datos.fecha, horario], function(disponible) {
+        if (!disponible) {
+          ocultarLoading();
+          mostrarNotificacion('Error', 'Ya existe una solicitud de alquiler para ' + area + ' en esa fecha/horario', 'error');
+          return;
         }
+        llamarGS('registrarFormato', [datos], function(res) {
+          ocultarLoading();
+          if (res && res.ok) {
+            mostrarNotificacion('Éxito', res.mensaje, 'success');
+            cerrarModal('modalFormatoAlquiler');
+            cargarFormatos();
+          } else {
+            mostrarNotificacion('Error', (res && res.mensaje) || 'Error al enviar', 'error');
+          }
+        });
       });
     }
 
@@ -5002,54 +4970,6 @@
           mostrarNotificacion('Éxito', res.mensaje, 'success');
         });
       }
-    }
-
-    function guardarSolicitud() {
-      var tipo = document.getElementById('tipoSolicitud').value;
-      var solicitud = document.getElementById('solicitud').value;
-      var fecha = document.getElementById('fechaSolicitud').value;
-      var horario = document.getElementById('horarioSolicitud').value;
-      var archivo = document.getElementById('soporteSolicitud').files[0];
-
-      if (!tipo || !solicitud || !fecha || !horario) { mostrarNotificacion('Error', 'Completa todos los campos', 'error'); return; }
-
-      mostrarLoading('Procesando...');
-
-      function enviar(base64) {
-        llamarGS('agregarSolicitud', [tipo, solicitud, fecha, horario, archivo ? archivo.name : '', base64 || '', state.apartamento], function(res) {
-          cerrarModal('modalSolicitud');
-          document.getElementById('tipoSolicitud').value = '';
-          document.getElementById('solicitud').innerHTML = '<option value="">Primero selecciona tipo</option>';
-          document.getElementById('fechaSolicitud').value = '';
-          document.getElementById('horarioSolicitud').value = '';
-          document.getElementById('soporteSolicitud').value = '';
-          cargarSolicitudes();
-          mostrarNotificacion('Éxito', res.mensaje, 'success');
-        });
-      }
-
-      if (tipo === 'Alquiler') {
-        llamarGS('validarDisponibilidadAlquiler', [solicitud, fecha, horario], function(disponible) {
-          if (!disponible) { ocultarLoading(); mostrarNotificacion('Error', 'Ya existe una solicitud para esa fecha/horario', 'error'); return; }
-          if (archivo) { var r = new FileReader(); r.onload = function(e) { enviar(e.target.result.split(',')[1]); }; r.readAsDataURL(archivo); }
-          else enviar('');
-        });
-      } else {
-        if (archivo) { var r = new FileReader(); r.onload = function(e) { enviar(e.target.result.split(',')[1]); }; r.readAsDataURL(archivo); }
-        else enviar('');
-      }
-    }
-
-    function actualizarOpcionesSolicitud() {
-      var tipo = document.getElementById('tipoSolicitud').value;
-      var sel = document.getElementById('solicitud');
-      var opciones = {
-        'Alquiler': ['Salón Social', 'Zona BBQ', 'Terraza'],
-        'Solicitud': ['Mudanza', 'Inicio de obra'],
-        'Queja': ['Ruido excesivo', 'Mascotas', 'Estacionamiento'],
-        'Sugerencia': ['Mejoras áreas comunes', 'Eventos', 'Nuevos servicios']
-      };
-      sel.innerHTML = '<option value="">Selecciona</option>' + (opciones[tipo] || []).map(function(o) { return '<option value="' + o + '">' + o + '</option>'; }).join('');
     }
 
     // ============================================
