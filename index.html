@@ -7021,7 +7021,7 @@
       if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
       if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'Archivo muy grande. Máximo 5MB.', 'error'); return; }
 
-      var montoStr = (document.getElementById('cePagoMonto').value || '').replace(/\./g, '');
+      var montoStr = (document.getElementById('cePagoMonto').value || '').replace(/[^0-9]/g, '');
       var monto = parseInt(montoStr, 10) || 0;
 
       if (monto <= 0) { mostrarNotificacion('Error', 'Ingresa un valor mayor a 0', 'error'); return; }
@@ -7251,7 +7251,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 48;
+    const SW_VERSION = 49;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
