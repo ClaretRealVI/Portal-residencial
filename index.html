@@ -1718,6 +1718,104 @@
     @media (max-width: 600px) {
       .firma-grid { grid-template-columns: repeat(2, 1fr); }
     }
+    
+    /* ============================================
+       CARDS LLAMADOS POR APTO
+       ============================================ */
+    .llamados-cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    
+    .llamado-apto-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 18px 16px;
+      text-align: center;
+      transition: var(--transition);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .llamado-apto-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+    }
+    
+    .llamado-apto-card.nivel-1::before { background: var(--secondary); }
+    .llamado-apto-card.nivel-2::before { background: var(--warning); }
+    .llamado-apto-card.nivel-3::before { background: var(--danger); }
+    
+    .llamado-apto-card .apto-numero {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px;
+    }
+    
+    .llamado-apto-card .apto-label {
+      font-size: 11px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+    }
+    
+    .llamado-apto-card .llamado-count-circle {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: white;
+      margin-bottom: 8px;
+    }
+    
+    .llamado-apto-card.nivel-1 .llamado-count-circle {
+      background: linear-gradient(135deg, #059669, #10b981);
+    }
+    
+    .llamado-apto-card.nivel-2 .llamado-count-circle {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      animation: pulse 1.5s infinite;
+    }
+    
+    .llamado-apto-card .llamado-count-text {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+    
+    .llamado-apto-card.nivel-1 .llamado-count-text { color: var(--secondary); }
+    .llamado-apto-card.nivel-2 .llamado-count-text { color: var(--warning); }
+    
+    .llamados-cards-empty {
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--text-muted);
+      font-size: 13px;
+      background: var(--bg);
+      border-radius: var(--radius);
+      border: 1px dashed var(--border);
+      margin-bottom: 20px;
+    }
+    
+    .llamados-cards-empty i {
+      font-size: 28px;
+      margin-bottom: 10px;
+      display: block;
+      color: var(--secondary);
+    }    
 
     </style>
 </head>
@@ -2287,6 +2385,7 @@
         </div>
 
         <div id="llamadosTabContent" class="hidden">
+          <div id="llamadosCardsContainer"></div>
           <div class="table-container">
             <table class="table">
               <thead><tr><th>Fecha</th><th>Apartamento</th><th>Descripción</th><th>Soporte</th><th class="admin-only">Acciones</th></tr></thead>
@@ -5589,23 +5688,45 @@
 
     function cargarLlamados() {
       mostrarLoading("Cargando llamados...");
-      llamarGS("obtenerLlamados", [], function(data) {
-        ocultarLoading();
-        var tbody = document.getElementById("tablaLlamadosBody");
-        if (!data || !data.length) {
-          tbody.innerHTML = '<tr><td colspan="5" style="text-align:center">Sin llamados registrados</td></tr>';
-          return;
+      llamarGS("obtenerResumenLlamadosActivos", [], function(resumen) {
+        // Renderizar cards
+        var container = document.getElementById("llamadosCardsContainer");
+        if (!resumen || !resumen.length) {
+          container.innerHTML = '<div class="llamados-cards-empty"><i class="fas fa-check-circle"></i>Todos los apartamentos están al día<br><span style="font-size:11px;color:var(--text-muted);">Sin llamados de alarma vigentes</span></div>';
+        } else {
+          var html = '<div class="llamados-cards-grid">';
+          resumen.forEach(function(item) {
+            var nivel = item.cantidad >= 2 ? (item.cantidad >= 3 ? "nivel-3" : "nivel-2") : "nivel-1";
+            var textoNivel = item.cantidad === 1 ? "llamado vigente" : "llamados vigentes";
+            html += '<div class="llamado-apto-card ' + nivel + '">';
+            html += '  <div class="apto-numero">' + item.apartamento + '</div>';
+            html += '  <div class="apto-label">Apartamento</div>';
+            html += '  <div class="llamado-count-circle">' + item.cantidad + '</div>';
+            html += '  <div class="llamado-count-text">' + item.cantidad + '/3 ' + textoNivel + '</div>';
+            html += '</div>';
+          });
+          html += '</div>';
+          container.innerHTML = html;
         }
-        tbody.innerHTML = data.map(function(r) {
-          // r = [fila, fecha, apartamento, descripcion, uuid, idMulta, soporte]
-          var soporteCol = r[6]
-            ? '<span class="soporte-badge" onclick="window.open(\'' + r[6] + '\',\'_blank\')" style="cursor:pointer;"><i class="fas fa-image"></i> Ver soporte</span>'
-            : '<span class="sin-soporte">-</span>';
-          var acc = state.esAdmin
-            ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td>'
-            : '';
-          return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td><td>' + soporteCol + '</td>' + acc + '</tr>';
-        }).join("");
+    
+        // Cargar tabla de detalle
+        llamarGS("obtenerLlamados", [], function(data) {
+          ocultarLoading();
+          var tbody = document.getElementById("tablaLlamadosBody");
+          if (!data || !data.length) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; color:var(--text-muted);">Sin llamados registrados</td></tr>';
+            return;
+          }
+          tbody.innerHTML = data.map(function(r) {
+            var soporteCol = r[6]
+              ? '<span class="soporte-badge" onclick="window.open(\'' + r[6] + '\',\'_blank\')" style="cursor:pointer;"><i class="fas fa-image"></i> Ver soporte</span>'
+              : '<span class="sin-soporte">-</span>';
+            var acc = state.esAdmin
+              ? '<td class="table-actions"><button class="btn btn-sm btn-danger" onclick="ejecutarEliminarLlamado(' + r[0] + ')"><i class="fas fa-trash"></i></button></td>'
+              : '';
+            return '<tr><td>' + r[1] + '</td><td>' + r[2] + '</td><td>' + (r[3] || "-") + '</td><td>' + soporteCol + '</td>' + acc + '</tr>';
+          }).join("");
+        });
       });
     }
 
@@ -7251,7 +7372,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 49;
+    const SW_VERSION = 50;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
