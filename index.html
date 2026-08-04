@@ -5273,9 +5273,14 @@
     function actualizarEstadoSol(fila, estado) {
       if (!confirm('¿Cambiar estado a "' + estado + '"?')) return;
       mostrarLoading('Actualizando...');
-      llamarGS('actualizarEstadoSolicitud', [fila, estado], function() {
-        cargarSolicitudes();
-        mostrarNotificacion('Éxito', 'Estado actualizado', 'success');
+      llamarGS('actualizarEstadoSolicitud', [fila, estado], function(res) {
+        ocultarLoading();
+        if (res === true || res === undefined) {
+          cargarSolicitudes();
+          mostrarNotificacion('Éxito', 'Estado actualizado correctamente', 'success');
+        } else {
+          mostrarNotificacion('Error', 'No se pudo actualizar el estado', 'error');
+        }
       });
     }
 
@@ -7458,7 +7463,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 55;
+    const SW_VERSION = 56;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
