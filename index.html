@@ -3524,16 +3524,15 @@
         ocultarLoading();
         mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
       };
-    
+
       var MAX_REINTENTOS = 3;
       var intento = 0;
-      var TIMEOUT_MS = 15000; // 15 segundos
-    
+      var resuelto = false;  // ← evita doble ejecución
+
       function ejecutarIntento() {
+        if (resuelto) return;  // si ya se resolvió, no reenviar
         intento++;
-        var controller = new AbortController();
-        var timeoutId = setTimeout(function() { controller.abort(); }, TIMEOUT_MS);
-    
+
         var payload = { funcion: funcion, argumentos: params };
         var requestOptions = {
           method: 'POST',
@@ -3541,96 +3540,93 @@
           cache: 'no-cache',
           redirect: 'follow',
           headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload),
-          signal: controller.signal
+          body: JSON.stringify(payload)
         };
-    
+
         fetch(API_URL, requestOptions)
           .then(function(response) {
-            clearTimeout(timeoutId);
-            if (!response.ok) {
-              throw new Error('HTTP ' + response.status);
-            }
+            if (!response.ok) throw new Error('HTTP ' + response.status);
             return response.json();
           })
           .then(function(data) {
-            if (!data) { 
-              // Respuesta vacía - reintentar
-              if (intento < MAX_REINTENTOS) {
-                var espera = Math.pow(2, intento) * 1000; // 2s, 4s, 8s
-                console.warn('llamarGS: Respuesta vacía, reintentando en ' + espera + 'ms (intento ' + intento + '/' + MAX_REINTENTOS + ')');
-                setTimeout(ejecutarIntento, espera);
-              } else {
-                errCb(new Error('Respuesta vacía del servidor tras ' + MAX_REINTENTOS + ' intentos'));
-              }
-              return;
-            }
+            if (resuelto) return;  // ← segundo intento llegó tarde, ignorar
+            if (!data) throw new Error('Respuesta vacía');
+            resuelto = true;
             cb(data);
           })
           .catch(function(error) {
-            clearTimeout(timeoutId);
-            var esErrorReintentable = (
+            if (resuelto) return;  // ← ya se resolvió con otro intento
+            var reintentar = (
               error.message.includes('404') ||
               error.message.includes('500') ||
               error.message.includes('502') ||
               error.message.includes('503') ||
-              error.name === 'AbortError'
+              error.message.includes('Respuesta vacía') ||
+              error.message.includes('Failed to fetch')
             );
-    
-            if (esErrorReintentable && intento < MAX_REINTENTOS) {
-              var espera = Math.pow(2, intento) * 1000; // 2s, 4s, 8s
-              console.warn('llamarGS [' + funcion + ']: ' + error.message + ', reintentando en ' + espera + 'ms (intento ' + intento + '/' + MAX_REINTENTOS + ')');
+
+            if (reintentar && intento < MAX_REINTENTOS) {
+              var espera = intento * 1500; // 1.5s, 3s, 4.5s
               setTimeout(ejecutarIntento, espera);
             } else {
+              resuelto = true;
               errCb(error);
             }
           });
       }
-    
+
       ejecutarIntento();
     }
-
-    // Mantener el script de GAS caliente con pings periódicos
+    // ============================================
+    // WAKE-UP + KEEP-ALIVE
+    // ============================================
     var _keepAliveInterval = null;
-    
-    function iniciarKeepAlive() {
-      // No hacer ping si la pestaña no está visible
-      if (document.hidden) return;
-    
-      // Ping ligero cada 4 minutos (GAS duerme a los ~5 min)
+    var _instanciaDespierta = false;
+
+    function despertarInstancia() {
+      // Ping ligero para despertar GAS (no muestra loading ni notificaciones)
       var payload = { funcion: 'ping', argumentos: [] };
       fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
-      }).catch(function() {
-        // Silencioso - no importa si falla el keep-alive
-      });
+      }).then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.status === 'ok') _instanciaDespierta = true;
+        })
+        .catch(function() {});
     }
-    
+
+    function iniciarKeepAlive() {
+      if (document.hidden) return;
+      var payload = { funcion: 'ping', argumentos: [] };
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).catch(function() {});
+    }
+
     function detenerKeepAlive() {
       if (_keepAliveInterval) {
         clearInterval(_keepAliveInterval);
         _keepAliveInterval = null;
       }
     }
-    
-    // Iniciar cuando el usuario interactúa
+
     document.addEventListener('visibilitychange', function() {
       if (!document.hidden && !_keepAliveInterval) {
-        // Reanudar cuando la pestaña vuelve a ser visible
         iniciarKeepAlive();
         _keepAliveInterval = setInterval(iniciarKeepAlive, 4 * 60 * 1000);
       } else if (document.hidden) {
         detenerKeepAlive();
       }
     });
-    
-    // Iniciar después del splash
+
     function activarKeepAlive() {
       iniciarKeepAlive();
       _keepAliveInterval = setInterval(iniciarKeepAlive, 4 * 60 * 1000);
-    }    
+    } 
     
     // ============================================
     // NAVEGACIÓN (MODAL AUTH)
@@ -6872,9 +6868,10 @@
       var totalChars = chars.length;
       var charIndex = 0;
       var splashDone = false;
+      var instanciaLista = false;
 
-      // Iniciar precarga en background inmediatamente
-      precargarEstadisticas();
+      // DESPERTAR la instancia de GAS inmediatamente (sin loading)
+      despertarInstancia();
 
       function typeNext() {
         if (charIndex < totalChars) {
@@ -6883,16 +6880,40 @@
           span.textContent = chars[charIndex] === " " ? "\u00A0" : chars[charIndex];
           titleEl.appendChild(span);
           charIndex++;
-          var progress = Math.round((charIndex / totalChars) * 60);
+          // La barra llega al 50% mientras escribe
+          var progress = Math.round((charIndex / totalChars) * 50);
           barFill.style.width = progress + "%";
           setTimeout(typeNext, 80);
         } else {
-          // Texto terminado, esperar hasta completar ~5s total
-          barFill.style.width = "80%";
-          subtitle.textContent = "Preparando portal...";
+          // Texto terminado → esperar que GAS despierte
+          barFill.style.width = "55%";
+          subtitle.textContent = "Conectando con el servidor...";
+
+          // Verificar cada segundo si la instancia ya despertó
+          var checkInterval = setInterval(function() {
+            if (_instanciaDespierta) {
+              clearInterval(checkInterval);
+              instanciaLista = true;
+              barFill.style.width = "85%";
+              subtitle.textContent = "Cargando datos...";
+              // Esperar 1.5s extra para que se vea el progreso
+              setTimeout(function() {
+                cerrarSplash();
+              }, 1500);
+            }
+          }, 1000);
+
+          // Seguridad: si en 8 segundos no despertó, cerrar de todas formas
           setTimeout(function() {
-            cerrarSplash();
-          }, 3000);
+            if (!instanciaLista) {
+              clearInterval(checkInterval);
+              barFill.style.width = "85%";
+              subtitle.textContent = "Listo";
+              setTimeout(function() {
+                cerrarSplash();
+              }, 1000);
+            }
+          }, 8000);
         }
       }
 
@@ -6901,20 +6922,24 @@
         splashDone = true;
         barFill.style.width = "100%";
         subtitle.textContent = "Listo";
+
+        // Ahora sí precargar estadísticas (GAS ya está despierto)
+        precargarEstadisticas();
+
         setTimeout(function() {
           var splash = document.getElementById("splashScreen");
           splash.classList.add("fade-out");
           setTimeout(function() {
             splash.style.display = "none";
-            activarKeepAlive(); // <-- AGREGAR ESTA LÍNEA
+            activarKeepAlive();
           }, 500);
         }, 300);
       }
 
-      // Iniciar después de una breve pausa
       setTimeout(typeNext, 400);
     }
 
+    
     function inicializar() {
       var grid = document.getElementById('apartmentGrid');
       grid.innerHTML = APARTAMENTOS.map(function(apt) {
@@ -7475,7 +7500,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 57;
+    const SW_VERSION = 58;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
