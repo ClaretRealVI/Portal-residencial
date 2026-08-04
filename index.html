@@ -6889,6 +6889,7 @@
           splash.classList.add("fade-out");
           setTimeout(function() {
             splash.style.display = "none";
+            activarKeepAlive(); // <-- AGREGAR ESTA LÍNEA
           }, 500);
         }, 300);
       }
