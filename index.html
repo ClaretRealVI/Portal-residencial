@@ -3599,6 +3599,33 @@
       _keepAliveInterval = setInterval(iniciarKeepAlive, 4 * 60 * 1000);
     }
 
+    // ============================================
+    // NAVEGACIÓN (MODAL AUTH)
+    // ============================================
+    function mostrarAuthPanel(panelId) {
+      ['authChoice', 'authAdminLogin', 'authResidenteSelect'].forEach(function(id) {
+        document.getElementById(id).style.display = id === panelId ? 'block' : 'none';
+      });
+    }
+
+    function cerrarModalAuth() {
+      document.getElementById('modalAuth').classList.remove('active');
+      document.getElementById('landingPage').style.opacity = '1';
+      document.querySelector('.login-corner-btn').style.display = 'flex';
+      mostrarAuthPanel('authChoice');
+      var u = document.getElementById('usuario');
+      var c = document.getElementById('contrasena');
+      if (u) u.value = '';
+      if (c) c.value = '';
+    }
+
+    function irALogin() {
+      document.getElementById('landingPage').style.opacity = '0.3';
+      document.querySelector('.login-corner-btn').style.display = 'none';
+      mostrarAuthPanel('authChoice');
+      document.getElementById('modalAuth').classList.add('active');
+    }
+
     function irAdministracion() { mostrarAuthPanel('authAdminLogin'); }
     function irResidentes() { mostrarAuthPanel('authResidenteSelect'); }
     function volverMenuPrincipal() { mostrarAuthPanel('authChoice'); }
