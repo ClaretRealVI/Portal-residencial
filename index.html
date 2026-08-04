@@ -3525,74 +3525,72 @@
         mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
       };
 
-      var MAX_REINTENTOS = 3;
-      var intento = 0;
-      var resuelto = false;  // ← evita doble ejecución
+      var payload = { funcion: funcion, argumentos: params };
 
-      function ejecutarIntento() {
-        if (resuelto) return;  // si ya se resolvió, no reenviar
-        intento++;
-
-        var payload = { funcion: funcion, argumentos: params };
-        var requestOptions = {
-          method: 'POST',
-          mode: 'cors',
-          cache: 'no-cache',
-          redirect: 'follow',
-          headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-          body: JSON.stringify(payload)
-        };
-
-        fetch(API_URL, requestOptions)
-          .then(function(response) {
-            if (!response.ok) throw new Error('HTTP ' + response.status);
-            return response.json();
-          })
-          .then(function(data) {
-            if (resuelto) return;  // ← segundo intento llegó tarde, ignorar
-            if (!data) throw new Error('Respuesta vacía');
-            resuelto = true;
-            cb(data);
-          })
-          .catch(function(error) {
-            if (resuelto) return;  // ← ya se resolvió con otro intento
-            var reintentar = (
-              error.message.includes('404') ||
-              error.message.includes('500') ||
-              error.message.includes('502') ||
-              error.message.includes('503') ||
-              error.message.includes('Respuesta vacía') ||
-              error.message.includes('Failed to fetch')
-            );
-
-            if (reintentar && intento < MAX_REINTENTOS) {
-              var espera = intento * 1500; // 1.5s, 3s, 4.5s
-              setTimeout(ejecutarIntento, espera);
-            } else {
-              resuelto = true;
-              errCb(error);
-            }
-          });
-      }
-
-      ejecutarIntento();
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      })
+      .then(function(r) {
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        return r.text();
+      })
+      .then(function(text) {
+        var data;
+        try { data = JSON.parse(text); } catch(e) {
+          errCb(new Error('Respuesta no válida del servidor'));
+          return;
+        }
+        cb(data);
+      })
+      .catch(function(err) {
+        errCb(err);
+      });
     }
-    // ============================================
-    // WAKE-UP + KEEP-ALIVE
-    // ============================================
-    var _keepAliveInterval = null;
-    var _instanciaDespierta = false;
 
-    function despertarInstancia() {
-      // Ping ligero para despertar GAS (no muestra loading ni notificaciones)
+    // Mantener el script de GAS caliente con pings periódicos
+    var _keepAliveInterval = null;
+    
+    function iniciarKeepAlive() {
+      // No hacer ping si la pestaña no está visible
+      if (document.hidden) return;
+    
+      // Ping ligero cada 4 minutos (GAS duerme a los ~5 min)
       var payload = { funcion: 'ping', argumentos: [] };
       fetch(API_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
-      }).then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data && data.status === 'ok') _instanciaDespierta = true;
+      }).catch(function() {
+        // Silencioso - no importa si falla el keep-alive
+      });
+    }
+    
+    function detenerKeepAlive() {
+      if (_keepAliveInterval) {
+        clearInterval(_keepAliveInterval);
+        _keepAliveInterval = null;
+      }
+    }
+    
+    // Iniciar cuando el usuario interactúa
+    document.addEventListener('visibilitychange', function() {
+    // ============================================
+    // KEEP-ALIVE
+    // ============================================
+    var _keepAliveInterval = null;
+    var _instanciaDespierta = false;
+
+    function despertarInstancia() {
+      var payload = { funcion: 'ping', argumentos: [] };
+      fetch(API_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        body: JSON.stringify(payload)
+      }).then(function(r) { return r.text(); })
+        .then(function(text) {
+          try { var d = JSON.parse(text); if (d && d.status === 'ok') _instanciaDespierta = true; } catch(e) {}
         })
         .catch(function() {});
     }
@@ -3626,33 +3624,7 @@
     function activarKeepAlive() {
       iniciarKeepAlive();
       _keepAliveInterval = setInterval(iniciarKeepAlive, 4 * 60 * 1000);
-    } 
-    
-    // ============================================
-    // NAVEGACIÓN (MODAL AUTH)
-    // ============================================
-    function mostrarAuthPanel(panelId) {
-      ['authChoice', 'authAdminLogin', 'authResidenteSelect'].forEach(function(id) {
-        document.getElementById(id).style.display = id === panelId ? 'block' : 'none';
-      });
     }
-
-    function cerrarModalAuth() {
-      document.getElementById('modalAuth').classList.remove('active');
-      document.getElementById('landingPage').style.opacity = '1';
-      document.querySelector('.login-corner-btn').style.display = 'flex';
-      mostrarAuthPanel('authChoice');
-      var u = document.getElementById('usuario');
-      var c = document.getElementById('contrasena');
-      if (u) u.value = '';
-      if (c) c.value = '';
-    }
-
-    function irALogin() {
-      document.getElementById('landingPage').style.opacity = '0.3';
-      document.querySelector('.login-corner-btn').style.display = 'none';
-      mostrarAuthPanel('authChoice');
-      document.getElementById('modalAuth').classList.add('active');
     }
 
     function irAdministracion() { mostrarAuthPanel('authAdminLogin'); }
@@ -4594,10 +4566,10 @@
     }
 
     // --- Enviar Obra ---
+    // --- Enviar Obra ---
     function enviarFormatoObra() {
       if (enviarFormatoObra._lock) return;
       enviarFormatoObra._lock = true;
-
       var desc = document.getElementById('obraDescripcion').value.trim();
       if (!desc) { enviarFormatoObra._lock = false; mostrarNotificacion('Error', 'La descripción de la obra es obligatoria', 'error'); return; }
 
@@ -4631,10 +4603,10 @@
     }
 
     // --- Enviar Mudanza ---
+    // --- Enviar Mudanza ---
     function enviarFormatoMudanza() {
       if (enviarFormatoMudanza._lock) return;
       enviarFormatoMudanza._lock = true;
-
       var prop = document.getElementById('mudPropietario').value.trim();
       if (!prop) { enviarFormatoMudanza._lock = false; mostrarNotificacion('Error', 'El nombre del propietario es obligatorio', 'error'); return; }
 
@@ -4668,10 +4640,10 @@
     }
 
     // --- Enviar Alquiler ---
+    // --- Enviar Alquiler ---
     function enviarFormatoAlquiler() {
       if (enviarFormatoAlquiler._lock) return;
       enviarFormatoAlquiler._lock = true;
-
       var evento = document.getElementById('alqEvento').value.trim();
       var area = document.getElementById('alqArea').value;
       var horario = document.getElementById('alqHorario').value;
@@ -4698,6 +4670,7 @@
         firma: firma
       };
 
+      // Validar disponibilidad: no cruzar alquileres en misma fecha+horario
       mostrarLoading('Verificando disponibilidad...');
       llamarGS('validarDisponibilidadAlquiler', [area, datos.fecha, horario], function(disponible) {
         if (!disponible) {
@@ -6870,7 +6843,7 @@
       var splashDone = false;
       var instanciaLista = false;
 
-      // DESPERTAR la instancia de GAS inmediatamente (sin loading)
+      // DESPERTAR la instancia de GAS inmediatamente
       despertarInstancia();
 
       function typeNext() {
@@ -6880,40 +6853,22 @@
           span.textContent = chars[charIndex] === " " ? "\u00A0" : chars[charIndex];
           titleEl.appendChild(span);
           charIndex++;
-          // La barra llega al 50% mientras escribe
           var progress = Math.round((charIndex / totalChars) * 50);
           barFill.style.width = progress + "%";
           setTimeout(typeNext, 80);
         } else {
-          // Texto terminado → esperar que GAS despierte
           barFill.style.width = "55%";
           subtitle.textContent = "Conectando con el servidor...";
-
-          // Verificar cada segundo si la instancia ya despertó
+          var checkCount = 0;
           var checkInterval = setInterval(function() {
-            if (_instanciaDespierta) {
+            checkCount++;
+            if (_instanciaDespierta || checkCount >= 8) {
               clearInterval(checkInterval);
-              instanciaLista = true;
               barFill.style.width = "85%";
               subtitle.textContent = "Cargando datos...";
-              // Esperar 1.5s extra para que se vea el progreso
-              setTimeout(function() {
-                cerrarSplash();
-              }, 1500);
+              setTimeout(cerrarSplash, 1200);
             }
           }, 1000);
-
-          // Seguridad: si en 8 segundos no despertó, cerrar de todas formas
-          setTimeout(function() {
-            if (!instanciaLista) {
-              clearInterval(checkInterval);
-              barFill.style.width = "85%";
-              subtitle.textContent = "Listo";
-              setTimeout(function() {
-                cerrarSplash();
-              }, 1000);
-            }
-          }, 8000);
         }
       }
 
@@ -6922,10 +6877,7 @@
         splashDone = true;
         barFill.style.width = "100%";
         subtitle.textContent = "Listo";
-
-        // Ahora sí precargar estadísticas (GAS ya está despierto)
         precargarEstadisticas();
-
         setTimeout(function() {
           var splash = document.getElementById("splashScreen");
           splash.classList.add("fade-out");
@@ -6938,8 +6890,6 @@
 
       setTimeout(typeNext, 400);
     }
-
-    
     function inicializar() {
       var grid = document.getElementById('apartmentGrid');
       grid.innerHTML = APARTAMENTOS.map(function(apt) {
@@ -7500,7 +7450,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 58;
+    const SW_VERSION = 59;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
