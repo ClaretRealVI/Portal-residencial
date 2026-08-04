@@ -3549,35 +3549,8 @@
       });
     }
 
-    // Mantener el script de GAS caliente con pings periódicos
-    var _keepAliveInterval = null;
-    
-    function iniciarKeepAlive() {
-      // No hacer ping si la pestaña no está visible
-      if (document.hidden) return;
-    
-      // Ping ligero cada 4 minutos (GAS duerme a los ~5 min)
-      var payload = { funcion: 'ping', argumentos: [] };
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(function() {
-        // Silencioso - no importa si falla el keep-alive
-      });
-    }
-    
-    function detenerKeepAlive() {
-      if (_keepAliveInterval) {
-        clearInterval(_keepAliveInterval);
-        _keepAliveInterval = null;
-      }
-    }
-    
-    // Iniciar cuando el usuario interactúa
-    document.addEventListener('visibilitychange', function() {
     // ============================================
-    // KEEP-ALIVE
+    // KEEP-ALIVE: Mantener la instancia de GAS despierta
     // ============================================
     var _keepAliveInterval = null;
     var _instanciaDespierta = false;
@@ -3624,7 +3597,6 @@
     function activarKeepAlive() {
       iniciarKeepAlive();
       _keepAliveInterval = setInterval(iniciarKeepAlive, 4 * 60 * 1000);
-    }
     }
 
     function irAdministracion() { mostrarAuthPanel('authAdminLogin'); }
