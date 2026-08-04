@@ -4599,11 +4599,14 @@
 
     // --- Enviar Obra ---
     function enviarFormatoObra() {
+      if (enviarFormatoObra._lock) return;
+      enviarFormatoObra._lock = true;
+
       var desc = document.getElementById('obraDescripcion').value.trim();
-      if (!desc) { mostrarNotificacion('Error', 'La descripción de la obra es obligatoria', 'error'); return; }
+      if (!desc) { enviarFormatoObra._lock = false; mostrarNotificacion('Error', 'La descripción de la obra es obligatoria', 'error'); return; }
 
       var firma = generarImagenFirmaTipo('obra');
-      if (!firma) { mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
+      if (!firma) { enviarFormatoObra._lock = false; mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
 
       var datos = {
         tipo: 'Obra',
@@ -4619,6 +4622,7 @@
 
       mostrarLoading('Enviando solicitud de obra...');
       llamarGS('registrarFormato', [datos], function(res) {
+        enviarFormatoObra._lock = false;
         ocultarLoading();
         if (res && res.ok) {
           mostrarNotificacion('Éxito', res.mensaje, 'success');
@@ -4632,11 +4636,14 @@
 
     // --- Enviar Mudanza ---
     function enviarFormatoMudanza() {
+      if (enviarFormatoMudanza._lock) return;
+      enviarFormatoMudanza._lock = true;
+
       var prop = document.getElementById('mudPropietario').value.trim();
-      if (!prop) { mostrarNotificacion('Error', 'El nombre del propietario es obligatorio', 'error'); return; }
+      if (!prop) { enviarFormatoMudanza._lock = false; mostrarNotificacion('Error', 'El nombre del propietario es obligatorio', 'error'); return; }
 
       var firma = generarImagenFirmaTipo('mud');
-      if (!firma) { mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
+      if (!firma) { enviarFormatoMudanza._lock = false; mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
 
       var datos = {
         tipo: 'Mudanza',
@@ -4652,6 +4659,7 @@
 
       mostrarLoading('Enviando formato de mudanza...');
       llamarGS('registrarFormato', [datos], function(res) {
+        enviarFormatoMudanza._lock = false;
         ocultarLoading();
         if (res && res.ok) {
           mostrarNotificacion('Éxito', res.mensaje, 'success');
@@ -4665,16 +4673,19 @@
 
     // --- Enviar Alquiler ---
     function enviarFormatoAlquiler() {
+      if (enviarFormatoAlquiler._lock) return;
+      enviarFormatoAlquiler._lock = true;
+
       var evento = document.getElementById('alqEvento').value.trim();
       var area = document.getElementById('alqArea').value;
       var horario = document.getElementById('alqHorario').value;
-      if (!evento || !area || !horario) { mostrarNotificacion('Error', 'Complete todos los campos principales', 'error'); return; }
+      if (!evento || !area || !horario) { enviarFormatoAlquiler._lock = false; mostrarNotificacion('Error', 'Complete todos los campos principales', 'error'); return; }
 
       var firma = generarImagenFirmaTipo('alq');
-      if (!firma) { mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
+      if (!firma) { enviarFormatoAlquiler._lock = false; mostrarNotificacion('Error', 'Debe dibujar o escribir su firma', 'error'); return; }
 
       var fechasArr = recogerFechasAlquiler();
-      if (fechasArr.length === 0) { mostrarNotificacion('Error', 'Agregue al menos una fecha', 'error'); return; }
+      if (fechasArr.length === 0) { enviarFormatoAlquiler._lock = false; mostrarNotificacion('Error', 'Agregue al menos una fecha', 'error'); return; }
 
       var datos = {
         tipo: 'Alquiler',
@@ -4691,15 +4702,16 @@
         firma: firma
       };
 
-      // Validar disponibilidad: no cruzar alquileres en misma fecha+horario
       mostrarLoading('Verificando disponibilidad...');
       llamarGS('validarDisponibilidadAlquiler', [area, datos.fecha, horario], function(disponible) {
         if (!disponible) {
+          enviarFormatoAlquiler._lock = false;
           ocultarLoading();
           mostrarNotificacion('Error', 'Ya existe una solicitud de alquiler para ' + area + ' en esa fecha/horario', 'error');
           return;
         }
         llamarGS('registrarFormato', [datos], function(res) {
+          enviarFormatoAlquiler._lock = false;
           ocultarLoading();
           if (res && res.ok) {
             mostrarNotificacion('Éxito', res.mensaje, 'success');
@@ -7463,7 +7475,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 56;
+    const SW_VERSION = 57;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
