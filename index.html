@@ -3524,7 +3524,7 @@
         ocultarLoading();
         mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
       };
-
+    
       var payload = { funcion: funcion, argumentos: params };
       var requestOptions = {
         method: 'POST',
@@ -3533,17 +3533,32 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       };
-
-      fetch(API_URL, requestOptions)
-        .then(function(response) {
-          if (!response.ok) throw new Error('Error de red o el servidor no respondió correctamente.');
-          return response.json();
-        })
-        .then(function(data) {
-          if (!data) { errCb(new Error('Respuesta vacía del servidor')); return; }
-          cb(data);
-        })
-        .catch(function(error) { errCb(error); });
+    
+      var intentos = 0;
+      var maxIntentos = 2;
+    
+      function intentar() {
+        intentos++;
+        fetch(API_URL, requestOptions)
+          .then(function(response) {
+            if (!response.ok) throw new Error('Error de red o el servidor no respondió correctamente.');
+            return response.json();
+          })
+          .then(function(data) {
+            if (!data) { errCb(new Error('Respuesta vacía del servidor')); return; }
+            cb(data);
+          })
+          .catch(function(error) {
+            if (intentos < maxIntentos) {
+              console.warn('Reintentando (' + intentos + '/' + maxIntentos + '): ' + funcion, error);
+              setTimeout(intentar, 1000 * intentos);
+            } else {
+              errCb(error);
+            }
+          });
+      }
+    
+      intentar();
     }
 
     // ============================================
@@ -3611,7 +3626,6 @@
       closeSidebar();
       mostrarLoading('Cargando datos del apartamento...');
       cargarDatosResidente(function() {
-        cargarCuotasEspecialesResidente();
         ocultarLoading();
       });
       if (state.estadisticasCargando && !state.estadisticasCache) {
@@ -7073,7 +7087,10 @@
     // Se llama al iniciar sesión como residente
     function cargarCuotasEspecialesResidente(callback) {
       if (state.esAdmin || !state.apartamento) { if (callback) callback(); return; }
+      if (state._cargandoCE) { if (callback) callback(); return; }
+      state._cargandoCE = true;
       llamarGS('obtenerCuotasEspecialesApartamento', [state.apartamento], function(cuotas) {
+        state._cargandoCE = false;
         var container = document.getElementById('ceButtonsContainer');
         if (!cuotas || !cuotas.length) {
           container.style.display = 'none';
@@ -7372,7 +7389,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 50;
+    const SW_VERSION = 52;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
