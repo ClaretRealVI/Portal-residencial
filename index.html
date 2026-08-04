@@ -3611,7 +3611,6 @@
       closeSidebar();
       mostrarLoading('Cargando datos del apartamento...');
       cargarDatosResidente(function() {
-        cargarCuotasEspecialesResidente();
         ocultarLoading();
       });
       if (state.estadisticasCargando && !state.estadisticasCache) {
