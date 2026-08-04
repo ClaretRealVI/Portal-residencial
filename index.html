@@ -3520,11 +3520,11 @@
     function llamarGS(funcion, params = [], successCb, errorCb) {
       var cb = successCb || function() {};
       var errCb = errorCb || function(e) {
-        console.error('Error [' + funcion + ']:', e);
+        console.error('Error:', e);
         ocultarLoading();
         mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
       };
-    
+
       var payload = { funcion: funcion, argumentos: params };
       var requestOptions = {
         method: 'POST',
@@ -3533,7 +3533,7 @@
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       };
-    
+
       fetch(API_URL, requestOptions)
         .then(function(response) {
           if (!response.ok) throw new Error('Error de red o el servidor no respondió correctamente.');
@@ -3581,43 +3581,48 @@
       state.apartamento = apt;
       state.esAdmin = false;
       state.rol = 'Residente';
-      state.estadisticasCache = null;  // Limpiar caché para recargar
-    
+
       document.getElementById('modalAuth').classList.remove('active');
       document.getElementById('landingPage').classList.add('hidden');
       document.querySelector('.login-corner-btn').style.display = 'none';
       document.getElementById('dashboard').classList.remove('hidden');
       document.documentElement.classList.add('dashboard-active');
       document.body.classList.add('dashboard-active');
-    
+
       // Update UI elements
       document.getElementById('userRole').textContent = 'Residente - Apto ' + apt;
       document.getElementById('userApartment').textContent = apt;
       document.getElementById('dropdownUserName').textContent = 'Apartamento ' + apt;
       document.getElementById('dropdownUserRole').textContent = 'Residente';
-    
+
       // Update avatar
       document.getElementById('userAvatarBtn').textContent = apt;
-    
+
       // Show/hide badges
       document.getElementById('badgeMora').style.display = 'none';
       document.getElementById('badgePendientes').style.display = 'none';
       document.getElementById('badgePagoResidente').style.display = 'flex';
-    
+
       document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
       document.querySelectorAll('.apartment-btn').forEach(function(b) { b.classList.remove('selected'); });
       if (event && event.target) event.target.classList.add('selected');
-    
+
+      // Hide payment banner for residents if not needed (we keep it)
       closeSidebar();
       mostrarLoading('Cargando datos del apartamento...');
-    
-      // ✅ SECUENCIAL: cargarDatosResidente → cargarCuotasEspeciales → mostrarSeccion
       cargarDatosResidente(function() {
-        cargarCuotasEspecialesResidente(function() {
+        cargarCuotasEspecialesResidente();
+        ocultarLoading();
+      });
+      if (state.estadisticasCargando && !state.estadisticasCache) {
+        mostrarLoading('Cargando datos...');
+        state.estadisticasReadyCallback = function() {
           ocultarLoading();
           mostrarSeccion('bienvenida');
-        });
-      });
+        };
+      } else {
+        mostrarSeccion('bienvenida');
+      }
     }
 
     function validarLogin() {
@@ -3748,7 +3753,7 @@
         document.getElementById('currentMonth').textContent = datos.mesActual || '-';
         document.getElementById('paymentAmount').textContent = datos.valorPago ? '$' + datos.valorPago.toLocaleString('es-CO') : '$0';
         document.getElementById('userApartment').textContent = state.apartamento;
-        document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-);
+        document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-');
     
         var breakdown = document.getElementById('paymentBreakdown');
         if (datos.cuotaExtraordinaria > 0) {
@@ -3777,9 +3782,8 @@
           document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
         }
     
-        // ✅ Ya NO llamamos cargarCuotasEspecialesResidente aquí
-        // El llamador (seleccionarApartamento) lo hace después
-        if (callback) callback();
+        // Cargar cuotas especiales antes de ocultar loading
+        cargarCuotasEspecialesResidente(callback);
       });
     }
 
@@ -7067,7 +7071,38 @@
 
     // --- CARGAR CUOTAS ESPECIALES PARA EL RESIDENTE ---
     // Se llama al iniciar sesión como residente
+    function cargarCuotasEspecialesResidente(callback) {
+      if (state.esAdmin || !state.apartamento) { if (callback) callback(); return; }
+      llamarGS('obtenerCuotasEspecialesApartamento', [state.apartamento], function(cuotas) {
+        var container = document.getElementById('ceButtonsContainer');
+        if (!cuotas || !cuotas.length) {
+          container.style.display = 'none';
+          if (callback) callback();
+          return;
+        }
 
+        var html = '';
+        cuotas.forEach(function(ce) {
+          if (ce.completado) return;
+          var porcentaje = Math.min(100, Math.round((ce.totalPagado / ce.valorTotal) * 100));
+          html += '<button class="ce-btn-pago" onclick="abrirModalPagarCE(\'' + ce.uuid + '\',\'' + escapeHtml(ce.concepto) + '\',' + ce.valorTotal + ',' + ce.totalPagado + ')">' +
+            '<i class="fas fa-coins"></i>' +
+            '<span class="ce-btn-concepto" title="' + escapeHtml(ce.concepto) + '">' + escapeHtml(ce.concepto) + '</span>' +
+            '<span class="ce-btn-restante">$' + ce.saldoRestante.toLocaleString('es-CO') + '</span>' +
+            '<span class="ce-btn-progreso"><span class="ce-btn-progreso-bar" style="width:' + porcentaje + '%"></span></span>' +
+          '</button>';
+        });
+
+        if (html) {
+          container.innerHTML = html;
+          container.style.display = 'flex';
+        } else {
+          container.style.display = 'none';
+        }
+
+        if (callback) callback();
+      });
+    }
 
     // --- ABRIR MODAL PAGO CUOTA ESPECIAL ---
     function abrirModalPagarCE(uuid, concepto, valorTotal, totalPagado) {
