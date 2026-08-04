@@ -3520,45 +3520,58 @@
     function llamarGS(funcion, params = [], successCb, errorCb) {
       var cb = successCb || function() {};
       var errCb = errorCb || function(e) {
-        console.error('Error:', e);
+        console.error('Error [' + funcion + ']:', e);
         ocultarLoading();
         mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
       };
     
       var payload = { funcion: funcion, argumentos: params };
+    
+      // Timeout de 25 segundos (Apps Script tiene límite de 30s, dejamos margen)
+      var controller = new AbortController();
+      var timeoutId = setTimeout(function() { controller.abort(); }, 25000);
+    
       var requestOptions = {
         method: 'POST',
         mode: 'cors',
         cache: 'no-cache',
+        redirect: 'follow',
+        signal: controller.signal,
         headers: { 'Content-Type': 'text/plain;charset=utf-8' },
         body: JSON.stringify(payload)
       };
     
-      var intentos = 0;
-      var maxIntentos = 2;
-    
-      function intentar() {
-        intentos++;
-        fetch(API_URL, requestOptions)
-          .then(function(response) {
-            if (!response.ok) throw new Error('Error de red o el servidor no respondió correctamente.');
-            return response.json();
-          })
-          .then(function(data) {
-            if (!data) { errCb(new Error('Respuesta vacía del servidor')); return; }
+      fetch(API_URL, requestOptions)
+        .then(function(response) {
+          clearTimeout(timeoutId);
+          if (!response.ok) throw new Error('Error de red o el servidor no respondió correctamente.');
+          
+          // Validar que la respuesta sea JSON real (no HTML de error de Google)
+          var contentType = response.headers.get('content-type') || '';
+          if (contentType.indexOf('application/json') === -1 && contentType.indexOf('text/plain') === -1) {
+            throw new Error('El servidor devolvió una respuesta inesperada. Intenta de nuevo.');
+          }
+          
+          return response.text();
+        })
+        .then(function(text) {
+          if (!text || !text.trim()) { errCb(new Error('Respuesta vacía del servidor')); return; }
+          try {
+            var data = JSON.parse(text);
             cb(data);
-          })
-          .catch(function(error) {
-            if (intentos < maxIntentos) {
-              console.warn('Reintentando (' + intentos + '/' + maxIntentos + '): ' + funcion, error);
-              setTimeout(intentar, 1000 * intentos);
-            } else {
-              errCb(error);
-            }
-          });
-      }
-    
-      intentar();
+          } catch(e) {
+            // Si no es JSON válido, probablemente es una página de error de Google
+            errCb(new Error('El servidor tardó demasiado en responder. Intenta de nuevo.'));
+          }
+        })
+        .catch(function(error) {
+          clearTimeout(timeoutId);
+          if (error.name === 'AbortError') {
+            errCb(new Error('El servidor tardó mucho en responder. Intenta recargar la página.'));
+          } else {
+            errCb(error);
+          }
+        });
     }
 
     // ============================================
@@ -3596,47 +3609,125 @@
       state.apartamento = apt;
       state.esAdmin = false;
       state.rol = 'Residente';
-
+    
       document.getElementById('modalAuth').classList.remove('active');
       document.getElementById('landingPage').classList.add('hidden');
       document.querySelector('.login-corner-btn').style.display = 'none';
       document.getElementById('dashboard').classList.remove('hidden');
       document.documentElement.classList.add('dashboard-active');
       document.body.classList.add('dashboard-active');
-
+    
       // Update UI elements
       document.getElementById('userRole').textContent = 'Residente - Apto ' + apt;
       document.getElementById('userApartment').textContent = apt;
+      document.getElementById('paymentMonth').textContent = apt;
       document.getElementById('dropdownUserName').textContent = 'Apartamento ' + apt;
       document.getElementById('dropdownUserRole').textContent = 'Residente';
-
+    
       // Update avatar
       document.getElementById('userAvatarBtn').textContent = apt;
-
+    
       // Show/hide badges
       document.getElementById('badgeMora').style.display = 'none';
       document.getElementById('badgePendientes').style.display = 'none';
       document.getElementById('badgePagoResidente').style.display = 'flex';
-
+    
       document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
       document.querySelectorAll('.apartment-btn').forEach(function(b) { b.classList.remove('selected'); });
       if (event && event.target) event.target.classList.add('selected');
-
-      // Hide payment banner for residents if not needed (we keep it)
+    
       closeSidebar();
       mostrarLoading('Cargando datos del apartamento...');
-      cargarDatosResidente(function() {
-        ocultarLoading();
-      });
-      if (state.estadisticasCargando && !state.estadisticasCache) {
-        mostrarLoading('Cargando datos...');
-        state.estadisticasReadyCallback = function() {
+      
+      // UNA SOLA LLAMADA: cargarDatosResidente ahora devuelve todo (pago + cuotas especiales)
+      llamarGS('cargarDatosResidente', [state.apartamento], function(datos) {
+        if (!datos || datos.status === 'error') {
           ocultarLoading();
+          mostrarNotificacion('Error', datos?.message || 'Error al cargar datos', 'error');
+          return;
+        }
+        
+        // Aplicar datos del residente (pago actual)
+        document.getElementById('currentMonth').textContent = datos.mesActual || '-';
+        document.getElementById('paymentAmount').textContent = datos.valorPago ? '$' + datos.valorPago.toLocaleString('es-CO') : '$0';
+        document.getElementById('userApartment').textContent = state.apartamento;
+        document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-');
+    
+        var breakdown = document.getElementById('paymentBreakdown');
+        if (datos.cuotaExtraordinaria > 0) {
+          breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin) + $' + datos.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)';
+        } else {
+          breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin)';
+        }
+    
+        var paymentSection = document.getElementById('paymentSection');
+        var badgePagoText = document.getElementById('badgePagoText');
+    
+        if (datos.pagado) {
+          document.getElementById('paymentState').innerHTML = '<span class="badge" style="background:#059669;color:white;">Pagado</span>';
+          paymentSection.classList.add('payment-banner-paid');
+          badgePagoText.textContent = 'Pago al día';
+          document.getElementById('badgePagoResidente').className = 'topbar-badge success';
+        } else if (datos.estadoPago === 'Con mora') {
+          document.getElementById('paymentState').innerHTML = '<span class="badge badge-danger">Con mora</span>';
+          paymentSection.classList.remove('payment-banner-paid');
+          badgePagoText.textContent = 'Con mora';
+          document.getElementById('badgePagoResidente').className = 'topbar-badge danger';
+        } else {
+          document.getElementById('paymentState').innerHTML = '<span class="badge badge-warning">Pendiente</span>';
+          paymentSection.classList.remove('payment-banner-paid');
+          badgePagoText.textContent = 'Pago pendiente';
+          document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
+        }
+    
+        // Renderizar cuotas especiales directamente desde los datos recibidos
+        var container = document.getElementById('ceButtonsContainer');
+        var cuotas = datos.cuotasEspeciales || [];
+        if (cuotas.length) {
+          var html = '';
+          cuotas.forEach(function(ce) {
+            if (ce.completado) return;
+            var porcentaje = Math.min(100, Math.round((ce.totalPagado / ce.valorTotal) * 100));
+            html += '<button class="ce-btn-pago" onclick="abrirModalPagarCE(\'' + ce.uuid + '\',\'' + escapeHtml(ce.concepto) + '\',' + ce.valorTotal + ',' + ce.totalPagado + ')">' +
+              '<i class="fas fa-coins"></i>' +
+              '<span class="ce-btn-concepto" title="' + escapeHtml(ce.concepto) + '">' + escapeHtml(ce.concepto) + '</span>' +
+              '<span class="ce-btn-restante">$' + ce.saldoRestante.toLocaleString('es-CO') + '</span>' +
+              '<span class="ce-btn-progreso"><span class="ce-btn-progreso-bar" style="width:' + porcentaje + '%"></span></span>' +
+              '</button>';
+          });
+          if (html) {
+            container.innerHTML = html;
+            container.style.display = 'flex';
+          } else {
+            container.style.display = 'none';
+          }
+        } else {
+          container.style.display = 'none';
+        }
+    
+        ocultarLoading();
+        
+        // Cargar estadísticas DESPUÉS de que el primer request terminó (ya la instancia está caliente)
+        if (state.estadisticasCache) {
+          aplicarEstadisticas(state.estadisticasCache);
           mostrarSeccion('bienvenida');
-        };
-      } else {
-        mostrarSeccion('bienvenida');
-      }
+        } else if (state.estadisticasCargando) {
+          // La precarga del splash sigue corriendo, esperarla
+          state.estadisticasReadyCallback = function() {
+            if (state.estadisticasCache) aplicarEstadisticas(state.estadisticasCache);
+          };
+          mostrarSeccion('bienvenida');
+        } else {
+          // No hay precarga, lanzar estadísticas ahora que la instancia está caliente
+          llamarGS('obtenerEstadisticasDashboard', [], function(est) {
+            if (est && est.status !== 'error') {
+              state.estadisticasCache = est;
+              aplicarEstadisticas(est);
+            }
+          });
+          mostrarSeccion('bienvenida');
+        }
+      });
     }
 
     function validarLogin() {
@@ -7389,7 +7480,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 52;
+    const SW_VERSION = 53;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
