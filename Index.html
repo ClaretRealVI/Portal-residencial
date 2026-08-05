@@ -3513,34 +3513,52 @@
       }
     });
 
-    function llamarGS(funcion, params = [], successCb, errorCb) {
+    // google.script.run está disponible cuando se sirve desde GAS (HtmlService)
+    // Usa comunicación directa iframe ↔ servidor (no sale a internet)
+    var _usarGASNative = (typeof google !== 'undefined' && google.script && google.script.run && !google.script.run._shim);
+
+    function llamarGS(funcion, params, successCb, errorCb) {
       var cb = successCb || function() {};
       var errCb = errorCb || function(e) {
-        console.error('Error:', e);
+        var msg = (e && e.message) ? e.message : (typeof e === 'string' ? e : 'Error de conexión');
+        console.error('Error llamarGS [' + funcion + ']:', msg);
         ocultarLoading();
-        mostrarNotificacion('Error', e.message || 'Error de conexión con el servidor', 'error');
+        mostrarNotificacion('Error', msg, 'error');
       };
 
-      var payload = { funcion: funcion, argumentos: params };
-
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: JSON.stringify(payload)
-      })
-      .then(function(r) {
-        if (!r.ok) throw new Error('HTTP ' + r.status);
-        return r.text();
-      })
-      .then(function(text) {
-        var data;
-        try { data = JSON.parse(text); } catch(e) { data = text; }
-        cb(data);
-      })
-      .catch(function(err) {
-        var errMsg = err.message || String(err);
-        errCb({ message: errMsg });
-      });
+      if (_usarGASNative) {
+        // Comunicación nativa GAS (dentro de HtmlService)
+        var args = params || [];
+        var handler = google.script.run
+          .withSuccessHandler(function(result) {
+            cb(result);
+          })
+          .withFailureHandler(function(error) {
+            errCb(error);
+          });
+        handler[funcion].apply(handler, args);
+      } else {
+        // Fallback fetch (para GitHub Pages o externo)
+        var payload = { funcion: funcion, argumentos: params || [] };
+        fetch(API_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'text/plain' },
+          body: JSON.stringify(payload)
+        })
+        .then(function(r) {
+          if (!r.ok) throw new Error('HTTP ' + r.status);
+          return r.text();
+        })
+        .then(function(text) {
+          var data;
+          try { data = JSON.parse(text); } catch(e) { data = text; }
+          cb(data);
+        })
+        .catch(function(err) {
+          var errMsg = err.message || String(err);
+          errCb({ message: errMsg });
+        });
+      }
     }
 
     // ============================================
@@ -7371,7 +7389,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 80;
+    const SW_VERSION = 56;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
