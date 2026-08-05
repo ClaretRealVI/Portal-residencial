@@ -6857,18 +6857,18 @@
           charIndex++;
           var progress = Math.round((charIndex / totalChars) * 50);
           barFill.style.width = progress + "%";
-          setTimeout(typeNext, 80);
+          setTimeout(typeNext, 120);
         } else {
           barFill.style.width = "55%";
           subtitle.textContent = "Conectando con el servidor...";
           var checkCount = 0;
           var checkInterval = setInterval(function() {
             checkCount++;
-            if (_instanciaDespierta || checkCount >= 8) {
+            if (_instanciaDespierta || checkCount >= 10) {
               clearInterval(checkInterval);
               barFill.style.width = "85%";
               subtitle.textContent = "Cargando datos...";
-              setTimeout(cerrarSplash, 1200);
+              setTimeout(cerrarSplash, 4000);
             }
           }, 1000);
         }
