@@ -1,4 +1,4 @@
-const CACHE_NAME = 'claret-real-v80';
+const CACHE_NAME = 'claret-real-v81';
 
 const ASSETS_TO_CACHE = [
   './',
@@ -48,7 +48,7 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
 
   // ── INDEX.HTML: red primero (siempre trae la última versión) ──
-  if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.endsWith('/index.html')) {
+  if (url.pathname === '/' || url.pathname === '/Index.html' || url.pathname.endsWith('/Index.html')) {
     event.respondWith(
       fetch(event.request)
         .then(response => {
