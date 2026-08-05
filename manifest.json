@@ -1,7 +1,7 @@
 {
   "name": "Claret Real VI - Portal de Gestión",
   "short_name": "Claret Real VI",
-  "description": "Portal de gestión del Conjunto Residencial Claret Real VI",
+  "description": "Portal de gestión del Conjunto Residencial Claret Real VI ",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#000000",
