@@ -6864,7 +6864,7 @@
           var checkCount = 0;
           var checkInterval = setInterval(function() {
             checkCount++;
-            if (_instanciaDespierta || checkCount >= 10) {
+            if (_instanciaDespierta || checkCount >= 8) {
               clearInterval(checkInterval);
               barFill.style.width = "85%";
               subtitle.textContent = "Cargando datos...";
