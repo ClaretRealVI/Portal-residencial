@@ -3513,10 +3513,66 @@
       }
     });
 
-    // google.script.run está disponible cuando se sirve desde GAS (HtmlService)
-    // Usa comunicación directa iframe ↔ servidor (no sale a internet)
-    var _usarGASNative = (typeof google !== 'undefined' && google.script && google.script.run && !google.script.run._shim);
 
+
+    // ============================================
+    // SHIM: google.script.run → fetch POST
+    // Igual que la otra página que funciona
+    // ============================================
+    var GAS_URL = API_URL;
+
+    var google = {
+      script: {
+        run: {
+          keepAlive: function() {},
+          _shim: true
+        }
+      }
+    };
+
+    (function() {
+      function createCallableProxy(successCb, failureCb) {
+        return new Proxy({}, {
+          get: function(target, prop) {
+            if (prop === 'withFailureHandler') {
+              return function(fn) {
+                return createCallableProxy(successCb, fn);
+              };
+            }
+            return function() {
+              var args = Array.prototype.slice.call(arguments);
+              var payload = JSON.stringify({ funcion: prop, argumentos: args });
+
+              fetch(GAS_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain' },
+                body: payload
+              })
+              .then(function(r) {
+                if (!r.ok) throw new Error('HTTP ' + r.status);
+                return r.text();
+              })
+              .then(function(text) {
+                var data;
+                try { data = JSON.parse(text); } catch(e) { data = text; }
+                if (successCb) successCb(data);
+              })
+              .catch(function(err) {
+                var errMsg = err.message || String(err);
+                if (failureCb) failureCb({ message: errMsg });
+                else if (successCb) successCb({ status: 'error', message: errMsg });
+              });
+            };
+          }
+        });
+      }
+
+      google.script.run.withSuccessHandler = function(fn) {
+        return createCallableProxy(fn, null);
+      };
+    })();
+
+    // llamarGS usa el SHIM internamente
     function llamarGS(funcion, params, successCb, errorCb) {
       var cb = successCb || function() {};
       var errCb = errorCb || function(e) {
@@ -3525,39 +3581,10 @@
         ocultarLoading();
         mostrarNotificacion('Error', msg, 'error');
       };
-
-      if (_usarGASNative) {
-        // Comunicación nativa GAS (dentro de HtmlService)
-        var args = params || [];
-        var handler = google.script.run
-          .withSuccessHandler(function(result) {
-            cb(result);
-          })
-          .withFailureHandler(function(error) {
-            errCb(error);
-          });
-        handler[funcion].apply(handler, args);
-      } else {
-        // Fallback fetch (para GitHub Pages o externo)
-        var payload = { funcion: funcion, argumentos: params || [] };
-        fetch(API_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'text/plain' },
-          body: JSON.stringify(payload)
-        })
-        .then(function(r) {
-          if (!r.ok) throw new Error('HTTP ' + r.status);
-          return r.text();
-        })
-        .then(function(text) {
-          var data;
-          try { data = JSON.parse(text); } catch(e) { data = text; }
-          cb(data);
-        })
-        .catch(function(err) {
-          var errMsg = err.message || String(err);
-          errCb({ message: errMsg });
-        });
+      var handler = google.script.run.withSuccessHandler(cb).withFailureHandler(errCb);
+      var fn = handler[funcion];
+      if (typeof fn === 'function') {
+        fn.apply(null, params || []);
       }
     }
 
@@ -6787,17 +6814,17 @@
       var text = "Bienvenido a Claret Real VI";
       var chars = text.split("");
       var totalChars = chars.length;
-      var charindex = 0;
+      var charIndex = 0;
       var splashDone = false;
 
       function typeNext() {
-        if (charindex < totalChars) {
+        if (charIndex < totalChars) {
           var span = document.createElement("span");
           span.className = "char";
-          span.textContent = chars[charindex] === " " ? "\u00A0" : chars[charindex];
+          span.textContent = chars[charIndex] === " " ? "\u00A0" : chars[charIndex];
           titleEl.appendChild(span);
-          charindex++;
-          var progress = Math.round((charindex / totalChars) * 50);
+          charIndex++;
+          var progress = Math.round((charIndex / totalChars) * 50);
           barFill.style.width = progress + "%";
           setTimeout(typeNext, 80);
         } else {
