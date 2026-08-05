@@ -3532,7 +3532,7 @@
 
       fetch(API_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+        headers: { 'Content-Type': 'text/plain' },
         body: JSON.stringify(payload)
       })
       .then(function(r) {
@@ -3541,14 +3541,12 @@
       })
       .then(function(text) {
         var data;
-        try { data = JSON.parse(text); } catch(e) {
-          errCb(new Error('Respuesta no válida del servidor'));
-          return;
-        }
+        try { data = JSON.parse(text); } catch(e) { data = text; }
         cb(data);
       })
       .catch(function(err) {
-        errCb(err);
+        var errMsg = err.message || String(err);
+        errCb({ message: errMsg });
       });
     }
 
@@ -6857,7 +6855,7 @@
           charIndex++;
           var progress = Math.round((charIndex / totalChars) * 50);
           barFill.style.width = progress + "%";
-          setTimeout(typeNext, 120);
+          setTimeout(typeNext, 80);
         } else {
           barFill.style.width = "55%";
           subtitle.textContent = "Conectando con el servidor...";
@@ -6868,7 +6866,7 @@
               clearInterval(checkInterval);
               barFill.style.width = "85%";
               subtitle.textContent = "Cargando datos...";
-              setTimeout(cerrarSplash, 4000);
+              setTimeout(cerrarSplash, 2000);
             }
           }, 1000);
         }
@@ -7452,7 +7450,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 59;
+    const SW_VERSION = 56;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
