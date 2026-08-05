@@ -83,7 +83,7 @@
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
       display: flex; flex-direction: column; align-items: center; justify-content: center;
-      z-Index: 9999; transition: opacity 0.5s ease;
+      z-index: 9999; transition: opacity 0.5s ease;
     }
     .splash-screen.fade-out { opacity: 0; pointer-events: none; }
     .splash-logo {
@@ -253,7 +253,7 @@
       height: 58px; background: var(--surface);
       border-bottom: 1px solid var(--border);
       display: flex; align-items: center; justify-content: space-between;
-      padding: 0 20px; z-Index: 900;
+      padding: 0 20px; z-index: 900;
     }
     .topbar-left {
       display: flex; align-items: center; gap: 14px;
@@ -304,7 +304,7 @@
       position: absolute; top: calc(100% + 10px); right: 0;
       background: var(--surface); border: 1px solid var(--border);
       border-radius: var(--radius-lg); box-shadow: var(--shadow-lg);
-      min-width: 220px; overflow: hidden; display: none; z-Index: 910;
+      min-width: 220px; overflow: hidden; display: none; z-index: 910;
       animation: fadeInScale 0.2s ease;
     }
     .user-dropdown.active { display: block; }
@@ -334,7 +334,7 @@
     .sidebar-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(15,23,42,0.3); backdrop-filter: blur(2px);
-      z-Index: 950; display: none; opacity: 0;
+      z-index: 950; display: none; opacity: 0;
       transition: opacity 0.3s ease;
     }
     .sidebar-overlay.active { display: block; opacity: 1; }
@@ -342,7 +342,7 @@
       position: fixed; top: 0; left: 0;
       width: 260px; height: 100%;
       background: var(--surface);
-      z-Index: 960; display: flex; flex-direction: column;
+      z-index: 960; display: flex; flex-direction: column;
       transform: translateX(-100%);
       transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: none;
@@ -459,7 +459,7 @@
     .loading-overlay {
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: rgba(255,255,255,0.92); backdrop-filter: blur(6px);
-      display: none; justify-content: center; align-items: center; z-Index: 2000;
+      display: none; justify-content: center; align-items: center; z-index: 2000;
     }
     .loading-overlay.active { display: flex; }
     .loading-spinner {
@@ -476,7 +476,7 @@
     /* ============================================
        NOTIFICATIONS
     ============================================ */
-    .notification-container { position: fixed; top: 10px; right: 10px; z-Index: 2000; max-width: calc(100% - 20px); }
+    .notification-container { position: fixed; top: 10px; right: 10px; z-index: 2000; max-width: calc(100% - 20px); }
     .notification {
       background: var(--surface); border-radius: var(--radius);
       box-shadow: var(--shadow-lg); padding: 14px 16px; margin-bottom: 8px;
@@ -513,7 +513,7 @@
       display: none; position: fixed; top: 0; left: 0;
       width: 100%; height: 100%;
       background: rgba(15,23,42,0.5); backdrop-filter: blur(6px);
-      z-Index: 1100; justify-content: center; align-items: center; padding: 16px;
+      z-index: 1100; justify-content: center; align-items: center; padding: 16px;
     }
     .modal.active { display: flex; }
     .modal-content {
@@ -652,7 +652,7 @@
       position: fixed; top: 0; left: 0; width: 100%; height: 100%;
       background: linear-gradient(135deg, #0f172a 0%, #1e293b 40%, #0f172a 100%);
       background-size: 200% 200%; animation: shimmer 12s ease infinite;
-      overflow-y: auto; overflow-x: hidden; z-Index: 1;
+      overflow-y: auto; overflow-x: hidden; z-index: 1;
     }
     .landing-page::before {
       content: ''; position: absolute; top: -15%; right: -10%;
@@ -669,7 +669,7 @@
       pointer-events: none;
     }
     .login-corner-btn {
-      position: fixed; top: 20px; right: 20px; z-Index: 999;
+      position: fixed; top: 20px; right: 20px; z-index: 999;
       width: 48px; height: 48px; border-radius: 50%;
       background: var(--surface); border: none;
       box-shadow: 0 4px 20px rgba(0,0,0,0.3); cursor: pointer;
@@ -678,7 +678,7 @@
     }
     .login-corner-btn:hover { transform: scale(1.06); box-shadow: 0 6px 24px rgba(0,0,0,0.35); }
     .landing-hero {
-      position: relative; z-Index: 1; text-align: center; padding: 90px 20px 36px;
+      position: relative; z-index: 1; text-align: center; padding: 90px 20px 36px;
     }
     .landing-logo {
       width: 120px; height: 120px; border-radius: 50%;
@@ -701,7 +701,7 @@
       margin: 24px auto; border-radius: 2px;
     }
     .landing-info {
-      position: relative; z-Index: 1; max-width: 1000px;
+      position: relative; z-index: 1; max-width: 1000px;
       margin: 0 auto; padding: 0 20px 36px;
     }
     .landing-info-grid {
@@ -729,7 +729,7 @@
     .landing-info-card h3 { font-size: 14px; font-weight: 600; margin-bottom: 6px; }
     .landing-info-card p { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; }
     .landing-rules {
-      position: relative; z-Index: 1; max-width: 750px;
+      position: relative; z-index: 1; max-width: 750px;
       margin: 0 auto; padding: 0 20px 50px;
     }
     .rules-title {
@@ -762,7 +762,7 @@
     .rule-content h4 { font-size: 13.5px; font-weight: 600; margin-bottom: 3px; }
     .rule-content p { font-size: 12.5px; color: rgba(255,255,255,0.45); line-height: 1.6; }
     .landing-footer {
-      position: relative; z-Index: 1; text-align: center;
+      position: relative; z-index: 1; text-align: center;
       padding: 24px 20px; border-top: 1px solid rgba(255,255,255,0.05);
       color: rgba(255,255,255,0.3); font-size: 12px;
     }
@@ -3952,15 +3952,15 @@
         totalIngresos += valor;
     
         // DETECTAR CUOTA ESPECIAL (fondo especiales)
-        if (tipo.IndexOf('cuota especial') !== -1) {
+        if (tipo.indexOf('cuota especial') !== -1) {
           totalEspeciales += valor;
-        } else if (tipo.IndexOf('multa') !== -1) {
+        } else if (tipo.indexOf('multa') !== -1) {
           totalMultas += valor;
-        } else if (tipo.IndexOf('alquiler') !== -1 && (descSin.IndexOf('salon') !== -1 || descSin.IndexOf('silla') !== -1) && descSin.IndexOf('bbq') === -1) {
+        } else if (tipo.indexOf('alquiler') !== -1 && (descSin.indexOf('salon') !== -1 || descSin.indexOf('silla') !== -1) && descSin.indexOf('bbq') === -1) {
           totalAlquileres += valor;
         } else {
           var extraordinary = 0;
-          if (descLower.IndexOf('exento') === -1) {
+          if (descLower.indexOf('exento') === -1) {
             var matchExtra = desc.match(/\$?([\d.]+)\s*de\s*cuota\s*extraordinaria/i);
             if (matchExtra) {
               extraordinary = parseFloat(matchExtra[1].replace(/\./g, ''));
@@ -4163,7 +4163,7 @@
         if (v > 0) { h += colRow(tipo, v, ''); tieneEgresosReg = true; }
       });
       Object.keys(bal.egresosPorTipo).forEach(function(tipo) {
-        if (tiposOrden.IndexOf(tipo) === -1 && tiposFondo.IndexOf(tipo) === -1 && bal.egresosPorTipo[tipo] > 0) {
+        if (tiposOrden.indexOf(tipo) === -1 && tiposFondo.indexOf(tipo) === -1 && bal.egresosPorTipo[tipo] > 0) {
           h += colRow(tipo, bal.egresosPorTipo[tipo], '');
           tieneEgresosReg = true;
         }
@@ -4863,7 +4863,7 @@
       h += '</div>';
 
       // Nota terraza
-      if (d.area && d.area.IndexOf('Terraza') !== -1) {
+      if (d.area && d.area.indexOf('Terraza') !== -1) {
         h += '<div class="acta-doc-section" style="border-left:3px solid #dc2626;">';
         h += '<h3 class="acta-doc-section-title" style="color:#dc2626;"><span class="num" style="background:#dc2626;">!</span> Formulario de Exoneración de Terraza</h3>';
         h += '<p class="acta-doc-text" style="margin-bottom:8px;">Al utilizar la terraza, el solicitante declara conocer y aceptar los siguientes riesgos:</p>';
@@ -5594,7 +5594,7 @@
 
       tbody.innerHTML = pendientes.map(function(m) {
         var esMia = String(m.apartamento) === String(state.apartamento);
-        var esMultaLlamados = m.motivo && m.motivo.IndexOf("llamados de alarma") !== -1;
+        var esMultaLlamados = m.motivo && m.motivo.indexOf("llamados de alarma") !== -1;
         var acciones = "";
 
         // Botón pagar (solo si es del residente)
@@ -6787,17 +6787,17 @@
       var text = "Bienvenido a Claret Real VI";
       var chars = text.split("");
       var totalChars = chars.length;
-      var charIndex = 0;
+      var charindex = 0;
       var splashDone = false;
 
       function typeNext() {
-        if (charIndex < totalChars) {
+        if (charindex < totalChars) {
           var span = document.createElement("span");
           span.className = "char";
-          span.textContent = chars[charIndex] === " " ? "\u00A0" : chars[charIndex];
+          span.textContent = chars[charindex] === " " ? "\u00A0" : chars[charindex];
           titleEl.appendChild(span);
-          charIndex++;
-          var progress = Math.round((charIndex / totalChars) * 50);
+          charindex++;
+          var progress = Math.round((charindex / totalChars) * 50);
           barFill.style.width = progress + "%";
           setTimeout(typeNext, 80);
         } else {
@@ -7389,7 +7389,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 81;
+    const SW_VERSION = 82;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
