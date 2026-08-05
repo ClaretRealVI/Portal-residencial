@@ -14,11 +14,9 @@
   <meta name="apple-mobile-web-app-title" content="Claret Real VI">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
 
-  
   <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-
 
   <style>
     :root {
@@ -120,8 +118,6 @@
       margin-top: 18px; font-size: 11px; color: rgba(255,255,255,0.3);
       letter-spacing: 3px; text-transform: uppercase; font-weight: 500;
     }
-
-
 
     .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; }
     .hidden { display: none !important; }
@@ -638,7 +634,6 @@
     }
     .llamado-counter.warning { background: rgba(217,119,6,0.1); color: var(--warning); }
     .llamado-counter.danger { background: rgba(220,38,38,0.1); color: var(--danger); animation: pulse 1.5s infinite; }
-
 
     /* ============================================
        DASHBOARD
@@ -1272,7 +1267,6 @@
       font-weight: 600; color: var(--text); font-size: 12px;
       margin-bottom: 2px;
     }
-
 
     .soporte-badge {
       display: inline-flex; align-items: center; gap: 4px;
@@ -2510,7 +2504,6 @@
     </div>
   </div>
 
-
   <!-- Modal Nueva Acta -->
   <div id="modalNuevaActa" class="modal">
     <div class="modal-content" style="max-width:720px; max-height:90vh; overflow-y:auto;">
@@ -3551,56 +3544,6 @@
     }
 
     // ============================================
-    // KEEP-ALIVE: Mantener la instancia de GAS despierta
-    // ============================================
-    var _keepAliveInterval = null;
-    var _instanciaDespierta = false;
-
-    function despertarInstancia() {
-      var payload = { funcion: 'ping', argumentos: [] };
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).then(function(r) { return r.text(); })
-        .then(function(text) {
-          try { var d = JSON.parse(text); if (d && d.status === 'ok') _instanciaDespierta = true; } catch(e) {}
-        })
-        .catch(function() {});
-    }
-
-    function iniciarKeepAlive() {
-      if (document.hidden) return;
-      var payload = { funcion: 'ping', argumentos: [] };
-      fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-        body: JSON.stringify(payload)
-      }).catch(function() {});
-    }
-
-    function detenerKeepAlive() {
-      if (_keepAliveInterval) {
-        clearInterval(_keepAliveInterval);
-        _keepAliveInterval = null;
-      }
-    }
-
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden && !_keepAliveInterval) {
-        iniciarKeepAlive();
-        _keepAliveInterval = setInterval(iniciarKeepAlive, 4 * 60 * 1000);
-      } else if (document.hidden) {
-        detenerKeepAlive();
-      }
-    });
-
-    function activarKeepAlive() {
-      iniciarKeepAlive();
-      _keepAliveInterval = setInterval(iniciarKeepAlive, 4 * 60 * 1000);
-    }
-
-    // ============================================
     // NAVEGACIÓN (MODAL AUTH)
     // ============================================
     function mostrarAuthPanel(panelId) {
@@ -3840,8 +3783,6 @@
       });
     }
 
-
-
     function aplicarEstadisticas(est) {
       document.getElementById("paymentsUpToDate").textContent = est.pagosAlDia || 0;
       document.getElementById("pendingPayments").textContent = (est.pendientes || []).length;
@@ -3921,7 +3862,6 @@
         aplicarEstadisticas(est);
       });
     }
-
 
     function cargarResumen() {
       mostrarLoading('Cargando resumen...');
@@ -5801,7 +5741,6 @@
       });
     }
 
-    
     function ejecutarEliminarLlamado(fila) {
       if (!confirm("¿Eliminar este llamado?")) return;
       mostrarLoading("Eliminando...");
@@ -5849,7 +5788,6 @@
       }
     }
 
-
     function enviarLlamadoConSoporte(apt, desc, soporteData, fecha) {
       llamarGS("registrarLlamado", [apt, desc, soporteData, fecha], function(res) {
         ocultarLoading();
@@ -5870,7 +5808,6 @@
       });
     }
     
-
     // ==========================================
     // MULTA DIRECTA
     // ==========================================
@@ -5931,7 +5868,6 @@
       });
     }
  
-    
     function actualizarContadorLlamados() {
       var apt = document.getElementById("llamadoApto").value;
       var info = document.getElementById("llamadoCounterInfo");
@@ -6041,7 +5977,6 @@
       });
     }
   
-    
     function agregarTemaTratado() {
       _temaCounter++;
       var num = _temaCounter;
@@ -6212,7 +6147,6 @@
       });
     }
 
-
     var _editarTemaCounter = 0;
 
     // Convierte "03:00 PM" a "15:00" para el input type="time"
@@ -6374,7 +6308,6 @@
       return escapeHtml(val);
     }
     
-
     function abrirEditarActa(fila) {
       mostrarLoading("Cargando acta...");
       llamarGS("obtenerActas", [], function(data) {
@@ -6486,8 +6419,6 @@
           soporteDiv.style.display = "none";
         }
 
-
-        
         // Auto-calculo de coeficientes en editar
         function editarCalcularCoeficientes() {
           var asistentesVal = document.getElementById('editarActaAsistentes').value;
@@ -6828,7 +6759,6 @@
       });
     }
 
-    
     // ============================================
     // INICIALIZACIÓN
     // ============================================
@@ -6841,10 +6771,6 @@
       var totalChars = chars.length;
       var charIndex = 0;
       var splashDone = false;
-      var instanciaLista = false;
-
-      // DESPERTAR la instancia de GAS inmediatamente
-      despertarInstancia();
 
       function typeNext() {
         if (charIndex < totalChars) {
@@ -6862,7 +6788,7 @@
           var checkCount = 0;
           var checkInterval = setInterval(function() {
             checkCount++;
-            if (_instanciaDespierta || checkCount >= 8) {
+            if (checkCount >= 3) {
               clearInterval(checkInterval);
               barFill.style.width = "85%";
               subtitle.textContent = "Cargando datos...";
@@ -6883,7 +6809,6 @@
           splash.classList.add("fade-out");
           setTimeout(function() {
             splash.style.display = "none";
-            activarKeepAlive();
           }, 500);
         }, 300);
       }
@@ -6915,8 +6840,6 @@
       document.getElementById('multaDirectaApto').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
       document.getElementById('llamadoApto').addEventListener('change', actualizarContadorLlamados);
 
-
-      
       // Auto-calculo de coeficientes representados
       function calcularCoeficientes() {
         var asistentesVal = document.getElementById('actaAsistentes').value;
@@ -6985,9 +6908,7 @@
       iniciarSplash();
     }
 
-
     document.addEventListener('DOMContentLoaded', inicializar);
-
 
     // ============================================
     // FIRMA DIGITAL
@@ -7450,7 +7371,7 @@
       return div.innerHTML;
     }    
     // ── Registrar Service Worker ──
-    const SW_VERSION = 72;
+    const SW_VERSION = 80;
     
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js?v=' + SW_VERSION).then(registration => {
