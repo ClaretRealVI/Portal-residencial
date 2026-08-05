@@ -1,11 +1,11 @@
-const CACHE_NAME = 'claret-realVI-v82';
+const CACHE_NAME = 'Claret-Real-v83';
 
 const ASSETS_TO_CACHE = [
   './',
   './manifest.json'
 ];
 
-// ── INSTALAR ──
+// Instalar
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -14,7 +14,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// ── ACTIVAR: limpiar cachés viejas ──
+// Activar: limpiar cachés viejas
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then(keys =>
@@ -25,30 +25,17 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// ── ESCUCHAR MENSAJES (para SKIP_WAITING desde el cliente) ──
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting();
-  }
-});
-
-// ── FETCH ──
+// Fetch
 self.addEventListener('fetch', (event) => {
-
-  // No cachear llamadas a GAS
+  // NO interceptar llamadas a GAS — dejarlas pasar directo al navegador
   if (event.request.url.includes('/exec') || event.request.url.includes('script.google.com')) {
-    event.respondWith(
-      fetch(event.request).catch(() => new Response(JSON.stringify({status: "error", message: "Sin conexión"}), {
-        headers: {'Content-Type': 'application/json'}
-      }))
-    );
     return;
   }
 
   const url = new URL(event.request.url);
 
-  // ── INDEX.HTML: red primero (siempre trae la última versión) ──
-  if (url.pathname === '/' || url.pathname === '/index.html' || url.pathname.endsWith('/index.html')) {
+  // INDEX.HTML: red primero
+  if (url.pathname === '/' || url.pathname === '/index.html') {
     event.respondWith(
       fetch(event.request)
         .then(response => {
@@ -63,7 +50,7 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  // ── DEMÁS ARCHIVOS (iconos, manifest): cache primero ──
+  // Demás archivos: cache primero
   event.respondWith(
     caches.match(event.request).then(cached => {
       return cached || fetch(event.request).then(response => {
