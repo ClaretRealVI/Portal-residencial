@@ -4678,114 +4678,6 @@
       });
     }
 
-    function obtenerFormatosGenerados() {
-      // 1. Mostrar indicador de carga (si existe en tu HTML)
-      var loading = document.querySelector('.loading-overlay');
-      if (loading) loading.classList.add('active');
-    
-      // 2. Llamar al Backend
-      llamarGS('obtenerFormatosGenerados', {}, function(response) {
-        if (loading) loading.classList.remove('active');
-    
-        // --- SOLUCIÓN DEL ERROR ---
-        
-        // Asignamos la respuesta a la variable 'fechas'
-        var fechas = response;
-    
-        // Validación CRÍTICA: Si 'fechas' no es un Array, lo convertimos en uno vacío.
-        // Esto evita que crashee si llega un null, undefined, objeto o string.
-        if (!Array.isArray(fechas)) {
-          console.warn("Advertencia: obtenerFormatosGenerados no devolvió un Array. Recibido:", fechas);
-          fechas = [];
-        }
-    
-        // Si está vacío, mostramos mensaje en la tabla y paramos
-        if (fechas.length === 0) {
-          var tbody = document.querySelector('#tabla-solicitudes tbody') || document.getElementById('tablaFormatos');
-          if (tbody) tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 15px; color: var(--text-muted);">No hay formatos generados actualmente.</td></tr>';
-          return;
-        }
-    
-        // --- MAPEO SEGURO (Aquí ocurría el error) ---
-    
-        var htmlContent = fechas.map(function(item) {
-          // Los datos vienen del CODE.gs: fila, uuid, tipo, apartamento, fecha, estado, datos
-          
-          // Definir color del badge según estado
-          var badgeClass = 'badge-warning'; // Pendiente (default)
-          if (item.estado === 'Aprobado') badgeClass = 'badge-success';
-          if (item.estado === 'Rechazado') badgeClass = 'badge-danger';
-    
-          // NOTA: Ajusta los ID de los botones ('verFormato', 'aprobarFormato') 
-          // si en tu código HTML tienen otro nombre.
-    
-          return `
-            <tr>
-              <td style="white-space:nowrap;">${item.fecha}</td>
-              <td>${item.tipo}</td>
-              <td><strong>${item.apartamento}</strong></td>
-              <td>
-                <span class="badge ${badgeClass}">${item.estado}</span>
-              </td>
-              <td>
-                <div class="table-actions">
-                  <!-- Botón Ver -->
-                  <button class="btn btn-sm btn-light" onclick="verDetalleFormato('${item.uuid}', '${item.tipo}')" title="Ver Detalle">
-                    <i class="fas fa-eye"></i>
-                  </button>
-                  
-                  <!-- Botón Aprobar (Solo si no está aprobado) -->
-                  ${item.estado !== 'Aprobado' ? `
-                  <button class="btn btn-sm btn-success" onclick="aprobarFormato(${item.fila}, 'Aprobado')" title="Aprobar">
-                    <i class="fas fa-check"></i>
-                  </button>` : ''}
-                </div>
-              </td>
-            </tr>
-          `;
-        }).join('');
-    
-        // 3. Inyectar el HTML en la tabla
-        // Busca el tbody de tu tabla de solicitudes. Ajusta el selector si usas un ID diferente.
-        var tablaBody = document.querySelector('#tabla-solicitudes tbody');
-        
-        // Fallback: Si no encuentra por ID, intenta buscar por la clase .table
-        if (!tablaBody) {
-          var table = document.querySelector('.table');
-          if (table) tablaBody = table.querySelector('tbody');
-        }
-    
-        if (tablaBody) {
-          tablaBody.innerHTML = htmlContent;
-        } else {
-          console.error("No se encontró la tabla HTML para inyectar los datos.");
-        }
-      });
-    }
-    
-    // --- Asegúrate de tener estas funciones auxiliares si las usas en los botones ---
-    // (Si ya las tienes, omite esta parte)
-    
-    function verDetalleFormato(uuid, tipo) {
-      // Lógica para abrir modal o ver detalles
-      console.log("Abriendo detalle:", uuid, tipo);
-      // Aquí iría tu código para abrir el modal de detalles...
-    }
-    
-    function aprobarFormato(fila, estado) {
-      // Lógica para actualizar estado
-      if(confirm('¿Deseas cambiar el estado de este formato a ' + estado + '?')) {
-        llamarGS('actualizarEstadoFormato', { fila: fila, estado: estado }, function(res) {
-          if(res && res.ok) {
-            mostrarNotificacion('Estado actualizado correctamente', 'success');
-            obtenerFormatosGenerados(); // Recargar tabla
-          } else {
-            mostrarNotificacion('Error al actualizar estado', 'error');
-          }
-        });
-      }
-    }    
-
     // --- Ver detalle del formato (documento) ---
     function verDetalleFormato(fila) {
       mostrarLoading('Cargando formato...');
@@ -5090,8 +4982,16 @@
               horario = '—';
             } else if (f.tipo === 'Alquiler') {
               resumen = (d.evento || d.alqEvento || 'Alquiler') + ' — ' + (d.area || d.alqArea || '') + ' (' + (d.apartamento || '') + ')';
-              var fechas = d.fechas || d.fechasAlquiler || [];
-              if (fechas.length) fechaSol = fechas.map(function(x) { return x.fecha || x; }).join(', ');
+              var fechas = d.fechas || d.fechasAlquiler || '[]';
+              if (typeof fechas === 'string') {
+                try { fechas = JSON.parse(fechas); } catch(e) { fechas = []; }
+              }
+              if (Array.isArray(fechas) && fechas.length) {
+                fechaSol = fechas.map(function(x) {
+                  if (x && typeof x === 'object') return x.fecha || '';
+                  return String(x);
+                }).filter(Boolean).join(', ');
+              }
               horario = d.horario || d.alqHorario || '';
             }
 
