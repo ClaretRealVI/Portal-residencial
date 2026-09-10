@@ -5,61 +5,178 @@ const ASSETS_TO_CACHE = [
   './manifest.json'
 ];
 
-// Instalar
+// ==========================================
+// INSTALACIÓN
+// ==========================================
 self.addEventListener('install', (event) => {
+
   event.waitUntil(
     caches.open(CACHE_NAME)
-      .then(cache => cache.addAll(ASSETS_TO_CACHE))
+      .then((cache) => {
+        return cache.addAll(ASSETS_TO_CACHE);
+      })
       .then(() => self.skipWaiting())
   );
+
 });
 
-// Activar: limpiar cachés viejas
+
+// ==========================================
+// ACTIVACIÓN
+// Limpiar versiones anteriores del caché
+// ==========================================
 self.addEventListener('activate', (event) => {
+
   event.waitUntil(
-    caches.keys().then(keys =>
-      Promise.all(
-        keys.filter(key => key !== CACHE_NAME).map(key => caches.delete(key))
-      )
-    ).then(() => self.clients.claim())
+
+    caches.keys()
+      .then((keys) => {
+
+        return Promise.all(
+
+          keys
+            .filter((key) => key !== CACHE_NAME)
+            .map((key) => caches.delete(key))
+
+        );
+
+      })
+      .then(() => self.clients.claim())
+
   );
+
 });
 
-// Fetch
+
+// ==========================================
+// FETCH
+// ==========================================
 self.addEventListener('fetch', (event) => {
-  // NO interceptar llamadas a GAS — dejarlas pasar directo al navegador
-  if (event.request.url.includes('/exec') || event.request.url.includes('script.google.com')) {
+
+  // Solo manejar solicitudes GET
+  if (event.request.method !== 'GET') {
     return;
   }
 
-  const url = new URL(event.request.url);
 
-  // INDEX.HTML: red primero
-  if (url.pathname === '/' || url.pathname === '/index.html') {
+  // ==========================================
+  // NO INTERCEPTAR GOOGLE APPS SCRIPT
+  // ==========================================
+  const requestUrl = event.request.url;
+
+  if (
+    requestUrl.includes('script.google.com') ||
+    requestUrl.includes('/exec')
+  ) {
+    return;
+  }
+
+
+  const url = new URL(requestUrl);
+
+
+  // ==========================================
+  // INDEX / PÁGINA PRINCIPAL
+  // NETWORK FIRST
+  // ==========================================
+  if (
+    url.pathname === '/' ||
+    url.pathname.endsWith('/index.html')
+  ) {
+
     event.respondWith(
+
       fetch(event.request)
-        .then(response => {
-          if (response.status === 200) {
+
+        .then((response) => {
+
+          if (response && response.status === 200) {
+
             const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+
+            caches.open(CACHE_NAME)
+              .then((cache) => {
+                cache.put(event.request, clone);
+              });
+
           }
+
           return response;
+
         })
-        .catch(() => caches.match(event.request))
+
+        // Si no hay internet → usar caché
+        .catch(() => {
+
+          return caches.match(event.request);
+
+        })
+
     );
+
     return;
   }
 
-  // Demás archivos: cache primero
+
+  // ==========================================
+  // DEMÁS ARCHIVOS
+  // CACHE FIRST
+  // ==========================================
   event.respondWith(
-    caches.match(event.request).then(cached => {
-      return cached || fetch(event.request).then(response => {
-        if (response.status === 200) {
-          const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone));
+
+    caches.match(event.request)
+
+      .then((cachedResponse) => {
+
+        // Si existe en caché
+        if (cachedResponse) {
+          return cachedResponse;
         }
-        return response;
-      });
-    })
+
+
+        // Si no existe → descargar
+        return fetch(event.request)
+
+          .then((response) => {
+
+            // No guardar respuestas inválidas
+            if (
+              !response ||
+              response.status !== 200 ||
+              response.type !== 'basic'
+            ) {
+              return response;
+            }
+
+
+            const clone = response.clone();
+
+            caches.open(CACHE_NAME)
+
+              .then((cache) => {
+                cache.put(event.request, clone);
+              });
+
+
+            return response;
+
+          });
+
+      })
+
+      // Si falla completamente
+      .catch(() => {
+
+        return new Response(
+          'Sin conexión a internet',
+          {
+            status: 503,
+            statusText: 'Servicio no disponible'
+          }
+        );
+
+      })
+
   );
+
 });
