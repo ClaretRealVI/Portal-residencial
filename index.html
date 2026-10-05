@@ -3445,79 +3445,132 @@
   </div>
 
   <!-- Modal Pago Digital -->
-  <div id="modalPago" class="modal">
+    <div id="modalPago" class="modal pay-modal">
     <div class="modal-content">
-      <div class="modal-header"><h3 class="modal-title">Pago Digital</h3><button class="modal-close" onclick="cerrarModalPago()"><i class="fas fa-times"></i></button></div>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-qrcode"></i> Pago de Administración</h3>
+        <button class="modal-close" onclick="cerrarModalPago()"><i class="fas fa-times"></i></button>
+      </div>
       <div class="modal-body">
-        <div class="modal-info-grid modal-info-grid-4">
-          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Mes</div><div style="font-size: 14px; font-weight: 600;" id="paymentMonth">-</div></div>
-          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="paymentApartment">-</div></div>
-          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600;" id="paymentValue">$0</div></div>
-          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Desglose</div><div style="font-size: 12px; font-weight: 600;" id="paymentBreakdown">-</div></div>
+        <div class="pay-steps">
+          <div class="pay-step on">1. Datos</div>
+          <div class="pay-step on">2. Transferir</div>
+          <div class="pay-step on">3. Comprobante</div>
         </div>
-        <div class="qr-container"><img src="https://i.imgur.com/G2pDQyY.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')"></div>
-        <div style="text-align: center; margin-top: 8px; color: var(--text-muted); font-size: 12px;"><i class="fas fa-download"></i> Click para descargar QR</div>
-        <div class="form-group" style="margin-top: 18px;">
-          <label class="form-label">Datos Transferencia</label>
-          <div style="background: var(--bg); padding: 16px; border-radius: var(--radius);">
-            <div style="margin-bottom: 8px;"><strong>Llave:</strong> 3214583531</div>
-            <div style="margin-bottom: 8px;"><strong>Llave 2:</strong> 1033796749</div>
-            <div style="margin-bottom: 8px;"><strong>Tipo:</strong> Bre-B</div>
-            <div><strong>Titular:</strong> Administracion Edificio</div>
+        <div class="pay-summary">
+          <div class="pay-summary-item">
+            <div class="lbl">Mes</div>
+            <div class="val" id="paymentMonth">-</div>
+          </div>
+          <div class="pay-summary-item">
+            <div class="lbl">Apartamento</div>
+            <div class="val" id="paymentApartment">-</div>
+          </div>
+          <div class="pay-summary-item highlight">
+            <div class="lbl">Total a pagar</div>
+            <div class="val" id="paymentValue">$0</div>
+            <div class="lbl" style="margin-top:6px;text-transform:none;letter-spacing:0;font-weight:500;" id="paymentBreakdown">-</div>
           </div>
         </div>
-        <div class="form-group" style="margin-top: 18px;"><label class="form-label">Comprobante</label><input type="file" id="comprobantePago" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></div>
+        <div class="pay-qr-wrap">
+          <img src="https://i.imgur.com/G2pDQyY.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')">
+          <div class="pay-qr-hint"><i class="fas fa-download"></i> Toca el QR para descargarlo</div>
+        </div>
+        <div class="pay-transfer">
+          <div class="pay-transfer-title">Datos de transferencia</div>
+          <div class="pay-transfer-row"><span class="k">Llave</span><span class="v">3214583531</span></div>
+          <div class="pay-transfer-row"><span class="k">Llave 2</span><span class="v">1033796749</span></div>
+          <div class="pay-transfer-row"><span class="k">Tipo</span><span class="v">Bre-B</span></div>
+          <div class="pay-transfer-row"><span class="k">Titular</span><span class="v">Administración Edificio</span></div>
+        </div>
+        <div class="pay-upload">
+          <label class="form-label"><i class="fas fa-cloud-upload-alt" style="color:#10b981;margin-right:6px;"></i>Adjunta tu comprobante</label>
+          <input type="file" id="comprobantePago" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+          <div style="font-size:11px;color:#94a3b8;margin-top:8px;">JPG, PNG o PDF · La IA verificará el valor</div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="procesarPago()"><i class="fas fa-credit-card"></i> Procesar</button>
         <button class="btn btn-light" onclick="cerrarModalPago()">Cancelar</button>
+        <button class="btn btn-primary" onclick="procesarPago()"><i class="fas fa-check-circle"></i> Confirmar pago</button>
       </div>
     </div>
   </div>
 
   <!-- Modal Pago Multa -->
-  <div id="modalPagoMulta" class="modal">
+
+    <div id="modalPagoMulta" class="modal pay-modal">
     <div class="modal-content">
-      <div class="modal-header"><h3 class="modal-title">Pago de Multa</h3><button class="modal-close" onclick="cerrarModalPagoMulta()"><i class="fas fa-times"></i></button></div>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-gavel"></i> Pago de Multa</h3>
+        <button class="modal-close" onclick="cerrarModalPagoMulta()"><i class="fas fa-times"></i></button>
+      </div>
       <div class="modal-body">
-        <div class="modal-info-grid modal-info-grid-3">
-          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Apartamento</div><div style="font-size: 14px; font-weight: 600;" id="multaPagoApto">-</div></div>
-          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Motivo</div><div style="font-size: 13px; font-weight: 600;" id="multaPagoMotivo">-</div></div>
-          <div style="text-align: center;"><div style="font-size: 10.5px; text-transform: uppercase; color: var(--text-muted); margin-bottom: 4px;">Valor</div><div style="font-size: 14px; font-weight: 600; color: var(--danger);" id="multaPagoValor">$0</div></div>
-        </div>
-        <div class="qr-container"><img src="https://i.imgur.com/G2pDQyY.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')"></div>
-        <div style="text-align: center; margin-top: 8px; color: var(--text-muted); font-size: 12px;"><i class="fas fa-download"></i> Click para descargar QR</div>
-        <div class="form-group" style="margin-top: 18px;">
-          <label class="form-label">Datos Transferencia</label>
-          <div style="background: var(--bg); padding: 16px; border-radius: var(--radius);">
-            <div style="margin-bottom: 8px;"><strong>Llave:</strong> 3214583531</div>
-            <div style="margin-bottom: 8px;"><strong>Llave 2:</strong> 1033796749</div>
-            <div style="margin-bottom: 8px;"><strong>Tipo:</strong> Bre-B</div>
-            <div><strong>Titular:</strong> Administracion Edificio</div>
+        <div class="pay-summary">
+          <div class="pay-summary-item">
+            <div class="lbl">Apartamento</div>
+            <div class="val" id="multaPagoApto">-</div>
+          </div>
+          <div class="pay-summary-item">
+            <div class="lbl">Motivo</div>
+            <div class="val" id="multaPagoMotivo" style="font-size:12px;line-height:1.3;">-</div>
+          </div>
+          <div class="pay-summary-item highlight">
+            <div class="lbl">Valor de la multa</div>
+            <div class="val" id="multaPagoValor">$0</div>
           </div>
         </div>
-        <div class="form-group" style="margin-top: 18px;"><label class="form-label">Comprobante de Pago</label><input type="file" id="comprobanteMulta" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required></div>
+        <div class="pay-qr-wrap">
+          <img src="https://i.imgur.com/G2pDQyY.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')">
+          <div class="pay-qr-hint"><i class="fas fa-download"></i> Toca el QR para descargarlo</div>
+        </div>
+        <div class="pay-transfer">
+          <div class="pay-transfer-title">Datos de transferencia</div>
+          <div class="pay-transfer-row"><span class="k">Llave</span><span class="v">3214583531</span></div>
+          <div class="pay-transfer-row"><span class="k">Llave 2</span><span class="v">1033796749</span></div>
+          <div class="pay-transfer-row"><span class="k">Tipo</span><span class="v">Bre-B</span></div>
+          <div class="pay-transfer-row"><span class="k">Titular</span><span class="v">Administración Edificio</span></div>
+        </div>
+        <div class="pay-upload">
+          <label class="form-label"><i class="fas fa-cloud-upload-alt" style="color:#10b981;margin-right:6px;"></i>Comprobante de pago</label>
+          <input type="file" id="comprobanteMulta" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+          <div style="font-size:11px;color:#94a3b8;margin-top:8px;">JPG, PNG o PDF · Verificación automática del monto</div>
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="procesarPagoMulta()"><i class="fas fa-check"></i> Pagar Multa</button>
         <button class="btn btn-light" onclick="cerrarModalPagoMulta()">Cancelar</button>
+        <button class="btn btn-primary" onclick="procesarPagoMulta()"><i class="fas fa-check-circle"></i> Pagar multa</button>
       </div>
     </div>
   </div>
 
   <!-- Modal Pago Efectivo -->
-  <div id="modalPagoEfectivo" class="modal">
+    <div id="modalPagoEfectivo" class="modal pay-modal">
     <div class="modal-content">
-      <div class="modal-header"><h3 class="modal-title">Pago en Efectivo</h3><button class="modal-close" onclick="cerrarModal('modalPagoEfectivo')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-money-bill-wave"></i> Pago en Efectivo</h3>
+        <button class="modal-close" onclick="cerrarModal('modalPagoEfectivo')"><i class="fas fa-times"></i></button>
+      </div>
       <div class="modal-body">
-        <div class="form-group"><label class="form-label">Descripción</label><input type="text" id="descripcionEfectivo" class="form-control"></div>
-        <div class="form-group"><label class="form-label">Apartamento</label><select id="apartamentoEfectivo" class="form-control"><option value="">Seleccione</option></select></div>
-        <div class="form-group"><label class="form-label">Valor</label><input type="text" id="valorEfectivo" class="form-control currency-input" placeholder="$0"></div>
-        <div class="form-group"><label class="form-label">Correo</label><input type="email" id="correoEfectivo" class="form-control"></div>
+        <div class="form-group">
+          <label class="form-label">Descripción</label>
+          <input type="text" id="descripcionEfectivo" class="form-control" placeholder="Ej: Pago administración marzo">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Apartamento</label>
+          <select id="apartamentoEfectivo" class="form-control"></select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Valor</label>
+          <input type="text" id="valorEfectivo" class="form-control currency-input" placeholder="$0">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Correo (opcional)</label>
+          <input type="email" id="correoEfectivo" class="form-control" placeholder="correo@ejemplo.com">
+        </div>
       </div>
       <div class="modal-footer">
-        <button class="btn btn-primary" onclick="procesarPagoEfectivo()"><i class="fas fa-save"></i> Procesar</button>
         <button class="btn btn-light" onclick="cerrarModal('modalPagoEfectivo')">Cancelar</button>
+        <button class="btn btn-primary" onclick="procesarPagoEfectivo()"><i class="fas fa-check-circle"></i> Registrar pago</button>
       </div>
     </div>
   </div>
@@ -7420,13 +7473,27 @@ function validarLoginResidente(apartamento, pin) {
 
       setTimeout(typeNext, 400);
     }
+    
+    function poblarSelectApartamentos(selectId) {
+      var sel = document.getElementById(selectId);
+      if (!sel) return;
+      var opts = (typeof APARTAMENTOS !== 'undefined' ? APARTAMENTOS : []).map(function(a) {
+        return '<option value="' + a + '">' + a + '</option>';
+      }).join('');
+      sel.innerHTML = opts;
+    }
+
     function inicializar() {
+      try { poblarSelectApartamentos('apartamentoEfectivo'); } catch(e) {}
+      try { poblarSelectApartamentos('llamadoApto'); } catch(e) {}
+      try { poblarSelectApartamentos('multaDirectaApto'); } catch(e) {}
+
       var grid = document.getElementById('apartmentGrid');
       grid.innerHTML = APARTAMENTOS.map(function(apt) {
         return '<button class="apartment-btn" onclick="seleccionarApartamento(\'' + apt + '\')">' + apt + '</button>';
       }).join('');
 
-      var optionsAptos = '<option value="">Seleccione</option>' + APARTAMENTOS.map(function(a) { return '<option>' + a + '</option>'; }).join('');
+      var optionsAptos = '' + APARTAMENTOS.map(function(a) { return '<option>' + a + '</option>'; }).join('');
       document.getElementById('apartamentoEfectivo').innerHTML = optionsAptos;
       document.getElementById('aptoExencion').innerHTML = '<option value="">Selecciona</option>' + APARTAMENTOS.map(function(a) { return '<option value="' + a + '">' + a + '</option>'; }).join('');
 
