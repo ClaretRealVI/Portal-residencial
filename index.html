@@ -3,515 +3,300 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Portal de Gestión Conjunto Residencial — Claret Real VI</title>
+  <title>Portal de Gestión Conjunto Residencial</title>
+
+  <!-- PWA -->
   <link rel="icon" type="image/png" href="icons/iconX-512.png">
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#030712">
+  <meta name="theme-color" content="#0f172a">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Claret Real VI">
   <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <!-- Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
   <style>
-/* =====================================================
-   CLARET REAL VI — FUTURISTIC GLASSMORPHISM THEME v3.0
-   Diseño premium, profundo, con profundidad y glow
-   ===================================================== */
+    :root {
+      --primary: #0f172a;
+      --primary-light: #1e293b;
+      --primary-mid: #334155;
+      --secondary: #059669;
+      --secondary-light: #10b981;
+      --accent: #7c3aed;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --surface: #ffffff;
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --text-secondary: #64748b;
+      --text-muted: #94a3b8;
+      --border: #e2e8f0;
+      --border-light: #f1f5f9;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,0.04);
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      --shadow-md: 0 4px 6px -1px rgba(0,0,0,0.06), 0 2px 4px -2px rgba(0,0,0,0.06);
+      --shadow-lg: 0 10px 15px -3px rgba(0,0,0,0.08), 0 4px 6px -4px rgba(0,0,0,0.04);
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 16px;
+      --transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    }
 
-:root {
-  /* Core palette - Deep Space + Neon Emerald */
-  --bg-deep: #030712;
-  --bg: #0a0f1c;
-  --bg-elevated: #111827;
-  --surface: rgba(17, 24, 39, 0.65);
-  --surface-solid: #111827;
-  --surface-glass: rgba(255, 255, 255, 0.04);
-  --surface-glass-hover: rgba(255, 255, 255, 0.07);
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  --primary: #0f172a;
-  --primary-light: #1e293b;
-  --primary-mid: #334155;
+    html {
+      scroll-behavior: smooth;
+      overflow: hidden;
+      height: 100%;
+    }
 
-  --secondary: #10b981;
-  --secondary-light: #34d399;
-  --secondary-glow: rgba(16, 185, 129, 0.35);
-  --secondary-dim: rgba(16, 185, 129, 0.12);
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      height: 100%;
+      overflow: hidden;
+    }
 
-  --accent: #8b5cf6;
-  --accent-light: #a78bfa;
-  --accent-glow: rgba(139, 92, 246, 0.3);
+    body.dashboard-active {
+      overflow: auto;
+    }
+    html.dashboard-active {
+      overflow: auto;
+    }
 
-  --success: #10b981;
-  --warning: #f59e0b;
-  --danger: #ef4444;
-  --info: #3b82f6;
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeInScale { from { opacity: 0; transform: scale(0.96); } to { opacity: 1; transform: scale(1); } }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.03); } }
+    @keyframes slideInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+    @keyframes shimmer { 0% { background-position: -200% 0; } 100% { background-position: 200% 0; } }
+    /* ============================================
+       SPLASH SCREEN
+    ============================================ */
+    .splash-screen {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      z-index: 9999; transition: opacity 0.5s ease;
+    }
+    .splash-screen.fade-out { opacity: 0; pointer-events: none; }
+    .splash-logo {
+      width: 90px; height: 90px; border-radius: 50%;
+      border: 2px solid rgba(255,255,255,0.15);
+      margin-bottom: 28px; object-fit: cover;
+      animation: pulse 2s infinite;
+      box-shadow: 0 0 40px rgba(5,150,105,0.15);
+    }
+    .splash-title {
+      font-family: 'Playfair Display', serif; font-size: 26px;
+      color: white; min-height: 38px; text-align: center;
+      letter-spacing: 1px;
+    }
+    .splash-title .char {
+      display: inline-block; opacity: 0; transform: translateY(8px);
+      animation: charReveal 0.35s ease forwards;
+    }
+    @keyframes charReveal {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .splash-bar {
+      width: 180px; height: 3px; background: rgba(255,255,255,0.08);
+      border-radius: 3px; margin-top: 28px; overflow: hidden;
+    }
+    .splash-bar-fill {
+      height: 100%; width: 0%; border-radius: 3px;
+      background: linear-gradient(90deg, #059669, #10b981, #34d399);
+      transition: width 0.4s ease;
+    }
+    .splash-subtitle {
+      margin-top: 18px; font-size: 11px; color: rgba(255,255,255,0.3);
+      letter-spacing: 3px; text-transform: uppercase; font-weight: 500;
+    }
 
-  --text: #f1f5f9;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  --text-dim: #475569;
+    .container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; }
+    .hidden { display: none !important; }
 
-  --border: rgba(255, 255, 255, 0.08);
-  --border-light: rgba(255, 255, 255, 0.04);
-  --border-glow: rgba(16, 185, 129, 0.25);
+    /* ============================================
+       CARDS
+    ============================================ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+      padding: 24px;
+      margin-bottom: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    .card-header {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-bottom: 20px; padding-bottom: 16px;
+      border-bottom: 1px solid var(--border-light);
+      flex-wrap: wrap; gap: 12px;
+    }
+    .card-title {
+      font-size: 16px; font-weight: 600; color: var(--text);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .card-title i {
+      width: 32px; height: 32px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; color: white;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+    }
 
-  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
-  --shadow: 0 4px 12px rgba(0,0,0,0.35);
-  --shadow-md: 0 8px 24px rgba(0,0,0,0.4);
-  --shadow-lg: 0 16px 48px rgba(0,0,0,0.5);
-  --shadow-glow: 0 0 40px rgba(16, 185, 129, 0.15);
+    /* ============================================
+       BUTTONS
+    ============================================ */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      padding: 9px 18px; border: none; border-radius: var(--radius);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: var(--transition); text-align: center;
+      letter-spacing: 0.01em; font-family: inherit;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn:active { transform: translateY(0); }
+    .btn-primary { background: var(--primary-light); color: white; }
+    .btn-primary:hover { background: var(--primary-mid); }
+    .btn-secondary { background: var(--secondary); color: white; }
+    .btn-secondary:hover { background: var(--secondary-light); }
+    .btn-success { background: var(--secondary); color: white; }
+    .btn-success:hover { background: var(--secondary-light); }
+    .btn-warning { background: var(--warning); color: white; }
+    .btn-warning:hover { background: #f59e0b; }
+    .btn-danger { background: var(--danger); color: white; }
+    .btn-danger:hover { background: #ef4444; }
+    .btn-accent { background: var(--accent); color: white; }
+    .btn-accent:hover { background: #8b5cf6; }
+    .btn-light { background: white; color: var(--text-secondary); border: 1px solid var(--border); }
+    .btn-light:hover { border-color: var(--secondary); color: var(--secondary); }
+    .btn-sm { padding: 7px 14px; font-size: 12.5px; }
+    .btn-icon { width: 36px; height: 36px; padding: 0; border-radius: 8px; }
 
-  --radius: 12px;
-  --radius-lg: 16px;
-  --radius-xl: 20px;
-  --radius-2xl: 28px;
+    /* ============================================
+       FORMS
+    ============================================ */
+    .form-group { margin-bottom: 18px; }
+    .form-label { display: block; margin-bottom: 6px; font-weight: 500; font-size: 13px; color: var(--text-secondary); }
+    .form-control {
+      width: 100%; padding: 10px 14px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      font-size: 14px; transition: var(--transition);
+      background: var(--surface); color: var(--text);
+      font-family: inherit;
+    }
+    .form-control:focus {
+      outline: none;
+      border-color: var(--secondary);
+      box-shadow: 0 0 0 3px rgba(5,150,105,0.08);
+    }
 
-  --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-fast: all 0.15s ease;
-  --font: 'Inter', system-ui, -apple-system, sans-serif;
-  --font-display: 'Playfair Display', Georgia, serif;
-}
+    /* ============================================
+       TABLE
+    ============================================ */
+    .table-container {
+      width: 100%; overflow-x: auto;
+      border-radius: var(--radius);
+      margin: 14px 0;
+      -webkit-overflow-scrolling: touch;
+      border: 1px solid var(--border);
+    }
+    .table { width: 100%; border-collapse: collapse; background: var(--surface); }
+    .table th {
+      background: var(--primary);
+      color: white; font-weight: 600;
+      padding: 12px 16px; text-align: left;
+      font-size: 11.5px; text-transform: uppercase;
+      white-space: nowrap; letter-spacing: 0.6px;
+    }
+    .table td {
+      padding: 11px 16px;
+      border-bottom: 1px solid var(--border-light);
+      font-size: 13.5px;
+    }
+    .table tbody tr:hover { background: #f0fdf4; }
+    .table-actions { display: flex; gap: 6px; justify-content: center; }
 
-* { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ============================================
+       SECTION TABS
+    ============================================ */
+    .section-tabs {
+      display: flex; gap: 0; margin-bottom: 20px;
+      border-bottom: 2px solid var(--border-light);
+    }
+    .section-tab {
+      padding: 10px 20px; background: none; border: none;
+      border-bottom: 2px solid transparent;
+      margin-bottom: -2px; color: var(--text-muted);
+      font-size: 13px; font-weight: 500; cursor: pointer;
+      transition: var(--transition); font-family: inherit;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .section-tab:hover { color: var(--text); }
+    .section-tab.active {
+      color: var(--secondary); border-bottom-color: var(--secondary);
+      font-weight: 600;
+    }
 
-html {
-  scroll-behavior: smooth;
-  overflow: hidden;
-  height: 100%;
-  background: var(--bg-deep);
-}
-
-body {
-  font-family: var(--font);
-  background: var(--bg-deep);
-  color: var(--text);
-  line-height: 1.6;
-  height: 100%;
-  overflow: hidden;
-  -webkit-font-smoothing: antialiased;
-}
-
-body.dashboard-active,
-html.dashboard-active {
-  overflow: auto;
-}
-
-/* Background ambient effects */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background: 
-    radial-gradient(ellipse 80% 50% at 20% -10%, rgba(16, 185, 129, 0.08), transparent),
-    radial-gradient(ellipse 60% 40% at 80% 10%, rgba(139, 92, 246, 0.06), transparent),
-    radial-gradient(ellipse 50% 30% at 50% 100%, rgba(16, 185, 129, 0.04), transparent);
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Subtle grid overlay */
-body::after {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-  background-size: 60px 60px;
-  pointer-events: none;
-  z-index: 0;
-  opacity: 0.6;
-}
-
-/* ================= ANIMATIONS ================= */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(12px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes fadeInScale {
-  from { opacity: 0; transform: scale(0.94); }
-  to { opacity: 1; transform: scale(1); }
-}
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 20px var(--secondary-glow); }
-  50% { box-shadow: 0 0 35px var(--secondary-glow), 0 0 60px rgba(16,185,129,0.15); }
-}
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-@keyframes shimmer {
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-}
-@keyframes charReveal {
-  to { opacity: 1; transform: translateY(0); }
-}
-@keyframes border-glow {
-  0%, 100% { border-color: rgba(16,185,129,0.3); }
-  50% { border-color: rgba(16,185,129,0.6); }
-}
-
-/* ================= SPLASH ================= */
-.splash-screen {
-  position: fixed; inset: 0;
-  background: linear-gradient(145deg, #030712 0%, #0a0f1c 40%, #0f172a 100%);
-  display: flex; flex-direction: column; align-items: center; justify-content: center;
-  z-index: 99999; transition: opacity 0.6s ease, visibility 0.6s;
-}
-.splash-screen.fade-out { opacity: 0; visibility: hidden; pointer-events: none; }
-
-.splash-logo {
-  width: 100px; height: 100px; border-radius: 50%;
-  border: 2px solid rgba(16,185,129,0.3);
-  margin-bottom: 32px; object-fit: cover;
-  animation: pulse-glow 2.5s infinite, float 4s ease-in-out infinite;
-  box-shadow: 0 0 50px rgba(16,185,129,0.2);
-}
-
-.splash-title {
-  font-family: var(--font-display); font-size: 28px;
-  color: white; min-height: 40px; text-align: center;
-  letter-spacing: 2px; text-shadow: 0 0 30px rgba(16,185,129,0.3);
-}
-.splash-title .char {
-  display: inline-block; opacity: 0; transform: translateY(10px);
-  animation: charReveal 0.4s ease forwards;
-}
-
-.splash-bar {
-  width: 200px; height: 3px; background: rgba(255,255,255,0.06);
-  border-radius: 4px; margin-top: 32px; overflow: hidden;
-}
-.splash-bar-fill {
-  height: 100%; width: 0%; border-radius: 4px;
-  background: linear-gradient(90deg, #059669, #10b981, #34d399, #10b981);
-  background-size: 200% 100%;
-  animation: shimmer 1.5s linear infinite;
-  transition: width 0.4s ease;
-  box-shadow: 0 0 12px var(--secondary-glow);
-}
-
-.splash-subtitle {
-  margin-top: 20px; font-size: 11px; color: rgba(255,255,255,0.25);
-  letter-spacing: 4px; text-transform: uppercase; font-weight: 500;
-}
-
-/* ================= CARDS - GLASS ================= */
-.card {
-  background: var(--surface);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-md);
-  padding: 28px;
-  margin-bottom: 24px;
-  animation: fadeIn 0.35s ease;
-  position: relative;
-  overflow: hidden;
-  transition: var(--transition);
-}
-.card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(16,185,129,0.3), transparent);
-}
-.card:hover {
-  border-color: rgba(16,185,129,0.2);
-  box-shadow: var(--shadow-lg), 0 0 30px rgba(16,185,129,0.05);
-}
-
-.card-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 22px; padding-bottom: 18px;
-  border-bottom: 1px solid var(--border);
-  flex-wrap: wrap; gap: 12px;
-}
-.card-title {
-  font-size: 16px; font-weight: 600; color: var(--text);
-  display: flex; align-items: center; gap: 12px;
-}
-.card-title i {
-  width: 36px; height: 36px; border-radius: 10px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 14px; color: white;
-  background: linear-gradient(135deg, #059669, #10b981);
-  box-shadow: 0 4px 14px rgba(16,185,129,0.3);
-}
-
-/* ================= BUTTONS ================= */
-.btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-  padding: 10px 20px; border: none; border-radius: var(--radius);
-  font-size: 13.5px; font-weight: 550; cursor: pointer;
-  transition: var(--transition); text-align: center;
-  letter-spacing: 0.02em; font-family: inherit;
-  position: relative; overflow: hidden;
-}
-.btn:hover { transform: translateY(-2px); }
-.btn:active { transform: translateY(0); }
-
-.btn-primary {
-  background: linear-gradient(135deg, #1e293b, #334155);
-  color: white; border: 1px solid rgba(255,255,255,0.08);
-}
-.btn-primary:hover {
-  background: linear-gradient(135deg, #334155, #475569);
-  box-shadow: 0 6px 20px rgba(0,0,0,0.3);
-}
-
-.btn-secondary, .btn-success {
-  background: linear-gradient(135deg, #059669, #10b981);
-  color: white;
-  box-shadow: 0 4px 16px rgba(16,185,129,0.25);
-}
-.btn-secondary:hover, .btn-success:hover {
-  background: linear-gradient(135deg, #10b981, #34d399);
-  box-shadow: 0 6px 24px rgba(16,185,129,0.4);
-}
-
-.btn-warning {
-  background: linear-gradient(135deg, #d97706, #f59e0b);
-  color: white; box-shadow: 0 4px 16px rgba(245,158,11,0.25);
-}
-.btn-danger {
-  background: linear-gradient(135deg, #dc2626, #ef4444);
-  color: white; box-shadow: 0 4px 16px rgba(239,68,68,0.25);
-}
-.btn-accent {
-  background: linear-gradient(135deg, #7c3aed, #8b5cf6);
-  color: white; box-shadow: 0 4px 16px rgba(139,92,246,0.25);
-}
-.btn-light {
-  background: var(--surface-glass);
-  color: var(--text-secondary);
-  border: 1px solid var(--border);
-  backdrop-filter: blur(8px);
-}
-.btn-light:hover {
-  border-color: var(--secondary);
-  color: var(--secondary-light);
-  background: var(--secondary-dim);
-}
-.btn-sm { padding: 7px 14px; font-size: 12.5px; border-radius: 8px; }
-.btn-icon { width: 38px; height: 38px; padding: 0; border-radius: 10px; }
-
-/* ================= FORMS ================= */
-.form-control {
-  width: 100%;
-  background: rgba(0,0,0,0.3);
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  padding: 12px 16px;
-  font-size: 14px;
-  color: var(--text);
-  font-family: inherit;
-  transition: var(--transition);
-  outline: none;
-}
-.form-control:focus {
-  border-color: var(--secondary);
-  box-shadow: 0 0 0 3px var(--secondary-dim), 0 0 20px rgba(16,185,129,0.1);
-  background: rgba(0,0,0,0.4);
-}
-.form-control::placeholder { color: var(--text-muted); }
-.form-label {
-  display: block; margin-bottom: 8px;
-  font-size: 12.5px; font-weight: 550;
-  color: var(--text-secondary); letter-spacing: 0.03em;
-}
-
-/* ================= SIDEBAR ================= */
-.sidebar {
-  background: rgba(10, 15, 28, 0.85) !important;
-  backdrop-filter: blur(24px) !important;
-  -webkit-backdrop-filter: blur(24px) !important;
-  border-right: 1px solid var(--border) !important;
-  box-shadow: 4px 0 40px rgba(0,0,0,0.4);
-}
-.sidebar-overlay {
-  background: rgba(0,0,0,0.6) !important;
-  backdrop-filter: blur(4px);
-}
-
-/* ================= LANDING ================= */
-.landing-page {
-  position: relative; z-index: 1;
-  min-height: 100vh;
-  background: transparent;
-}
-.landing-hero {
-  text-align: center; padding: 80px 20px 60px;
-}
-.landing-logo {
-  width: 120px; height: 120px; border-radius: 50%;
-  border: 2px solid rgba(16,185,129,0.25);
-  box-shadow: 0 0 60px rgba(16,185,129,0.2), 0 20px 40px rgba(0,0,0,0.4);
-  margin-bottom: 28px; object-fit: cover;
-  animation: float 5s ease-in-out infinite;
-}
-.landing-title {
-  font-family: var(--font-display); font-size: 42px;
-  color: white; letter-spacing: 1px;
-  text-shadow: 0 0 40px rgba(16,185,129,0.25);
-  margin-bottom: 8px;
-}
-.landing-subtitle {
-  color: var(--text-secondary); font-size: 15px;
-  letter-spacing: 3px; text-transform: uppercase;
-}
-.landing-divider {
-  width: 60px; height: 3px; margin: 24px auto;
-  background: linear-gradient(90deg, transparent, var(--secondary), transparent);
-  border-radius: 2px;
-  box-shadow: 0 0 12px var(--secondary-glow);
-}
-
-.landing-info-card {
-  background: var(--surface) !important;
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-xl) !important;
-  transition: var(--transition);
-  position: relative; overflow: hidden;
-}
-.landing-info-card::before {
-  content: '';
-  position: absolute; top: 0; left: 0; right: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
-}
-.landing-info-card:hover {
-  transform: translateY(-6px);
-  border-color: rgba(16,185,129,0.25) !important;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.35), 0 0 30px rgba(16,185,129,0.08);
-}
-
-.landing-info-icon {
-  width: 52px; height: 52px; border-radius: 14px;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 20px; margin-bottom: 16px;
-  box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-}
-.landing-info-icon.blue { background: linear-gradient(135deg, #1e40af, #3b82f6); }
-.landing-info-icon.green { background: linear-gradient(135deg, #047857, #10b981); box-shadow: 0 8px 20px rgba(16,185,129,0.3); }
-.landing-info-icon.purple { background: linear-gradient(135deg, #6d28d9, #8b5cf6); }
-.landing-info-icon.orange { background: linear-gradient(135deg, #b45309, #f59e0b); }
-
-/* ================= LOGIN BUTTON ================= */
-.login-corner-btn {
-  position: fixed; top: 24px; right: 24px; z-index: 100;
-  width: 52px; height: 52px; border-radius: 16px;
-  background: var(--surface);
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border);
-  color: var(--secondary-light);
-  font-size: 18px; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  transition: var(--transition);
-  box-shadow: var(--shadow-md);
-}
-.login-corner-btn:hover {
-  transform: scale(1.08);
-  border-color: var(--secondary);
-  box-shadow: 0 0 30px var(--secondary-glow), var(--shadow-lg);
-  color: white;
-  background: var(--secondary-dim);
-}
-
-/* ================= MODAL AUTH ================= */
-.modal-auth, .modal {
-  background: rgba(3, 7, 18, 0.75) !important;
-  backdrop-filter: blur(12px) !important;
-}
-.auth-form, .modal-content {
-  background: rgba(17, 24, 39, 0.9) !important;
-  backdrop-filter: blur(24px) !important;
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-2xl) !important;
-  box-shadow: 0 25px 60px rgba(0,0,0,0.5), 0 0 40px rgba(16,185,129,0.06) !important;
-}
-
-/* ================= TABLES ================= */
-table {
-  width: 100%; border-collapse: collapse;
-}
-th {
-  background: rgba(0,0,0,0.3);
-  color: var(--text-secondary);
-  font-size: 11.5px; font-weight: 600;
-  text-transform: uppercase; letter-spacing: 0.06em;
-  padding: 14px 16px; text-align: left;
-  border-bottom: 1px solid var(--border);
-}
-td {
-  padding: 14px 16px;
-  border-bottom: 1px solid var(--border-light);
-  font-size: 13.5px; color: var(--text);
-}
-tr:hover td {
-  background: rgba(16,185,129,0.04);
-}
-
-/* ================= NOTIFICATIONS ================= */
-.notification {
-  background: rgba(17, 24, 39, 0.95) !important;
-  backdrop-filter: blur(20px);
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-lg) !important;
-  box-shadow: var(--shadow-lg) !important;
-}
-
-/* ================= LOADING ================= */
-.loading-overlay {
-  background: rgba(3, 7, 18, 0.7) !important;
-  backdrop-filter: blur(8px) !important;
-}
-.loading-spinner {
-  border: 3px solid rgba(16,185,129,0.15) !important;
-  border-top-color: var(--secondary) !important;
-  box-shadow: 0 0 20px var(--secondary-glow);
-}
-
-/* ================= BADGES & STATS ================= */
-.stat-card, .badge-card {
-  background: var(--surface) !important;
-  backdrop-filter: blur(16px);
-  border: 1px solid var(--border) !important;
-  border-radius: var(--radius-xl) !important;
-  transition: var(--transition);
-}
-.stat-card:hover {
-  border-color: rgba(16,185,129,0.25) !important;
-  transform: translateY(-3px);
-  box-shadow: 0 12px 32px rgba(0,0,0,0.3), 0 0 20px rgba(16,185,129,0.08);
-}
-
-/* ================= SCROLLBAR ================= */
-::-webkit-scrollbar { width: 8px; height: 8px; }
-::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
-  border-radius: 4px;
-}
-::-webkit-scrollbar-thumb:hover { background: rgba(16,185,129,0.4); }
-
-/* ================= RESPONSIVE ================= */
-@media (max-width: 768px) {
-  .landing-title { font-size: 32px; }
-  .card { padding: 20px; border-radius: var(--radius-lg); }
-  .login-corner-btn { top: 16px; right: 16px; width: 46px; height: 46px; }
-}
-
-/* Utility */
-.container { width: 100%; max-width: 1400px; margin: 0 auto; padding: 20px; position: relative; z-index: 1; }
-.hidden { display: none !important; }
-
-/* === STRUCTURAL LAYOUT (adapted to dark theme) === */
+    /* ============================================
+       TOPBAR
+    ============================================ */
+    .topbar {
+      position: fixed; top: 0; left: 0; right: 0;
+      height: 58px; background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 20px; z-index: 900;
+    }
+    .topbar-left {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .topbar-toggle {
+      width: 38px; height: 38px; border-radius: 8px;
+      background: var(--bg); border: 1px solid var(--border);
+      color: var(--text-secondary); cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 16px; transition: var(--transition);
+    }
+    .topbar-toggle:hover { background: var(--border-light); color: var(--text); }
+    .topbar-brand {
+      display: flex; align-items: center; gap: 10px;
+    }
+    .topbar-brand img {
+      width: 32px; height: 32px; border-radius: 8px; object-fit: cover;
+    }
+    .topbar-brand h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 17px; font-weight: 700; color: var(--primary);
+    }
+    .topbar-center {
+      display: flex; gap: 8px; align-items: center;
+    }
+    .topbar-badge {
+      display: flex; align-items: center; gap: 6px;
+      padding: 6px 14px; background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 20px; font-size: 12px;
+      font-weight: 500; color: var(--text-secondary);
+      white-space: nowrap;
+    }
+    .topbar-badge i { font-size: 12px; }
+    .topbar-badge.danger { color: var(--danger); border-color: rgba(220,38,38,0.15); background: rgba(220,38,38,0.04); }
+    .topbar-badge.success { color: var(--success); border-color: rgba(5,150,105,0.15); background: rgba(5,150,105,0.04); }
+    .topbar-badge.warning { color: var(--warning); border-color: rgba(217,119,6,0.15); background: rgba(217,119,6,0.04); }
+    .topbar-right { display: flex; align-items: center; gap: 10px; position: relative; }
+    .user-avatar {
+      width: 36px; height: 36px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--secondary), var(--secondary-light));
+      color: white; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 12px; cursor: pointer;
       transition: var(--transition); user-select: none;
     }
     .user-avatar:hover { transform: scale(1.05); box-shadow: 0 2px 8px rgba(5,150,105,0.3); }
@@ -2026,7 +1811,7 @@ tr:hover td {
       color: var(--secondary);
     }    
 
-  </style>
+    </style>
 </head>
 <body>
   <!-- Splash Screen -->
@@ -3628,275 +3413,51 @@ tr:hover td {
         <button class="btn btn-light" onclick="cerrarModalPagarCE()">Cancelar</button>
       </div>
     </div>
+  </div>  
+  <!-- Scripts -->
   <script>
-// =====================================================
-// PARCHE FRONTEND - Autenticación con Token + Shim seguro
-// Reemplaza la sección de CONFIGURACIÓN API y SHIM
-// =====================================================
 
-const API_URL = 'https://script.google.com/macros/s/AKfycbxcMTM9Bk-0kdNdzLoiRHcW0fTiiU9yGNP-6JCxxYZpdMuzO1tkRUnr1EJEsgCHBN4/exec';
-
-const state = {
-  usuario: '',
-  rol: '',
-  apartamento: '',
-  esAdmin: false,
-  token: null,                    // ← NUEVO
-  filtroInicio: null,
-  filtroFin: null,
-  seccionActual: 'bienvenida',
-  estadisticasCache: null,
-  estadisticasCargando: false,
-  cache: { ingresos: null, egresos: null, solicitudes: null, activos: null },
-  resumenAllData: null,
-  selectedYear: null,
-  selectedMonth: null,
-  multaFilaPendiente: null
-};
-
-// Restaurar token al cargar
-(function restoreSession() {
-  try {
-    const saved = sessionStorage.getItem('claret_session');
-    if (saved) {
-      const data = JSON.parse(saved);
-      if (data.token && data.exp > Date.now()) {
-        state.token = data.token;
-        state.usuario = data.usuario || '';
-        state.rol = data.rol || '';
-        state.apartamento = data.apartamento || '';
-        state.esAdmin = data.rol === 'admin';
-      } else {
-        sessionStorage.removeItem('claret_session');
-      }
-    }
-  } catch(e) {}
-})();
-
-function saveSession(token, usuario, rol, apartamento) {
-  state.token = token;
-  state.usuario = usuario;
-  state.rol = rol;
-  state.apartamento = apartamento || '';
-  state.esAdmin = rol === 'admin';
-  sessionStorage.setItem('claret_session', JSON.stringify({
-    token, usuario, rol, apartamento,
-    exp: Date.now() + (7.5 * 60 * 60 * 1000) // 7.5h
-  }));
-}
-
-function clearSession() {
-  state.token = null;
-  state.usuario = '';
-  state.rol = '';
-  state.apartamento = '';
-  state.esAdmin = false;
-  sessionStorage.removeItem('claret_session');
-}
-
-// ========== SHIM MEJORADO (envía token siempre) ==========
-(function() {
-  if (typeof google === 'undefined') window.google = {};
-  if (!google.script) google.script = {};
-  if (!google.script.run) google.script.run = {};
-
-  var GAS_URL = API_URL;
-
-  function createCallableProxy(successCb, failureCb) {
-    return new Proxy({}, {
-      get: function(target, prop) {
-        if (prop === 'withFailureHandler') {
-          return function(fn) {
-            return createCallableProxy(successCb, fn);
-          };
-        }
-        return function() {
-          var args = Array.prototype.slice.call(arguments);
-          var payload = {
-            funcion: prop,
-            argumentos: args,
-            token: state.token || null          // ← SIEMPRE se envía
-          };
-
-          fetch(GAS_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-            body: JSON.stringify(payload)
-          })
-          .then(function(r) {
-            if (!r.ok) throw new Error('HTTP ' + r.status);
-            return r.text();
-          })
-          .then(function(text) {
-            var data;
-            try { data = JSON.parse(text); } catch(e) { data = text; }
-
-            // Si el backend responde 401 → forzar logout
-            if (data && (data.code === 401 || (data.message && data.message.indexOf('Sesión inválida') !== -1))) {
-              // Evitar bucle: solo limpiar sesión y volver a landing, sin reload infinito
-              clearSession();
-              var dash = document.getElementById('dashboard');
-              var landing = document.getElementById('landingPage');
-              if (dash && !dash.classList.contains('hidden')) {
-                dash.classList.add('hidden');
-                document.documentElement.classList.remove('dashboard-active');
-                document.body.classList.remove('dashboard-active');
-                if (landing) {
-                  landing.classList.remove('hidden');
-                  landing.style.opacity = '1';
-                }
-                var btn = document.querySelector('.login-corner-btn');
-                if (btn) btn.style.display = 'flex';
-                mostrarNotificacion('Sesión expirada', 'Vuelve a iniciar sesión', 'warning');
-              }
-              // Si ya estamos en landing, ignorar el 401 (llamada prematura sin login)
-              return;
-            }
-
-            if (successCb) successCb(data);
-          })
-          .catch(function(err) {
-            var errMsg = err.message || String(err);
-            if (failureCb) failureCb({ message: errMsg });
-            else if (successCb) successCb({ status: 'error', message: errMsg });
-          });
-        };
-      }
-    });
-  }
-
-  google.script.run.withSuccessHandler = function(fn) {
-    return createCallableProxy(fn, null);
-  };
-})();
-
-function llamarGS(funcion, params, successCb, errorCb) {
-  var cb = successCb || function() {};
-  var errCb = errorCb || function(e) {
-    var msg = (e && e.message) ? e.message : (typeof e === 'string' ? e : 'Error de conexión');
-    console.error('Error llamarGS [' + funcion + ']:', msg);
-    ocultarLoading();
-    mostrarNotificacion('Error', msg, 'error');
-  };
-  var handler = google.script.run.withSuccessHandler(cb).withFailureHandler(errCb);
-  var fn = handler[funcion];
-  if (typeof fn === 'function') {
-    fn.apply(null, params || []);
-  }
-}
-
-// ========== LOGIN ADMIN MEJORADO ==========
-function validarLogin() {
-  var usuario = document.getElementById('usuario').value.trim();
-  var contrasena = document.getElementById('contrasena').value.trim();
-
-  if (!usuario || !contrasena) {
-    mostrarNotificacion('Error', 'Completa todos los campos', 'error');
-    return;
-  }
-
-  mostrarLoading('Validando credenciales...');
-
-  llamarGS('validarCredenciales', [usuario, contrasena], function(res) {
-    ocultarLoading();
-    if (res.status === 'success' && res.token) {
-      saveSession(res.token, usuario, 'admin', null);
-
-      document.getElementById('modalAuth').classList.remove('active');
-      document.getElementById('landingPage').classList.add('hidden');
-      document.querySelector('.login-corner-btn').style.display = 'none';
-      document.getElementById('dashboard').classList.remove('hidden');
-      document.documentElement.classList.add('dashboard-active');
-      document.body.classList.add('dashboard-active');
-
-      document.getElementById('userRole').textContent = 'Administrador';
-      document.getElementById('dropdownUserName').textContent = usuario;
-      document.getElementById('dropdownUserRole').textContent = 'Administrador';
-      document.getElementById('userAvatarBtn').textContent = 'AD';
-
-      document.getElementById('badgeMora').style.display = 'flex';
-      document.getElementById('badgePendientes').style.display = 'flex';
-      document.getElementById('badgeMultas').style.display = 'flex';
-      document.getElementById('badgePagoResidente').style.display = 'none';
-      document.getElementById('paymentSection').style.display = 'none';
-
-      document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = ''; });
-
-      mostrarNotificacion('Éxito', 'Bienvenido, ' + (res.nombre || usuario), 'success');
-      closeSidebar();
-      mostrarSeccion('bienvenida');
-    } else {
-      mostrarNotificacion('Error', res.message || 'Credenciales incorrectas', 'error');
-    }
-  });
-}
-
-// ========== SELECCIÓN DE APARTAMENTO (ahora con token) ==========
-function seleccionarApartamento(apt) {
-  mostrarLoading('Generando sesión segura...');
-
-  llamarGS('generarTokenResidente', [apt], function(res) {
-    ocultarLoading();
-
-    if (res.status !== 'success' || !res.token) {
-      mostrarNotificacion('Error', res.message || 'No se pudo iniciar sesión', 'error');
-      return;
-    }
-
-    saveSession(res.token, 'apto_' + apt, 'residente', apt);
-
-    document.getElementById('modalAuth').classList.remove('active');
-    document.getElementById('landingPage').classList.add('hidden');
-    document.querySelector('.login-corner-btn').style.display = 'none';
-    document.getElementById('dashboard').classList.remove('hidden');
-    document.documentElement.classList.add('dashboard-active');
-    document.body.classList.add('dashboard-active');
-
-    document.getElementById('userRole').textContent = 'Residente - Apto ' + apt;
-    document.getElementById('userApartment').textContent = apt;
-    document.getElementById('dropdownUserName').textContent = 'Apartamento ' + apt;
-    document.getElementById('dropdownUserRole').textContent = 'Residente';
-    document.getElementById('userAvatarBtn').textContent = apt;
-
-    document.getElementById('badgeMora').style.display = 'none';
-    document.getElementById('badgePendientes').style.display = 'none';
-    document.getElementById('badgePagoResidente').style.display = 'flex';
-
-    document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
-
-    closeSidebar();
-    mostrarLoading('Cargando datos del apartamento...');
-    cargarDatosResidente(function() {
-      ocultarLoading();
-      mostrarSeccion('bienvenida');
-    });
-  });
-}
-
-// ========== CERRAR SESIÓN ==========
-function cerrarSesion() {
-  document.getElementById('userDropdown').classList.remove('active');
-  clearSession();
-
-  document.getElementById('dashboard').classList.add('hidden');
-  document.documentElement.classList.remove('dashboard-active');
-  document.body.classList.remove('dashboard-active');
-
-  document.getElementById('landingPage').classList.remove('hidden');
-  document.getElementById('landingPage').style.opacity = '1';
-  document.querySelector('.login-corner-btn').style.display = 'flex';
-  document.getElementById('usuario').value = '';
-  document.getElementById('contrasena').value = '';
-  document.getElementById('paymentSection').style.display = '';
-
-  closeSidebar();
-  mostrarNotificacion('Info', 'Sesión cerrada correctamente', 'info');
+function escapeHtml(str) {
+  if (str === null || str === undefined) return '';
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
 }
 
     // ============================================
+    // CONFIGURACIÓN API
+    // ============================================
+    const API_URL = 'https://script.google.com/macros/s/AKfycbxcMTM9Bk-0kdNdzLoiRHcW0fTiiU9yGNP-6JCxxYZpdMuzO1tkRUnr1EJEsgCHBN4/exec';
+
+    // ============================================
+    // ESTADO GLOBAL
+    // ============================================
+    const state = {
+      usuario: '',
+      rol: '',
+      apartamento: '',
+      esAdmin: false,
+      filtroInicio: null,
+      filtroFin: null,
+      seccionActual: 'bienvenida',
+      estadisticasCache: null,
+      estadisticasCargando: false,
+      cache: { ingresos: null, egresos: null, solicitudes: null, activos: null },
+      resumenAllData: null,
+      selectedYear: null,
+      selectedMonth: null,
+      multaFilaPendiente: null
+    };
+
     const APARTAMENTOS = ['201','202','203','204','301','302','303','304','401','402','403','404','501','502','503','504'];
 
     // ========== COEFICIENTES DE COPROPIEDAD ==========
+    // CAMBIA estos valores por los coeficientes REALES de tu edificio.
+    // La suma de todos debe ser 100.
+    // Si no los conoces, deja los 6.25 (iguales para los 16 apartamentos).
     const COEFICIENTES = {
       '201': 6.25, '202': 6.25, '203': 6.25, '204': 6.25,
       '301': 6.25, '302': 6.25, '303': 6.25, '304': 6.25,
@@ -3954,6 +3515,7 @@ function cerrarSesion() {
 
     function togglePassword(id) { var el = document.getElementById(id); el.type = el.type === 'password' ? 'text' : 'password'; }
 
+    // Close dropdowns on outside click
     document.addEventListener('click', function(e) {
       var dropdown = document.getElementById('userDropdown');
       var avatarBtn = document.getElementById('userAvatarBtn');
@@ -3961,6 +3523,122 @@ function cerrarSesion() {
         dropdown.classList.remove('active');
       }
     });
+
+
+
+    // ============================================
+    
+// === SEGURIDAD: SHIM SEGURO CON TOKEN ===
+var GAS_URL = API_URL;
+
+var google = {
+  script: {
+    run: {
+      keepAlive: function() {},
+      _shim: true
+    }
+  }
+};
+
+(function() {
+  function createCallableProxy(successCb, failureCb) {
+    return new Proxy({}, {
+      get: function(target, prop) {
+        if (prop === 'withFailureHandler') {
+          return function(fn) {
+            return createCallableProxy(successCb, fn);
+          };
+        }
+        return function() {
+          var args = Array.prototype.slice.call(arguments);
+          var token = sessionStorage.getItem('claret_token') || null;
+
+          var payload = JSON.stringify({
+            funcion: prop,
+            argumentos: args,
+            token: token
+          });
+
+          fetch(GAS_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+            body: payload
+          })
+          .then(function(r) {
+            if (!r.ok) throw new Error('HTTP ' + r.status);
+            return r.text();
+          })
+          .then(function(text) {
+            var data;
+            try { data = JSON.parse(text); } catch (e) {
+              data = { status: 'error', message: 'Respuesta inválida del servidor' };
+            }
+
+            if (data && (data.code === 401 || (data.status === 'error' && data.message && data.message.indexOf('Sesión') !== -1))) {
+              sessionStorage.removeItem('claret_token');
+              sessionStorage.removeItem('claret_rol');
+              sessionStorage.removeItem('claret_apto');
+              sessionStorage.removeItem('claret_usuario');
+              mostrarNotificacion('Sesión expirada', 'Vuelve a iniciar sesión', 'warning');
+              setTimeout(function() {
+                try { cerrarSesion(); } catch (e) { location.reload(); }
+              }, 1200);
+              return;
+            }
+
+            if (successCb) successCb(data);
+          })
+          .catch(function(err) {
+            var errMsg = err.message || String(err);
+            if (failureCb) failureCb({ message: errMsg });
+            else if (successCb) successCb({ status: 'error', message: errMsg });
+          });
+        };
+      }
+    });
+  }
+
+  google.script.run.withSuccessHandler = function(fn) {
+    return createCallableProxy(fn, null);
+  };
+})();
+
+
+    // llamarGS usa el SHIM internamente
+    function llamarGS(funcion, params, successCb, errorCb) {
+      var cb = successCb || function() {};
+      var errCb = errorCb || function(e) {
+        var msg = (e && e.message) ? e.message : (typeof e === 'string' ? e : 'Error de conexión');
+        console.error('Error llamarGS [' + funcion + ']:', msg);
+        ocultarLoading();
+        mostrarNotificacion('Error', msg, 'error');
+      };
+      var handler = google.script.run.withSuccessHandler(cb).withFailureHandler(errCb);
+      var fn = handler[funcion];
+      if (typeof fn === 'function') {
+        fn.apply(null, params || []);
+      }
+    }
+
+    // ============================================
+    // NAVEGACIÓN (MODAL AUTH)
+    // ============================================
+    function mostrarAuthPanel(panelId) {
+      ['authChoice', 'authAdminLogin', 'authResidenteSelect'].forEach(function(id) {
+        document.getElementById(id).style.display = id === panelId ? 'block' : 'none';
+      });
+    }
+
+    function cerrarModalAuth() {
+      document.getElementById('modalAuth').classList.remove('active');
+      document.getElementById('landingPage').style.opacity = '1';
+      document.querySelector('.login-corner-btn').style.display = 'flex';
+      mostrarAuthPanel('authChoice');
+      var u = document.getElementById('usuario');
+      var c = document.getElementById('contrasena');
+      if (u) u.value = '';
+      if (c) c.value = '';
+    }
 
     function irALogin() {
       document.getElementById('landingPage').style.opacity = '0.3';
@@ -3973,12 +3651,184 @@ function cerrarSesion() {
     function irResidentes() { mostrarAuthPanel('authResidenteSelect'); }
     function volverMenuPrincipal() { mostrarAuthPanel('authChoice'); }
 
-    function mostrarAuthPanel(panelId) {
-      ['authChoice', 'authAdminLogin', 'authResidenteSelect'].forEach(function(id) {
-        var el = document.getElementById(id);
-        if (el) el.style.display = id === panelId ? 'block' : 'none';
+    function seleccionarApartamento(apt) {
+      state.apartamento = apt;
+      state.esAdmin = false;
+      state.rol = 'Residente';
+
+      document.getElementById('modalAuth').classList.remove('active');
+      document.getElementById('landingPage').classList.add('hidden');
+      document.querySelector('.login-corner-btn').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.documentElement.classList.add('dashboard-active');
+      document.body.classList.add('dashboard-active');
+
+      // Update UI elements
+      document.getElementById('userRole').textContent = 'Residente - Apto ' + apt;
+      document.getElementById('userApartment').textContent = apt;
+      document.getElementById('dropdownUserName').textContent = 'Apartamento ' + apt;
+      document.getElementById('dropdownUserRole').textContent = 'Residente';
+
+      // Update avatar
+      document.getElementById('userAvatarBtn').textContent = apt;
+
+      // Show/hide badges
+      document.getElementById('badgeMora').style.display = 'none';
+      document.getElementById('badgePendientes').style.display = 'none';
+      document.getElementById('badgePagoResidente').style.display = 'flex';
+
+      document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
+      document.querySelectorAll('.apartment-btn').forEach(function(b) { b.classList.remove('selected'); });
+      if (event && event.target) event.target.classList.add('selected');
+
+      // Hide payment banner for residents if not needed (we keep it)
+      closeSidebar();
+      mostrarLoading('Cargando datos del apartamento...');
+      cargarDatosResidente(function() {
+        ocultarLoading();
       });
+      if (state.estadisticasCargando && !state.estadisticasCache) {
+        mostrarLoading('Cargando datos...');
+        state.estadisticasReadyCallback = function() {
+          ocultarLoading();
+          mostrarSeccion('bienvenida');
+        };
+      } else {
+        mostrarSeccion('bienvenida');
+      }
     }
+
+    function validarLogin() {
+  var usuario = document.getElementById('usuario').value.trim();
+  var contrasena = document.getElementById('contrasena').value.trim();
+
+  if (!usuario || !contrasena) {
+    mostrarNotificacion('Error', 'Completa todos los campos', 'error');
+    return;
+  }
+
+  mostrarLoading('Validando...');
+
+  llamarGS('validarCredenciales', [usuario, contrasena], function(res) {
+    ocultarLoading();
+    if (res && res.status === 'success' && res.token) {
+      sessionStorage.setItem('claret_token', res.token);
+      sessionStorage.setItem('claret_rol', 'admin');
+      sessionStorage.setItem('claret_usuario', usuario);
+
+      state.usuario = usuario;
+      state.esAdmin = true;
+      state.rol = 'Administrador';
+      state.apartamento = '';
+
+      document.getElementById('modalAuth').classList.remove('active');
+      document.getElementById('landingPage').classList.add('hidden');
+      document.querySelector('.login-corner-btn').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.documentElement.classList.add('dashboard-active');
+      document.body.classList.add('dashboard-active');
+
+      document.getElementById('userRole').textContent = 'Administrador';
+      document.getElementById('dropdownUserName').textContent = escapeHtml(usuario);
+      document.getElementById('dropdownUserRole').textContent = 'Administrador';
+      document.getElementById('userAvatarBtn').textContent = 'AD';
+
+      document.getElementById('badgeMora').style.display = 'flex';
+      document.getElementById('badgePendientes').style.display = 'flex';
+      document.getElementById('badgeMultas').style.display = 'flex';
+      document.getElementById('badgePagoResidente').style.display = 'none';
+      document.getElementById('paymentSection').style.display = 'none';
+
+      document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = ''; });
+
+      mostrarNotificacion('Éxito', 'Bienvenido', 'success');
+      closeSidebar();
+      mostrarSeccion('bienvenida');
+    } else {
+      mostrarNotificacion('Error', (res && res.message) || 'Credenciales incorrectas', 'error');
+    }
+  });
+}
+
+    function cerrarSesion() {
+  sessionStorage.removeItem('claret_token');
+  sessionStorage.removeItem('claret_rol');
+  sessionStorage.removeItem('claret_apto');
+  sessionStorage.removeItem('claret_usuario');
+
+  document.getElementById('userDropdown').classList.remove('active');
+  Object.assign(state, { usuario: '', rol: '', apartamento: '', esAdmin: false });
+
+  document.getElementById('dashboard').classList.add('hidden');
+  document.documentElement.classList.remove('dashboard-active');
+  document.body.classList.remove('dashboard-active');
+
+  document.getElementById('landingPage').classList.remove('hidden');
+  document.getElementById('landingPage').style.opacity = '1';
+  document.querySelector('.login-corner-btn').style.display = 'flex';
+
+  var u = document.getElementById('usuario');
+  var c = document.getElementById('contrasena');
+  if (u) u.value = '';
+  if (c) c.value = '';
+
+  document.getElementById('paymentSection').style.display = '';
+  closeSidebar();
+  mostrarNotificacion('Info', 'Sesión cerrada', 'info');
+}
+
+
+function validarLoginResidente(apartamento, pin) {
+  apartamento = String(apartamento || '').trim();
+  pin = String(pin || '').trim();
+
+  if (!apartamento || !pin) {
+    mostrarNotificacion('Error', 'Selecciona apartamento e ingresa el PIN', 'error');
+    return;
+  }
+
+  mostrarLoading('Validando PIN...');
+
+  llamarGS('validarResidente', [apartamento, pin], function(res) {
+    ocultarLoading();
+    if (res && res.status === 'success' && res.token) {
+      sessionStorage.setItem('claret_token', res.token);
+      sessionStorage.setItem('claret_rol', 'residente');
+      sessionStorage.setItem('claret_apto', apartamento);
+
+      state.apartamento = apartamento;
+      state.esAdmin = false;
+      state.rol = 'Residente';
+
+      document.getElementById('modalAuth').classList.remove('active');
+      document.getElementById('landingPage').classList.add('hidden');
+      document.querySelector('.login-corner-btn').style.display = 'none';
+      document.getElementById('dashboard').classList.remove('hidden');
+      document.documentElement.classList.add('dashboard-active');
+      document.body.classList.add('dashboard-active');
+
+      document.getElementById('userRole').textContent = 'Residente - Apto ' + escapeHtml(apartamento);
+      document.getElementById('userApartment').textContent = escapeHtml(apartamento);
+      document.getElementById('dropdownUserName').textContent = 'Apartamento ' + escapeHtml(apartamento);
+      document.getElementById('dropdownUserRole').textContent = 'Residente';
+      document.getElementById('userAvatarBtn').textContent = escapeHtml(apartamento);
+
+      document.getElementById('badgeMora').style.display = 'none';
+      document.getElementById('badgePendientes').style.display = 'none';
+      document.getElementById('badgePagoResidente').style.display = 'flex';
+
+      document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
+
+      mostrarNotificacion('Éxito', 'Bienvenido - Apto ' + apartamento, 'success');
+      closeSidebar();
+      mostrarSeccion('bienvenida');
+      if (typeof cargarDatosResidente === 'function') cargarDatosResidente();
+    } else {
+      mostrarNotificacion('Error', (res && res.message) || 'PIN incorrecto', 'error');
+    }
+  });
+}
+
 
 
     // ============================================
@@ -4097,8 +3947,6 @@ function cerrarSesion() {
     }
 
     function precargarEstadisticas() {
-      // Solo precargar si hay sesión de admin (requiere token)
-      if (!state.token || !state.esAdmin) return;
       if (state.estadisticasCargando || state.estadisticasCache) return;
       state.estadisticasCargando = true;
       llamarGS('obtenerEstadisticasDashboard', [], function(est) {
