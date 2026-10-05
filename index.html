@@ -3769,13 +3769,15 @@ function abrirModalCambioPinObligatorio(apartamento, pinActual) {
   state.pinActualTemporal = pinActual;
   var modal = document.getElementById('modalCambioPinObligatorio');
   if (modal) {
-    document.getElementById('nuevoPinOblig').value = '';
-    document.getElementById('confirmarPinOblig').value = '';
+    var n1 = document.getElementById('nuevoPinOblig');
+    var n2 = document.getElementById('confirmarPinOblig');
+    if (n1) n1.value = '';
+    if (n2) n2.value = '';
     var label = document.getElementById('cambioPinAptoLabel');
     if (label) label.textContent = 'Apartamento ' + apartamento;
     modal.classList.add('active');
+    setTimeout(function() { if (n1) n1.focus(); }, 200);
   } else {
-    // Fallback con prompts
     var nuevo = prompt('Es tu primer acceso. Elige un NUEVO PIN (mín. 3 caracteres, distinto al número del apto):');
     if (!nuevo) {
       mostrarNotificacion('Error', 'Debes cambiar el PIN para continuar', 'error');
@@ -3914,8 +3916,9 @@ function validarLoginResidente(apartamento, pin) {
 
       document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
 
-      // Si es el primer acceso, forzar cambio de PIN
-      if (res.mustChangePin) {
+      // Primer acceso: si el backend lo indica O si el PIN es el número del apto
+      var forzarCambio = res.mustChangePin || (String(pin) === String(apartamento));
+      if (forzarCambio) {
         mostrarNotificacion('Importante', 'Debes cambiar tu PIN antes de continuar', 'warning');
         abrirModalCambioPinObligatorio(apartamento, pin);
         return;
@@ -3960,7 +3963,14 @@ function validarLoginResidente(apartamento, pin) {
       closeSidebar();
 
       var cargadores = {
-        bienvenida: actualizarEstadisticas,
+        bienvenida: function() {
+          if (state.esAdmin) {
+            actualizarEstadisticas();
+          } else if (state.apartamento) {
+            mostrarLoading('Cargando datos...');
+            cargarDatosResidente(function() { ocultarLoading(); });
+          }
+        },
         resumen: cargarResumen,
         ingresos: cargarIngresos,
         egresos: cargarEgresos,
@@ -4108,6 +4118,11 @@ function validarLoginResidente(apartamento, pin) {
     }
 
     function actualizarEstadisticas() {
+      // Residentes no tienen acceso a estadísticas globales de admin
+      if (!state.esAdmin) {
+        ocultarLoading();
+        return;
+      }
       if (state.estadisticasCache) {
         aplicarEstadisticas(state.estadisticasCache);
         ocultarLoading();
@@ -7696,12 +7711,12 @@ function validarLoginResidente(apartamento, pin) {
   </script>
 
   <!-- Modal Cambio PIN Obligatorio (primer acceso) -->
-  <div class="modal-overlay" id="modalCambioPinObligatorio">
-    <div class="modal" style="max-width:420px;">
+  <div id="modalCambioPinObligatorio" class="modal">
+    <div class="modal-content" style="max-width:420px;">
       <div class="modal-header">
         <h3 class="modal-title"><i class="fas fa-key" style="margin-right:8px;"></i>Cambia tu PIN</h3>
       </div>
-      <div class="modal-body">
+      <div class="modal-body" style="padding:20px;">
         <p style="margin-bottom:12px;color:var(--text-secondary);font-size:14px;">
           Es tu <strong>primer acceso</strong>. Por seguridad debes crear un PIN nuevo.
         </p>
@@ -7719,7 +7734,7 @@ function validarLoginResidente(apartamento, pin) {
           No uses el número del apartamento como PIN.
         </p>
       </div>
-      <div class="modal-footer" style="display:flex;gap:8px;justify-content:flex-end;">
+      <div class="modal-footer" style="padding:16px 20px;display:flex;gap:8px;justify-content:flex-end;">
         <button class="btn btn-primary" onclick="confirmarCambioPinObligatorio()">
           <i class="fas fa-save"></i> Guardar y continuar
         </button>
