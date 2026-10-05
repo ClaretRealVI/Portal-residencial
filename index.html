@@ -3733,9 +3733,23 @@ function clearSession() {
 
             // Si el backend responde 401 → forzar logout
             if (data && (data.code === 401 || (data.message && data.message.indexOf('Sesión inválida') !== -1))) {
+              // Evitar bucle: solo limpiar sesión y volver a landing, sin reload infinito
               clearSession();
-              mostrarNotificacion('Sesión expirada', 'Vuelve a iniciar sesión', 'warning');
-              setTimeout(function() { location.reload(); }, 1800);
+              var dash = document.getElementById('dashboard');
+              var landing = document.getElementById('landingPage');
+              if (dash && !dash.classList.contains('hidden')) {
+                dash.classList.add('hidden');
+                document.documentElement.classList.remove('dashboard-active');
+                document.body.classList.remove('dashboard-active');
+                if (landing) {
+                  landing.classList.remove('hidden');
+                  landing.style.opacity = '1';
+                }
+                var btn = document.querySelector('.login-corner-btn');
+                if (btn) btn.style.display = 'flex';
+                mostrarNotificacion('Sesión expirada', 'Vuelve a iniciar sesión', 'warning');
+              }
+              // Si ya estamos en landing, ignorar el 401 (llamada prematura sin login)
               return;
             }
 
@@ -4083,6 +4097,8 @@ function cerrarSesion() {
     }
 
     function precargarEstadisticas() {
+      // Solo precargar si hay sesión de admin (requiere token)
+      if (!state.token || !state.esAdmin) return;
       if (state.estadisticasCargando || state.estadisticasCache) return;
       state.estadisticasCargando = true;
       llamarGS('obtenerEstadisticasDashboard', [], function(est) {
