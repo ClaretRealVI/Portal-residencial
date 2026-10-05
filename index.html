@@ -3762,7 +3762,89 @@ var google = {
   });
 }
 
-    function cerrarSesion() {
+    
+
+function abrirModalCambioPinObligatorio(apartamento, pinActual) {
+  state.apartamento = apartamento;
+  state.pinActualTemporal = pinActual;
+  var modal = document.getElementById('modalCambioPinObligatorio');
+  if (modal) {
+    document.getElementById('nuevoPinOblig').value = '';
+    document.getElementById('confirmarPinOblig').value = '';
+    var label = document.getElementById('cambioPinAptoLabel');
+    if (label) label.textContent = 'Apartamento ' + apartamento;
+    modal.classList.add('active');
+  } else {
+    // Fallback con prompts
+    var nuevo = prompt('Es tu primer acceso. Elige un NUEVO PIN (mín. 3 caracteres, distinto al número del apto):');
+    if (!nuevo) {
+      mostrarNotificacion('Error', 'Debes cambiar el PIN para continuar', 'error');
+      cerrarSesion();
+      return;
+    }
+    var conf = prompt('Confirma el nuevo PIN:');
+    if (nuevo !== conf) {
+      mostrarNotificacion('Error', 'Los PIN no coinciden', 'error');
+      cerrarSesion();
+      return;
+    }
+    confirmarCambioPinObligatorio(nuevo);
+  }
+}
+
+function confirmarCambioPinObligatorio(pinNuevoManual) {
+  var pinNuevo = pinNuevoManual;
+  var pinConf = pinNuevoManual;
+
+  if (!pinNuevoManual) {
+    pinNuevo = (document.getElementById('nuevoPinOblig') || {}).value || '';
+    pinConf = (document.getElementById('confirmarPinOblig') || {}).value || '';
+  }
+
+  pinNuevo = String(pinNuevo).trim();
+  pinConf = String(pinConf).trim();
+
+  if (pinNuevo.length < 3) {
+    mostrarNotificacion('Error', 'El PIN debe tener al menos 3 caracteres', 'error');
+    return;
+  }
+  if (pinNuevo !== pinConf) {
+    mostrarNotificacion('Error', 'Los PIN no coinciden', 'error');
+    return;
+  }
+  if (pinNuevo === state.apartamento) {
+    mostrarNotificacion('Error', 'No puedes usar el número del apartamento como PIN', 'error');
+    return;
+  }
+  if (pinNuevo === state.pinActualTemporal) {
+    mostrarNotificacion('Error', 'El nuevo PIN debe ser diferente al actual', 'error');
+    return;
+  }
+
+  mostrarLoading('Guardando nuevo PIN...');
+  llamarGS('actualizarPinResidente', [state.apartamento, state.pinActualTemporal, pinNuevo], function(res) {
+    ocultarLoading();
+    if (res && res.status === 'success') {
+      var modal = document.getElementById('modalCambioPinObligatorio');
+      if (modal) modal.classList.remove('active');
+      state.pinActualTemporal = null;
+      mostrarNotificacion('Éxito', 'PIN actualizado. Bienvenido', 'success');
+      closeSidebar();
+      mostrarSeccion('bienvenida');
+      if (typeof cargarDatosResidente === 'function') {
+        mostrarLoading('Cargando datos...');
+        cargarDatosResidente(function() { ocultarLoading(); });
+      }
+    } else {
+      mostrarNotificacion('Error', (res && res.message) || 'No se pudo cambiar el PIN', 'error');
+    }
+  }, function(err) {
+    ocultarLoading();
+    mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
+  });
+}
+
+function cerrarSesion() {
   sessionStorage.removeItem('claret_token');
   sessionStorage.removeItem('claret_rol');
   sessionStorage.removeItem('claret_apto');
@@ -3811,6 +3893,7 @@ function validarLoginResidente(apartamento, pin) {
       state.apartamento = apartamento;
       state.esAdmin = false;
       state.rol = 'Residente';
+      state.pinActualTemporal = pin; // para el cambio obligatorio
 
       document.getElementById('modalAuth').classList.remove('active');
       document.getElementById('landingPage').classList.add('hidden');
@@ -3831,13 +3914,26 @@ function validarLoginResidente(apartamento, pin) {
 
       document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
 
+      // Si es el primer acceso, forzar cambio de PIN
+      if (res.mustChangePin) {
+        mostrarNotificacion('Importante', 'Debes cambiar tu PIN antes de continuar', 'warning');
+        abrirModalCambioPinObligatorio(apartamento, pin);
+        return;
+      }
+
       mostrarNotificacion('Éxito', 'Bienvenido - Apto ' + apartamento, 'success');
       closeSidebar();
       mostrarSeccion('bienvenida');
-      if (typeof cargarDatosResidente === 'function') cargarDatosResidente();
+      if (typeof cargarDatosResidente === 'function') {
+        mostrarLoading('Cargando datos...');
+        cargarDatosResidente(function() { ocultarLoading(); });
+      }
     } else {
       mostrarNotificacion('Error', (res && res.message) || 'PIN incorrecto', 'error');
     }
+  }, function(err) {
+    ocultarLoading();
+    mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
   });
 }
 
@@ -4045,6 +4141,11 @@ function validarLoginResidente(apartamento, pin) {
     function cargarResumen() {
       mostrarLoading('Cargando resumen...');
       llamarGS('obtenerResumen', [null, null], function(data) {
+        if (!data || data.status === 'error') {
+          ocultarLoading();
+          mostrarNotificacion('Error', (data && data.message) || 'Error al cargar resumen', 'error');
+          return;
+        }
         state.resumenAllData = data;
 
         var ingresos = data.totalIngresos || 0;
@@ -4382,18 +4483,32 @@ function validarLoginResidente(apartamento, pin) {
     function cargarIngresos() {
       mostrarLoading('Cargando...');
       llamarGS('obtenerDatosingresos', [], function(data) {
+        ocultarLoading();
+        if (!data || data.status === 'error') {
+          mostrarNotificacion('Error', (data && data.message) || 'Error al cargar ingresos', 'error');
+          return;
+        }
         state.cache.ingresos = data;
         renderizarIngresos(filtrarPorFecha(data));
+      }, function(err) {
         ocultarLoading();
+        mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
       });
     }
 
     function cargarEgresos() {
       mostrarLoading('Cargando...');
       llamarGS('obtenerDatos', [], function(data) {
+        ocultarLoading();
+        if (!data || data.status === 'error') {
+          mostrarNotificacion('Error', (data && data.message) || 'Error al cargar egresos', 'error');
+          return;
+        }
         state.cache.egresos = data;
         renderizarEgresos(filtrarPorFecha(data));
+      }, function(err) {
         ocultarLoading();
+        mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
       });
     }
 
@@ -5738,6 +5853,11 @@ function validarLoginResidente(apartamento, pin) {
     function cargarMultas() {
       mostrarLoading("Cargando multas...");
       llamarGS("obtenerMultas", [], function(data) {
+        if (!data || data.status === 'error') {
+          ocultarLoading();
+          mostrarNotificacion('Error', (data && data.message) || 'Error al cargar multas', 'error');
+          return;
+        }
         ocultarLoading();
         renderizarMultas(data);
       });
@@ -7574,5 +7694,38 @@ function validarLoginResidente(apartamento, pin) {
 
     
   </script>
+
+  <!-- Modal Cambio PIN Obligatorio (primer acceso) -->
+  <div class="modal-overlay" id="modalCambioPinObligatorio">
+    <div class="modal" style="max-width:420px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-key" style="margin-right:8px;"></i>Cambia tu PIN</h3>
+      </div>
+      <div class="modal-body">
+        <p style="margin-bottom:12px;color:var(--text-secondary);font-size:14px;">
+          Es tu <strong>primer acceso</strong>. Por seguridad debes crear un PIN nuevo.
+        </p>
+        <p id="cambioPinAptoLabel" style="font-weight:600;margin-bottom:16px;"></p>
+        <div class="form-group">
+          <label class="form-label">Nuevo PIN</label>
+          <input type="password" id="nuevoPinOblig" class="form-control" placeholder="Mínimo 3 caracteres" maxlength="20">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Confirmar nuevo PIN</label>
+          <input type="password" id="confirmarPinOblig" class="form-control" placeholder="Repite el PIN" maxlength="20"
+            onkeydown="if(event.key==='Enter'){ confirmarCambioPinObligatorio(); }">
+        </div>
+        <p style="font-size:12px;color:var(--text-muted);margin-top:8px;">
+          No uses el número del apartamento como PIN.
+        </p>
+      </div>
+      <div class="modal-footer" style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn btn-primary" onclick="confirmarCambioPinObligatorio()">
+          <i class="fas fa-save"></i> Guardar y continuar
+        </button>
+      </div>
+    </div>
+  </div>
+
 </body>
 </html>
