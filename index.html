@@ -1964,6 +1964,25 @@
           <div id="apartmentGrid" class="apartment-grid"></div>
         </div>
       </div>
+
+        <div id="authResidentePin" class="auth-panel" style="display: none;">
+          <button class="auth-back-btn" onclick="document.getElementById('authResidentePin').style.display='none'; document.getElementById('authResidenteSelect').style.display='block';"><i class="fas fa-arrow-left"></i> Volver</button>
+          <p class="auth-panel-title">PIN del Apartamento</p>
+          <p class="auth-panel-subtitle" id="pinAptoLabel">Ingresa el PIN</p>
+          <div class="auth-form">
+            <div class="form-group">
+              <label class="form-label">PIN</label>
+              <input type="password" id="pinResidente" class="form-control" placeholder="PIN del apartamento" maxlength="20"
+                onkeydown="if(event.key==='Enter'){ validarLoginResidente(state.apartamentoPendiente, document.getElementById('pinResidente').value); }">
+            </div>
+            <div class="auth-login-actions">
+              <button class="btn btn-primary" onclick="validarLoginResidente(state.apartamentoPendiente, document.getElementById('pinResidente').value)">
+                <i class="fas fa-sign-in-alt"></i> Entrar
+              </button>
+            </div>
+          </div>
+        </div>
+
     </div>
   </div>
 
@@ -3574,15 +3593,21 @@ var google = {
               data = { status: 'error', message: 'Respuesta inválida del servidor' };
             }
 
-            if (data && (data.code === 401 || (data.status === 'error' && data.message && data.message.indexOf('Sesión') !== -1))) {
-              sessionStorage.removeItem('claret_token');
-              sessionStorage.removeItem('claret_rol');
-              sessionStorage.removeItem('claret_apto');
-              sessionStorage.removeItem('claret_usuario');
-              mostrarNotificacion('Sesión expirada', 'Vuelve a iniciar sesión', 'warning');
-              setTimeout(function() {
-                try { cerrarSesion(); } catch (e) { location.reload(); }
-              }, 1200);
+            if (data && data.code === 401) {
+              // Solo forzar logout si había una sesión activa
+              var hadToken = !!sessionStorage.getItem('claret_token');
+              if (hadToken) {
+                sessionStorage.removeItem('claret_token');
+                sessionStorage.removeItem('claret_rol');
+                sessionStorage.removeItem('claret_apto');
+                sessionStorage.removeItem('claret_usuario');
+                mostrarNotificacion('Sesión expirada', 'Vuelve a iniciar sesión', 'warning');
+                setTimeout(function() {
+                  try { cerrarSesion(); } catch (e) { location.reload(); }
+                }, 1200);
+              }
+              // Pasar el error al callback para que oculte loading
+              if (successCb) successCb(data);
               return;
             }
 
@@ -3652,49 +3677,29 @@ var google = {
     function volverMenuPrincipal() { mostrarAuthPanel('authChoice'); }
 
     function seleccionarApartamento(apt) {
-      state.apartamento = apt;
-      state.esAdmin = false;
-      state.rol = 'Residente';
-
-      document.getElementById('modalAuth').classList.remove('active');
-      document.getElementById('landingPage').classList.add('hidden');
-      document.querySelector('.login-corner-btn').style.display = 'none';
-      document.getElementById('dashboard').classList.remove('hidden');
-      document.documentElement.classList.add('dashboard-active');
-      document.body.classList.add('dashboard-active');
-
-      // Update UI elements
-      document.getElementById('userRole').textContent = 'Residente - Apto ' + apt;
-      document.getElementById('userApartment').textContent = apt;
-      document.getElementById('dropdownUserName').textContent = 'Apartamento ' + apt;
-      document.getElementById('dropdownUserRole').textContent = 'Residente';
-
-      // Update avatar
-      document.getElementById('userAvatarBtn').textContent = apt;
-
-      // Show/hide badges
-      document.getElementById('badgeMora').style.display = 'none';
-      document.getElementById('badgePendientes').style.display = 'none';
-      document.getElementById('badgePagoResidente').style.display = 'flex';
-
-      document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
+      // Ahora requiere PIN - mostrar campo de PIN
+      state.apartamentoPendiente = apt;
       document.querySelectorAll('.apartment-btn').forEach(function(b) { b.classList.remove('selected'); });
       if (event && event.target) event.target.classList.add('selected');
 
-      // Hide payment banner for residents if not needed (we keep it)
-      closeSidebar();
-      mostrarLoading('Cargando datos del apartamento...');
-      cargarDatosResidente(function() {
-        ocultarLoading();
-      });
-      if (state.estadisticasCargando && !state.estadisticasCache) {
-        mostrarLoading('Cargando datos...');
-        state.estadisticasReadyCallback = function() {
-          ocultarLoading();
-          mostrarSeccion('bienvenida');
-        };
+      // Mostrar panel de PIN si existe, si no usar prompt temporal
+      var pinPanel = document.getElementById('authResidentePin');
+      if (pinPanel) {
+        // UI con panel
+        document.getElementById('authResidenteSelect').style.display = 'none';
+        pinPanel.style.display = 'block';
+        var label = document.getElementById('pinAptoLabel');
+        if (label) label.textContent = 'Apartamento ' + apt;
+        var pinInput = document.getElementById('pinResidente');
+        if (pinInput) { pinInput.value = ''; pinInput.focus(); }
       } else {
-        mostrarSeccion('bienvenida');
+        // Fallback: prompt
+        var pin = prompt('Ingresa el PIN del apartamento ' + apt + ':');
+        if (pin) {
+          validarLoginResidente(apt, pin);
+        } else {
+          state.apartamentoPendiente = null;
+        }
       }
     }
 
@@ -3743,10 +3748,17 @@ var google = {
 
       mostrarNotificacion('Éxito', 'Bienvenido', 'success');
       closeSidebar();
+      // Precargar estadísticas ahora que hay token de admin
+      state.estadisticasCache = null;
+      state.estadisticasCargando = false;
       mostrarSeccion('bienvenida');
     } else {
+      ocultarLoading();
       mostrarNotificacion('Error', (res && res.message) || 'Credenciales incorrectas', 'error');
     }
+  }, function(err) {
+    ocultarLoading();
+    mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
   });
 }
 
@@ -3870,47 +3882,73 @@ function validarLoginResidente(apartamento, pin) {
     // CARGA DE DATOS
     // ============================================
     function cargarDatosResidente(callback) {
+      if (!state.apartamento) {
+        ocultarLoading();
+        if (callback) callback();
+        return;
+      }
       llamarGS('cargarDatosResidente', [state.apartamento], function(datos) {
         if (!datos || datos.status === 'error') {
           ocultarLoading();
-          mostrarNotificacion('Error', datos?.message || 'Error al cargar datos del residente', 'error');
+          mostrarNotificacion('Error', (datos && datos.message) || 'Error al cargar datos del residente', 'error');
           if (callback) callback();
           return;
         }
-        document.getElementById('currentMonth').textContent = datos.mesActual || '-';
-        document.getElementById('paymentAmount').textContent = datos.valorPago ? '$' + datos.valorPago.toLocaleString('es-CO') : '$0';
-        document.getElementById('userApartment').textContent = state.apartamento;
-        document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-');
-    
-        var breakdown = document.getElementById('paymentBreakdown');
-        if (datos.cuotaExtraordinaria > 0) {
-          breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin) + $' + datos.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)';
-        } else {
-          breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin)';
+        try {
+          document.getElementById('currentMonth').textContent = datos.mesActual || '-';
+          document.getElementById('paymentAmount').textContent = datos.valorPago ? '$' + datos.valorPago.toLocaleString('es-CO') : '$0';
+          document.getElementById('userApartment').textContent = state.apartamento;
+          document.getElementById('paymentMonth').textContent = datos.pagado ? (datos.mesSiguiente || '-') : (datos.mesActual || '-');
+      
+          var breakdown = document.getElementById('paymentBreakdown');
+          if (breakdown) {
+            if (datos.cuotaExtraordinaria > 0) {
+              breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin) + $' + datos.cuotaExtraordinaria.toLocaleString('es-CO') + ' (extra)';
+            } else {
+              breakdown.textContent = '$' + (datos.valorBase || 0).toLocaleString('es-CO') + ' (admin)';
+            }
+          }
+      
+          var paymentSection = document.getElementById('paymentSection');
+          var badgePagoText = document.getElementById('badgePagoText');
+      
+          if (datos.pagado) {
+            document.getElementById('paymentState').innerHTML = '<span class="badge" style="background:#059669;color:white;">Pagado</span>';
+            if (paymentSection) paymentSection.classList.add('payment-banner-paid');
+            if (badgePagoText) badgePagoText.textContent = 'Pago al día';
+            var badge = document.getElementById('badgePagoResidente');
+            if (badge) badge.className = 'topbar-badge success';
+          } else if (datos.estadoPago === 'Con mora') {
+            document.getElementById('paymentState').innerHTML = '<span class="badge badge-danger">Con mora</span>';
+            if (paymentSection) paymentSection.classList.remove('payment-banner-paid');
+            if (badgePagoText) badgePagoText.textContent = 'Con mora';
+            var badge = document.getElementById('badgePagoResidente');
+            if (badge) badge.className = 'topbar-badge danger';
+          } else {
+            document.getElementById('paymentState').innerHTML = '<span class="badge badge-warning">Pendiente</span>';
+            if (paymentSection) paymentSection.classList.remove('payment-banner-paid');
+            if (badgePagoText) badgePagoText.textContent = 'Pago pendiente';
+            var badge = document.getElementById('badgePagoResidente');
+            if (badge) badge.className = 'topbar-badge warning';
+          }
+        } catch (e) {
+          console.error('Error pintando datos residente:', e);
         }
     
-        var paymentSection = document.getElementById('paymentSection');
-        var badgePagoText = document.getElementById('badgePagoText');
-    
-        if (datos.pagado) {
-          document.getElementById('paymentState').innerHTML = '<span class="badge" style="background:#059669;color:white;">Pagado</span>';
-          paymentSection.classList.add('payment-banner-paid');
-          badgePagoText.textContent = 'Pago al día';
-          document.getElementById('badgePagoResidente').className = 'topbar-badge success';
-        } else if (datos.estadoPago === 'Con mora') {
-          document.getElementById('paymentState').innerHTML = '<span class="badge badge-danger">Con mora</span>';
-          paymentSection.classList.remove('payment-banner-paid');
-          badgePagoText.textContent = 'Con mora';
-          document.getElementById('badgePagoResidente').className = 'topbar-badge danger';
+        // Cargar cuotas especiales y luego callback
+        if (typeof cargarCuotasEspecialesResidente === 'function') {
+          cargarCuotasEspecialesResidente(function() {
+            ocultarLoading();
+            if (callback) callback();
+          });
         } else {
-          document.getElementById('paymentState').innerHTML = '<span class="badge badge-warning">Pendiente</span>';
-          paymentSection.classList.remove('payment-banner-paid');
-          badgePagoText.textContent = 'Pago pendiente';
-          document.getElementById('badgePagoResidente').className = 'topbar-badge warning';
+          ocultarLoading();
+          if (callback) callback();
         }
-    
-        // Cargar cuotas especiales antes de ocultar loading
-        cargarCuotasEspecialesResidente(callback);
+      }, function(err) {
+        ocultarLoading();
+        mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
+        if (callback) callback();
       });
     }
 
@@ -3947,6 +3985,12 @@ function validarLoginResidente(apartamento, pin) {
     }
 
     function precargarEstadisticas() {
+      // Solo precargar si ya hay sesión de admin
+      var token = sessionStorage.getItem('claret_token');
+      var rol = sessionStorage.getItem('claret_rol');
+      if (!token || rol !== 'admin') {
+        return;
+      }
       if (state.estadisticasCargando || state.estadisticasCache) return;
       state.estadisticasCargando = true;
       llamarGS('obtenerEstadisticasDashboard', [], function(est) {
@@ -3970,6 +4014,7 @@ function validarLoginResidente(apartamento, pin) {
     function actualizarEstadisticas() {
       if (state.estadisticasCache) {
         aplicarEstadisticas(state.estadisticasCache);
+        ocultarLoading();
         return;
       }
       if (state.estadisticasCargando) {
@@ -3986,11 +4031,14 @@ function validarLoginResidente(apartamento, pin) {
       llamarGS('obtenerEstadisticasDashboard', [], function(est) {
         ocultarLoading();
         if (!est || est.status === 'error') {
-          mostrarNotificacion('Error', est?.message || 'Error al cargar estadísticas', 'error');
+          mostrarNotificacion('Error', (est && est.message) || 'Error al cargar estadísticas', 'error');
           return;
         }
         state.estadisticasCache = est;
         aplicarEstadisticas(est);
+      }, function(err) {
+        ocultarLoading();
+        mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
       });
     }
 
@@ -7212,32 +7260,39 @@ function validarLoginResidente(apartamento, pin) {
     function cargarCuotasEspecialesResidente(callback) {
       if (state.esAdmin || !state.apartamento) { if (callback) callback(); return; }
       llamarGS('obtenerCuotasEspecialesApartamento', [state.apartamento], function(cuotas) {
-        var container = document.getElementById('ceButtonsContainer');
-        if (!cuotas || !cuotas.length) {
-          container.style.display = 'none';
-          if (callback) callback();
-          return;
+        try {
+          var container = document.getElementById('ceButtonsContainer');
+          if (!container) { if (callback) callback(); return; }
+          if (!cuotas || !cuotas.length || (cuotas.status === 'error')) {
+            container.style.display = 'none';
+            if (callback) callback();
+            return;
+          }
+
+          var html = '';
+          cuotas.forEach(function(ce) {
+            if (ce.completado) return;
+            var porcentaje = Math.min(100, Math.round((ce.totalPagado / ce.valorTotal) * 100));
+            html += '<button class="ce-btn-pago" onclick="abrirModalPagarCE(\'' + ce.uuid + '\',\'' + escapeHtml(ce.concepto) + '\',' + ce.valorTotal + ',' + ce.totalPagado + ')">' +
+              '<i class="fas fa-coins"></i>' +
+              '<span class="ce-btn-concepto" title="' + escapeHtml(ce.concepto) + '">' + escapeHtml(ce.concepto) + '</span>' +
+              '<span class="ce-btn-restante">$' + ce.saldoRestante.toLocaleString('es-CO') + '</span>' +
+              '<span class="ce-btn-progreso"><span class="ce-btn-progreso-bar" style="width:' + porcentaje + '%"></span></span>' +
+            '</button>';
+          });
+
+          if (html) {
+            container.innerHTML = html;
+            container.style.display = 'flex';
+          } else {
+            container.style.display = 'none';
+          }
+        } catch (e) {
+          console.error(e);
         }
-
-        var html = '';
-        cuotas.forEach(function(ce) {
-          if (ce.completado) return;
-          var porcentaje = Math.min(100, Math.round((ce.totalPagado / ce.valorTotal) * 100));
-          html += '<button class="ce-btn-pago" onclick="abrirModalPagarCE(\'' + ce.uuid + '\',\'' + escapeHtml(ce.concepto) + '\',' + ce.valorTotal + ',' + ce.totalPagado + ')">' +
-            '<i class="fas fa-coins"></i>' +
-            '<span class="ce-btn-concepto" title="' + escapeHtml(ce.concepto) + '">' + escapeHtml(ce.concepto) + '</span>' +
-            '<span class="ce-btn-restante">$' + ce.saldoRestante.toLocaleString('es-CO') + '</span>' +
-            '<span class="ce-btn-progreso"><span class="ce-btn-progreso-bar" style="width:' + porcentaje + '%"></span></span>' +
-          '</button>';
-        });
-
-        if (html) {
-          container.innerHTML = html;
-          container.style.display = 'flex';
-        } else {
-          container.style.display = 'none';
-        }
-
+        if (callback) callback();
+      }, function(err) {
+        // Error de red o 401: igual continuar
         if (callback) callback();
       });
     }
