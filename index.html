@@ -54,10 +54,7 @@
     }
 
     body {
-      background:
-        radial-gradient(1200px 600px at 10% -10%, rgba(16,185,129,0.06), transparent 50%),
-        radial-gradient(900px 500px at 100% 0%, rgba(124,58,237,0.04), transparent 45%),
-        #f8fafc !important;
+      background: #f8fafc !important;
     }
 
     .card {
@@ -108,26 +105,11 @@
       font-size: 26px;
       font-weight: 750;
       letter-spacing: -0.03em;
-      background: linear-gradient(135deg, #0f172a, #334155);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
+      color: #0f172a;
     }
-    .stat-card.success .stat-value {
-      background: linear-gradient(135deg, #047857, #10b981);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-    .stat-card.danger .stat-value {
-      background: linear-gradient(135deg, #b91c1c, #ef4444);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
-    .stat-card.warning .stat-value {
-      background: linear-gradient(135deg, #b45309, #f59e0b);
-      -webkit-background-clip: text;
-      background-clip: text;
-    }
+    .stat-card.success .stat-value { color: #047857; }
+    .stat-card.danger .stat-value { color: #b91c1c; }
+    .stat-card.warning .stat-value { color: #b45309; }
 
     .table-container {
       border: 1px solid #e8eef5;
@@ -2072,7 +2054,172 @@
       color: var(--secondary);
     }    
 
-    </style>
+    
+    /* ========== MODALES DE PAGO (PRO / BLANCO) ========== */
+    .pay-modal .modal-content {
+      max-width: 480px !important;
+      background: #ffffff !important;
+      border-radius: 20px !important;
+      overflow: hidden;
+      border: 1px solid #e8eef5;
+    }
+    .pay-modal .modal-header {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%) !important;
+      padding: 20px 22px !important;
+    }
+    .pay-modal .modal-header .modal-title {
+      font-size: 16px !important;
+      font-weight: 700 !important;
+      color: #fff !important;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .pay-modal .modal-header .modal-title i {
+      width: 30px; height: 30px;
+      border-radius: 9px;
+      background: rgba(16,185,129,0.22);
+      color: #34d399;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+    }
+    .pay-modal .modal-body {
+      padding: 20px 22px !important;
+      background: #ffffff !important;
+    }
+    .pay-steps {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .pay-step {
+      flex: 1;
+      text-align: center;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      color: #94a3b8;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    .pay-step.on {
+      color: #059669;
+      border-bottom-color: #10b981;
+    }
+    .pay-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+    .pay-summary-item {
+      background: #f8fafc;
+      border: 1px solid #eef2f7;
+      border-radius: 12px;
+      padding: 12px 14px;
+    }
+    .pay-summary-item .lbl {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+    .pay-summary-item .val {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0f172a;
+    }
+    .pay-summary-item.highlight {
+      grid-column: 1 / -1;
+      background: linear-gradient(135deg, #f0fdf4, #ecfdf5);
+      border-color: #bbf7d0;
+    }
+    .pay-summary-item.highlight .val {
+      font-size: 22px;
+      color: #047857;
+    }
+    .pay-qr-wrap {
+      text-align: center;
+      margin: 6px 0 14px;
+      padding: 16px;
+      background: #fafbfc;
+      border: 1px dashed #e2e8f0;
+      border-radius: 14px;
+    }
+    .pay-qr-wrap img.qr-code {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(15,23,42,0.08);
+      background: #fff;
+    }
+    .pay-qr-hint {
+      margin-top: 10px;
+      font-size: 12px;
+      color: #64748b;
+    }
+    .pay-transfer {
+      background: #fff;
+      border: 1px solid #eef2f7;
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin-bottom: 14px;
+    }
+    .pay-transfer-title {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #94a3b8;
+      margin-bottom: 10px;
+    }
+    .pay-transfer-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 7px 0;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 13px;
+    }
+    .pay-transfer-row:last-child { border-bottom: none; }
+    .pay-transfer-row .k { color: #64748b; }
+    .pay-transfer-row .v { font-weight: 700; color: #0f172a; }
+    .pay-upload {
+      border: 2px dashed #e2e8f0;
+      border-radius: 12px;
+      padding: 16px;
+      text-align: center;
+      background: #fafbfc;
+    }
+    .pay-upload:hover {
+      border-color: #10b981;
+      background: #f0fdf4;
+    }
+    .pay-upload .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #334155;
+    }
+    .pay-modal .modal-footer {
+      background: #fafbfc !important;
+      border-top: 1px solid #f1f5f9 !important;
+      padding: 14px 18px !important;
+    }
+    .pay-modal .modal-footer .btn-primary {
+      background: linear-gradient(135deg, #059669, #10b981) !important;
+      border: none !important;
+      color: #fff !important;
+    }
+
+  </style>
 </head>
 <body>
   <!-- Splash Screen -->
