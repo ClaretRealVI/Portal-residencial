@@ -1,4 +1,4 @@
-const CACHE_NAME = 'edificioclaret-real-V6';
+const CACHE_NAME = 'edificioclaret-real-V7';
 
 const ASSETS_TO_CACHE = [
   './',
