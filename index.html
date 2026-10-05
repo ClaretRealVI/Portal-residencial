@@ -2433,11 +2433,17 @@
   <!-- Modal Registrar Llamado -->
   <div id="modalLlamado" class="modal">
     <div class="modal-content">
-      <div class="modal-header"><h3 class="modal-title">Registrar Llamado de Alarma</h3><button class="modal-close" onclick="cerrarModal('modalLlamado')"><i class="fas fa-times"></i></button></div>
+      <div class="modal-header"><h3 class="modal-title">Registrar Llamado de Atención</h3><button class="modal-close" onclick="cerrarModal('modalLlamado')"><i class="fas fa-times"></i></button></div>
       <div class="modal-body">
         <div class="form-group"><label class="form-label">Apartamento</label><select id="llamadoApto" class="form-control"></select></div>
         <div class="form-group"><label class="form-label">Fecha del llamado</label><input type="date" id="fechaLlamado" class="form-control" style="max-width:220px;"></div>
-        <div class="form-group"><label class="form-label">Descripción</label><textarea id="llamadoDesc" class="form-control" rows="3" placeholder="Ej: Alarma activada sin motivo aparente"></textarea></div>
+        <div class="form-group">
+          <label class="form-label">Tipo de llamado</label>
+          <select id="llamadoTipo" class="form-control">
+            <option value="no_activacion">No activación de la alarma (3 → multa)</option>
+            <option value="salto_alarma">Salto de alarma (2 → multa)</option>
+          </select>
+        </div>
         <div id="llamadoCounterInfo" style="display:none; margin-bottom:14px;" class="filtro-activo"></div>
       </div>
       <div class="form-group">
@@ -3964,11 +3970,11 @@ function validarLoginResidente(apartamento, pin) {
 
       var cargadores = {
         bienvenida: function() {
-          if (state.esAdmin) {
-            actualizarEstadisticas();
-          } else if (state.apartamento) {
-            mostrarLoading('Cargando datos...');
-            cargarDatosResidente(function() { ocultarLoading(); });
+          // Panel general (pagos al día, pendientes, mora) para todos
+          actualizarEstadisticas();
+          // Datos de pago del residente
+          if (!state.esAdmin && state.apartamento) {
+            cargarDatosResidente(function() {});
           }
         },
         resumen: cargarResumen,
@@ -4118,11 +4124,6 @@ function validarLoginResidente(apartamento, pin) {
     }
 
     function actualizarEstadisticas() {
-      // Residentes no tienen acceso a estadísticas globales de admin
-      if (!state.esAdmin) {
-        ocultarLoading();
-        return;
-      }
       if (state.estadisticasCache) {
         aplicarEstadisticas(state.estadisticasCache);
         ocultarLoading();
@@ -6079,9 +6080,10 @@ function validarLoginResidente(apartamento, pin) {
 
     function procesarLlamado() {
       var apt = document.getElementById("llamadoApto").value;
-      var desc = document.getElementById("llamadoDesc").value.trim();
+      var tipo = document.getElementById("llamadoTipo") ? document.getElementById("llamadoTipo").value : "no_activacion";
       var fecha = document.getElementById("fechaLlamado").value || '';
       if (!apt) { mostrarNotificacion("Error", "Selecciona un apartamento", "error"); return; }
+      if (!tipo) { mostrarNotificacion("Error", "Selecciona el tipo de llamado", "error"); return; }
 
       var archivoInput = document.getElementById("soporteLlamado");
       var soporteData = null;
@@ -6101,22 +6103,23 @@ function validarLoginResidente(apartamento, pin) {
             nombreArchivo: archivo.name,
             mimeType: archivo.type
           };
-          enviarLlamadoConSoporte(apt, desc, soporteData, fecha);
+          enviarLlamadoConSoporte(apt, tipo, soporteData, fecha);
         };
         reader.readAsDataURL(archivo);
       } else {
         mostrarLoading("Registrando llamado...");
-        enviarLlamadoConSoporte(apt, desc, null, fecha);
+        enviarLlamadoConSoporte(apt, tipo, null, fecha);
       }
     }
 
-    function enviarLlamadoConSoporte(apt, desc, soporteData, fecha) {
-      llamarGS("registrarLlamado", [apt, desc, soporteData, fecha], function(res) {
+    function enviarLlamadoConSoporte(apt, tipo, soporteData, fecha) {
+      llamarGS("registrarLlamado", [apt, tipo, soporteData, fecha], function(res) {
         ocultarLoading();
         if (res.ok) {
           mostrarNotificacion("Exito", res.mensaje, res.multaGenerada ? "warning" : "success");
           cerrarModal("modalLlamado");
-          document.getElementById("llamadoDesc").value = "";
+          var tipoEl = document.getElementById("llamadoTipo");
+          if (tipoEl) tipoEl.value = "no_activacion";
           document.getElementById("fechaLlamado").value = "";
           document.getElementById("soporteLlamado").value = "";
           document.getElementById("llamadoCounterInfo").style.display = "none";
