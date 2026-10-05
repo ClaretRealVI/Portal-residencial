@@ -2525,7 +2525,7 @@
         </div>
         <div class="rule-item">
           <div class="rule-icon info-icon"><i class="fas fa-door-open"></i></div>
-          <div class="rule-content"><h4>Salón Comunal y BBQ</h4><p>El uso del Salón Comunal y Zona de BBQ requiere <strong>reserva previa</strong> a través del portal. Salón Comunal: $100.000 | Zona BBQ: $50.000 | Sillas: $2.000 c/u (máx 20).</p></div>
+          <div class="rule-content"><h4>Salón Comunal y BBQ</h4><p>El uso del Salón Comunal y Zona de BBQ requiere <strong>reserva previa</strong> a través del portal. Salón Comunal: $100.000 | Zona BBQ: $100.000 | Sillas: $2.000 c/u (máx 20).</p></div>
         </div>
       </div>
     </div>
@@ -3999,9 +3999,17 @@
           <img src="https://i.imgur.com/MXfVtEQ.jpeg" alt="QR" class="qr-code" onclick="window.open('https://i.postimg.cc/TGxffgcs/Qr-Administracion.jpg?dl=1','_blank')">
           <div class="pay-qr-hint"><i class="fas fa-download"></i> Toca el QR para descargarlo</div>
         </div>
+        <div class="pay-transfer">
+          <div class="pay-transfer-title">Datos de transferencia</div>
+          <div class="pay-transfer-row"><span class="k">Llave</span><span class="v">3214583531</span></div>
+          <div class="pay-transfer-row"><span class="k">Llave 2</span><span class="v">1033796749</span></div>
+          <div class="pay-transfer-row"><span class="k">Tipo</span><span class="v">Bre-B</span></div>
+          <div class="pay-transfer-row"><span class="k">Titular</span><span class="v">Administración Edificio</span></div>
+        </div>
         <div class="pay-upload">
           <label class="form-label"><i class="fas fa-cloud-upload-alt" style="color:#10b981;margin-right:6px;"></i>Comprobante</label>
           <input type="file" id="comprobanteAlquiler" class="form-control" accept=".pdf,.jpg,.jpeg,.png" required>
+          <div style="font-size:11px;color:#94a3b8;margin-top:8px;">JPG, PNG o PDF</div>
         </div>
       </div>
       <div class="modal-footer">
@@ -4204,7 +4212,7 @@ function escapeHtml(str) {
       '501': 6.25, '502': 6.25, '503': 6.25, '504': 6.25
     };
 
-    const PRECIOS_ALQUILER = { 'Salón Común': 100000, 'Zona de BBQ': 50000, 'Sillas': 2000 };
+    const PRECIOS_ALQUILER = { 'Salón Comunal': 100000, 'Zona de BBQ': 100000, 'Sillas': 2000 };
     const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 
     // ============================================
