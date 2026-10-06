@@ -3856,6 +3856,45 @@
     </div>
   </div>
 
+
+  <!-- Modal Distribución de excedente -->
+  <div id="modalDistribucionPago" class="modal pay-modal">
+    <div class="modal-content" style="max-width:520px;">
+      <div class="modal-header">
+        <h3 class="modal-title"><i class="fas fa-random"></i> Distribución del comprobante</h3>
+        <button class="modal-close" onclick="cerrarModalDistribucion()"><i class="fas fa-times"></i></button>
+      </div>
+      <div class="modal-body">
+        <p style="font-size:13px;color:#64748b;margin:0 0 14px;line-height:1.5;">
+          Tu comprobante es mayor que la administración. El sistema sugiere aplicar el excedente así
+          (multas solo completas · especiales con abono):
+        </p>
+        <div id="distResumen" style="background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:14px;margin-bottom:14px;">
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="color:#64748b;font-size:12px;">Comprobante</span>
+            <strong id="distValorComprobante">$0</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
+            <span style="color:#64748b;font-size:12px;">Administración</span>
+            <strong id="distValorAdmin" style="color:#047857;">$0</strong>
+          </div>
+          <div style="display:flex;justify-content:space-between;">
+            <span style="color:#64748b;font-size:12px;">Excedente</span>
+            <strong id="distExcedente" style="color:#b45309;">$0</strong>
+          </div>
+        </div>
+        <div id="distDetalle" style="font-size:13px;"></div>
+        <p id="distSobrante" style="display:none;margin:12px 0 0;font-size:12px;color:#94a3b8;"></p>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-light" onclick="cerrarModalDistribucion()">Cancelar</button>
+        <button class="btn btn-primary" onclick="confirmarDistribucionPago()">
+          <i class="fas fa-check-circle"></i> Confirmar distribución
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Modal Pago Multa -->
 
     <div id="modalPagoMulta" class="modal pay-modal">
@@ -4251,17 +4290,20 @@ function escapeHtml(str) {
         mostrarNotificacion('Error', 'Sin respuesta del servidor', 'error', 10000);
         return false;
       }
+      if (res.needsConfirmation) {
+        return false; // lo maneja procesarPago
+      }
       if (res.ok === false || res.status === 'error') {
         var msg = res.mensaje || res.message || 'No se pudo procesar el pago';
         var titulo = 'Pago no aceptado';
         if (res.verificacion) {
           if (res.verificacion.codigo === 'MONTO_NO_COINCIDE') titulo = 'Monto no coincide';
+          else if (res.verificacion.codigo === 'MONTO_INSUFICIENTE') titulo = 'Monto insuficiente';
           else if (res.verificacion.codigo === 'MONTO_NO_LEIBLE') titulo = 'Comprobante ilegible';
           else if (res.verificacion.codigo === 'NO_COMPROBANTE') titulo = 'Imagen no válida';
           else titulo = 'Verificación de comprobante';
         }
         mostrarNotificacion(titulo, msg, 'error', 14000);
-        // No cerrar modal en fallo de verificación (permite reintentar)
         return false;
       }
       if (opciones.cerrarModal) {
@@ -6418,21 +6460,114 @@ function validarLoginResidente(apartamento, pin) {
       var reader = new FileReader();
       reader.onload = function(e) {
         var base64Data = e.target.result.split(',')[1];
-        llamarGS('subirPagoAdministracion', [{
+        state._pagoPendiente = {
           descripcion: 'Pago de Administración - ' + document.getElementById('paymentMonth').textContent,
           apartamento: state.apartamento,
           nombreArchivo: archivo.name,
           base64: base64Data,
           mimeType: archivo.type
-        }], function(res) {
+        };
+        llamarGS('subirPagoAdministracion', [state._pagoPendiente], function(res) {
+          ocultarLoading();
+          if (res && res.needsConfirmation && res.propuesta) {
+            mostrarModalDistribucion(res.propuesta);
+            return;
+          }
           if (!manejarRespuestaPago(res, { cerrarModal: cerrarModalPago, mensajeExito: 'Pago procesado correctamente' })) {
             return;
           }
+          state._pagoPendiente = null;
           state.cache.ingresos = null;
           cargarDatosResidente();
         });
       };
       reader.readAsDataURL(archivo);
+    }
+
+    function mostrarModalDistribucion(propuesta) {
+      state._propuestaPago = propuesta;
+      document.getElementById('distValorComprobante').textContent = '$' + Number(propuesta.valorComprobante || 0).toLocaleString('es-CO');
+      document.getElementById('distValorAdmin').textContent = '$' + Number(propuesta.administracion || 0).toLocaleString('es-CO');
+      document.getElementById('distExcedente').textContent = '$' + Number(propuesta.excedente || 0).toLocaleString('es-CO');
+
+      var html = '';
+      html += '<div style="margin-bottom:10px;padding:10px 12px;background:#ecfdf5;border-radius:10px;border-left:3px solid #10b981;">';
+      html += '<div style="font-weight:600;color:#047857;font-size:13px;"><i class="fas fa-building"></i> Administración</div>';
+      html += '<div style="font-size:12px;color:#065f46;margin-top:2px;">$' + Number(propuesta.administracion).toLocaleString('es-CO') + '</div></div>';
+
+      if (propuesta.multas && propuesta.multas.length) {
+        propuesta.multas.forEach(function(m) {
+          html += '<div style="margin-bottom:10px;padding:10px 12px;background:#fef2f2;border-radius:10px;border-left:3px solid #ef4444;">';
+          html += '<div style="font-weight:600;color:#b91c1c;font-size:13px;"><i class="fas fa-gavel"></i> Multa (pago completo)</div>';
+          html += '<div style="font-size:12px;color:#7f1d1d;margin-top:2px;">' + (m.motivo || 'Multa') + ' — $' + Number(m.valor).toLocaleString('es-CO') + '</div></div>';
+        });
+      }
+
+      if (propuesta.especiales && propuesta.especiales.length) {
+        propuesta.especiales.forEach(function(e) {
+          html += '<div style="margin-bottom:10px;padding:10px 12px;background:#eff6ff;border-radius:10px;border-left:3px solid #3b82f6;">';
+          html += '<div style="font-weight:600;color:#1d4ed8;font-size:13px;"><i class="fas fa-star"></i> Cuota especial (abono)</div>';
+          html += '<div style="font-size:12px;color:#1e3a8a;margin-top:2px;">' + (e.concepto || 'Especial') + ' — $' + Number(e.valor).toLocaleString('es-CO');
+          if (e.saldoDespues !== undefined) {
+            html += ' <span style="color:#64748b;">(saldo restante $' + Number(e.saldoDespues).toLocaleString('es-CO') + ')</span>';
+          }
+          html += '</div></div>';
+        });
+      }
+
+      if ((!propuesta.multas || !propuesta.multas.length) && (!propuesta.especiales || !propuesta.especiales.length)) {
+        html += '<p style="font-size:12.5px;color:#64748b;margin:0;">No hay multas completas ni cuotas especiales pendientes donde aplicar el excedente.</p>';
+      }
+
+      document.getElementById('distDetalle').innerHTML = html;
+
+      var sob = document.getElementById('distSobrante');
+      if (propuesta.sobranteSinAsignar > 0) {
+        sob.style.display = 'block';
+        sob.innerHTML = '<i class="fas fa-info-circle"></i> Sobrante sin asignar: <strong>$' +
+          Number(propuesta.sobranteSinAsignar).toLocaleString('es-CO') +
+          '</strong> (no hay más deudas aplicables). Quedará registrado solo lo aplicado.';
+      } else {
+        sob.style.display = 'none';
+        sob.textContent = '';
+      }
+
+      cerrarModalPago();
+      abrirModal('modalDistribucionPago');
+    }
+
+    function cerrarModalDistribucion() {
+      cerrarModal('modalDistribucionPago');
+      state._propuestaPago = null;
+      // No borramos _pagoPendiente por si quiere reintentar desde el modal de pago
+    }
+
+    function confirmarDistribucionPago() {
+      if (!state._pagoPendiente) {
+        mostrarNotificacion('Error', 'No hay comprobante pendiente. Vuelve a subir el archivo.', 'error');
+        cerrarModalDistribucion();
+        return;
+      }
+      mostrarLoading('Registrando distribución del pago...');
+      var payload = Object.assign({}, state._pagoPendiente, { confirmarDistribucion: true });
+      llamarGS('subirPagoAdministracion', [payload], function(res) {
+        if (!manejarRespuestaPago(res, {
+          cerrarModal: function() {
+            cerrarModalDistribucion();
+            cerrarModalPago();
+          },
+          mensajeExito: 'Pago distribuido correctamente'
+        })) {
+          return;
+        }
+        state._pagoPendiente = null;
+        state._propuestaPago = null;
+        state.cache.ingresos = null;
+        state.estadisticasCache = null;
+        try { cargarDatosResidente(); } catch (e1) {}
+        try { if (typeof cargarMultas === 'function') cargarMultas(); } catch (e2) {}
+        try { if (typeof cargarCuotasEspecialesResidente === 'function') cargarCuotasEspecialesResidente(); } catch (e3) {}
+      });
     }
 
     // ============================================
