@@ -4227,7 +4227,7 @@ function escapeHtml(str) {
       document.getElementById('loadingOverlay').classList.remove('active');
     }
 
-    function mostrarNotificacion(titulo, mensaje, tipo = 'info') {
+    function mostrarNotificacion(titulo, mensaje, tipo = 'info', duracionMs) {
       const iconos = { success: 'fa-check-circle', error: 'fa-exclamation-circle', warning: 'fa-exclamation-triangle', info: 'fa-info-circle' };
       const container = document.getElementById('notificationContainer');
       const el = document.createElement('div');
@@ -4238,7 +4238,41 @@ function escapeHtml(str) {
         <button class="notification-close" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></button>
       `;
       container.appendChild(el);
-      setTimeout(() => el.remove(), 5000);
+      // Errores de verificación de comprobante se muestran más tiempo
+      var ms = duracionMs || (tipo === 'error' ? 10000 : 5000);
+      setTimeout(() => { if (el.parentElement) el.remove(); }, ms);
+    }
+
+    /** Maneja respuesta de pagos con verificación Gemini de forma profesional */
+    function manejarRespuestaPago(res, opciones) {
+      opciones = opciones || {};
+      ocultarLoading();
+      if (!res) {
+        mostrarNotificacion('Error', 'Sin respuesta del servidor', 'error', 10000);
+        return false;
+      }
+      if (res.ok === false || res.status === 'error') {
+        var msg = res.mensaje || res.message || 'No se pudo procesar el pago';
+        var titulo = 'Pago no aceptado';
+        if (res.verificacion) {
+          if (res.verificacion.codigo === 'MONTO_NO_COINCIDE') titulo = 'Monto no coincide';
+          else if (res.verificacion.codigo === 'MONTO_NO_LEIBLE') titulo = 'Comprobante ilegible';
+          else if (res.verificacion.codigo === 'NO_COMPROBANTE') titulo = 'Imagen no válida';
+          else titulo = 'Verificación de comprobante';
+        }
+        mostrarNotificacion(titulo, msg, 'error', 14000);
+        // No cerrar modal en fallo de verificación (permite reintentar)
+        return false;
+      }
+      if (opciones.cerrarModal) {
+        try { opciones.cerrarModal(); } catch (e) {}
+      }
+      var okMsg = res.mensaje || opciones.mensajeExito || 'Operación exitosa';
+      if (res.verificacion && res.verificacion.valorLeido) {
+        okMsg += ' (verificado $' + Number(res.verificacion.valorLeido).toLocaleString('es-CO') + ')';
+      }
+      mostrarNotificacion('Éxito', okMsg, 'success', 7000);
+      return true;
     }
 
     function abrirModal(id) { document.getElementById(id).classList.add('active'); }
@@ -6379,7 +6413,7 @@ function validarLoginResidente(apartamento, pin) {
       if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
       if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error'); return; }
 
-      mostrarLoading('Procesando pago... esto puede tomar unos segundos');
+      mostrarLoading('Verificando comprobante con IA... puede tomar unos segundos');
 
       var reader = new FileReader();
       reader.onload = function(e) {
@@ -6391,15 +6425,11 @@ function validarLoginResidente(apartamento, pin) {
           base64: base64Data,
           mimeType: archivo.type
         }], function(res) {
-          ocultarLoading();
-          cerrarModalPago();
-
-          if (res.ok === false) { mostrarNotificacion('Error', res.mensaje || 'Error al procesar el pago', 'error'); return; }
-          if (res.status === 'error') { mostrarNotificacion('Error', res.message || 'Error de conexión', 'error'); return; }
-
+          if (!manejarRespuestaPago(res, { cerrarModal: cerrarModalPago, mensajeExito: 'Pago procesado correctamente' })) {
+            return;
+          }
           state.cache.ingresos = null;
           cargarDatosResidente();
-          mostrarNotificacion('Éxito', res.mensaje || 'Pago procesado correctamente', 'success');
         });
       };
       reader.readAsDataURL(archivo);
@@ -6569,7 +6599,7 @@ function validarLoginResidente(apartamento, pin) {
       if (!archivo) { mostrarNotificacion('Error', 'Selecciona un comprobante', 'error'); return; }
       if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion('Error', 'El archivo es muy grande. Máximo 5MB.', 'error'); return; }
 
-      mostrarLoading('Procesando alquiler...');
+      mostrarLoading('Verificando comprobante de alquiler con IA...');
 
       var reader = new FileReader();
       reader.onload = function(e) {
@@ -6582,14 +6612,10 @@ function validarLoginResidente(apartamento, pin) {
           zona: zona,
           cantidad: cantidad
         }], function(res) {
-          ocultarLoading();
-          cerrarModalAlquiler();
-
-          if (res.ok === false) { mostrarNotificacion('Error', res.mensaje || 'Error al procesar alquiler', 'error'); return; }
-          if (res.status === 'error') { mostrarNotificacion('Error', res.message || 'Error de conexión', 'error'); return; }
-
+          if (!manejarRespuestaPago(res, { cerrarModal: cerrarModalAlquiler, mensajeExito: 'Alquiler registrado' })) {
+            return;
+          }
           state.cache.ingresos = null;
-          mostrarNotificacion('Éxito', res.mensaje || 'Alquiler registrado', 'success');
         });
       };
       reader.readAsDataURL(archivo);
@@ -6705,26 +6731,23 @@ function validarLoginResidente(apartamento, pin) {
       if (!archivo) { mostrarNotificacion("Error", "Selecciona un comprobante", "error"); return; }
       if (archivo.size > 5 * 1024 * 1024) { mostrarNotificacion("Error", "El archivo es muy grande. Máximo 5MB.", "error"); return; }
 
-      mostrarLoading("Procesando pago de multa...");
+      mostrarLoading("Verificando comprobante de multa con IA...");
       var reader = new FileReader();
       reader.onload = function(e) {
         var base64Data = e.target.result.split(",")[1];
         llamarGS("pagarMultaConSoporte", [{
           fila: state.multaFilaPendiente,
+          apartamento: state.apartamento || document.getElementById("multaPagoApto").textContent,
           nombreArchivo: archivo.name,
           base64: base64Data,
           mimeType: archivo.type
         }], function(res) {
-          ocultarLoading();
-          cerrarModalPagoMulta();
-          if (res.ok) {
-            mostrarNotificacion("Éxito", res.mensaje, "success");
-            state.estadisticasCache = null;
-            cargarMultas();
-            if (state.seccionActual === "bienvenida") actualizarEstadisticas();
-          } else {
-            mostrarNotificacion("Error", res.mensaje, "error");
+          if (!manejarRespuestaPago(res, { cerrarModal: cerrarModalPagoMulta, mensajeExito: 'Multa pagada correctamente' })) {
+            return;
           }
+          state.estadisticasCache = null;
+          cargarMultas();
+          if (state.seccionActual === "bienvenida") actualizarEstadisticas();
         });
       };
       reader.readAsDataURL(archivo);
@@ -8234,7 +8257,7 @@ function validarLoginResidente(apartamento, pin) {
       if (monto <= 0) { mostrarNotificacion('Error', 'Ingresa un valor mayor a 0', 'error'); return; }
       if (monto > data.saldo) { mostrarNotificacion('Error', 'El valor máximo es $' + data.saldo.toLocaleString('es-CO'), 'error'); return; }
 
-      mostrarLoading('Procesando pago...');
+      mostrarLoading('Verificando comprobante de cuota especial con IA...');
 
       var reader = new FileReader();
       reader.onload = function(e) {
@@ -8247,20 +8270,11 @@ function validarLoginResidente(apartamento, pin) {
           base64: base64Data,
           mimeType: archivo.type
         }], function(res) {
-          ocultarLoading();
-
-          if (res.ok === false || res.status === 'error') {
-            mostrarNotificacion('Error', (res.mensaje || res.message || 'Error al procesar'), 'error');
+          if (!manejarRespuestaPago(res, { cerrarModal: cerrarModalPagarCE, mensajeExito: 'Pago de cuota especial registrado' })) {
             return;
           }
-
-          cerrarModalPagarCE();
           state.cache.ingresos = null;
-
-          // Recargar botones de cuotas especiales
           cargarCuotasEspecialesResidente();
-
-          mostrarNotificacion('Éxito', res.mensaje || 'Pago procesado correctamente', 'success');
         });
       };
       reader.readAsDataURL(archivo);
