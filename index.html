@@ -4481,30 +4481,11 @@ var google = {
     function volverMenuPrincipal() { mostrarAuthPanel('authChoice'); }
 
     function seleccionarApartamento(apt) {
-      // Ahora requiere PIN - mostrar campo de PIN
-      state.apartamentoPendiente = apt;
       document.querySelectorAll('.apartment-btn').forEach(function(b) { b.classList.remove('selected'); });
       if (event && event.target) event.target.classList.add('selected');
 
-      // Mostrar panel de PIN si existe, si no usar prompt temporal
-      var pinPanel = document.getElementById('authResidentePin');
-      if (pinPanel) {
-        // UI con panel
-        document.getElementById('authResidenteSelect').style.display = 'none';
-        pinPanel.style.display = 'block';
-        var label = document.getElementById('pinAptoLabel');
-        if (label) label.textContent = 'Apartamento ' + apt;
-        var pinInput = document.getElementById('pinResidente');
-        if (pinInput) { pinInput.value = ''; pinInput.focus(); }
-      } else {
-        // Fallback: prompt
-        var pin = prompt('Ingresa el PIN del apartamento ' + apt + ':');
-        if (pin) {
-          validarLoginResidente(apt, pin);
-        } else {
-          state.apartamentoPendiente = null;
-        }
-      }
+      // Entrar directamente (sin PIN)
+      validarLoginResidente(apt);
     }
 
     function validarLogin() {
@@ -4678,73 +4659,61 @@ function cerrarSesion() {
 }
 
 
-function validarLoginResidente(apartamento, pin) {
-  apartamento = String(apartamento || '').trim();
-  pin = String(pin || '').trim();
+function validarLoginResidente(apartamento) {
+      apartamento = String(apartamento || '').trim();
 
-  if (!apartamento || !pin) {
-    mostrarNotificacion('Error', 'Selecciona apartamento e ingresa el PIN', 'error');
-    return;
-  }
-
-  mostrarLoading('Validando PIN...');
-
-  llamarGS('validarResidente', [apartamento, pin], function(res) {
-    ocultarLoading();
-    if (res && res.status === 'success' && res.token) {
-      sessionStorage.setItem('claret_token', res.token);
-      sessionStorage.setItem('claret_rol', 'residente');
-      sessionStorage.setItem('claret_apto', apartamento);
-
-      state.apartamento = apartamento;
-      state.esAdmin = false;
-      state.rol = 'Residente';
-      state.pinActualTemporal = pin; // para el cambio obligatorio
-
-      document.getElementById('modalAuth').classList.remove('active');
-      document.getElementById('landingPage').classList.add('hidden');
-      document.querySelector('.login-corner-btn').style.display = 'none';
-      document.getElementById('dashboard').classList.remove('hidden');
-      document.documentElement.classList.add('dashboard-active');
-      document.body.classList.add('dashboard-active');
-
-      document.getElementById('userRole').textContent = 'Residente - Apto ' + escapeHtml(apartamento);
-      document.getElementById('userApartment').textContent = escapeHtml(apartamento);
-      document.getElementById('dropdownUserName').textContent = 'Apartamento ' + escapeHtml(apartamento);
-      document.getElementById('dropdownUserRole').textContent = 'Residente';
-      document.getElementById('userAvatarBtn').textContent = escapeHtml(apartamento);
-
-      document.getElementById('badgeMora').style.display = 'none';
-      document.getElementById('badgePendientes').style.display = 'none';
-      document.getElementById('badgePagoResidente').style.display = 'flex';
-
-      document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
-
-      // Primer acceso: si el backend lo indica O si el PIN es el número del apto
-      var forzarCambio = res.mustChangePin || (String(pin) === String(apartamento));
-      if (forzarCambio) {
-        mostrarNotificacion('Importante', 'Debes cambiar tu PIN antes de continuar', 'warning');
-        abrirModalCambioPinObligatorio(apartamento, pin);
+      if (!apartamento) {
+        mostrarNotificacion('Error', 'Selecciona un apartamento', 'error');
         return;
       }
 
-      mostrarNotificacion('Éxito', 'Bienvenido - Apto ' + apartamento, 'success');
-      closeSidebar();
-      mostrarSeccion('bienvenida');
-      if (typeof cargarDatosResidente === 'function') {
-        mostrarLoading('Cargando datos...');
-        cargarDatosResidente(function() { ocultarLoading(); });
-      }
-    } else {
-      mostrarNotificacion('Error', (res && res.message) || 'PIN incorrecto', 'error');
+      mostrarLoading('Ingresando...');
+
+      llamarGS('validarResidente', [apartamento], function(res) {
+        ocultarLoading();
+        if (res && res.status === 'success' && res.token) {
+          sessionStorage.setItem('claret_token', res.token);
+          sessionStorage.setItem('claret_rol', 'residente');
+          sessionStorage.setItem('claret_apto', apartamento);
+
+          state.apartamento = apartamento;
+          state.esAdmin = false;
+          state.rol = 'Residente';
+
+          document.getElementById('modalAuth').classList.remove('active');
+          document.getElementById('landingPage').classList.add('hidden');
+          document.querySelector('.login-corner-btn').style.display = 'none';
+          document.getElementById('dashboard').classList.remove('hidden');
+          document.documentElement.classList.add('dashboard-active');
+          document.body.classList.add('dashboard-active');
+
+          document.getElementById('userRole').textContent = 'Residente - Apto ' + escapeHtml(apartamento);
+          document.getElementById('userApartment').textContent = escapeHtml(apartamento);
+          document.getElementById('dropdownUserName').textContent = 'Apartamento ' + escapeHtml(apartamento);
+          document.getElementById('dropdownUserRole').textContent = 'Residente';
+          document.getElementById('userAvatarBtn').textContent = escapeHtml(apartamento);
+
+          document.getElementById('badgeMora').style.display = 'none';
+          document.getElementById('badgePendientes').style.display = 'none';
+          document.getElementById('badgePagoResidente').style.display = 'flex';
+
+          document.querySelectorAll('.admin-only').forEach(function(el) { el.style.display = 'none'; });
+
+          mostrarNotificacion('Éxito', 'Bienvenido - Apto ' + apartamento, 'success');
+          closeSidebar();
+          mostrarSeccion('bienvenida');
+          if (typeof cargarDatosResidente === 'function') {
+            mostrarLoading('Cargando datos...');
+            cargarDatosResidente(function() { ocultarLoading(); });
+          }
+        } else {
+          mostrarNotificacion('Error', (res && res.message) || 'No se pudo ingresar', 'error');
+        }
+      }, function(err) {
+        ocultarLoading();
+        mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
+      });
     }
-  }, function(err) {
-    ocultarLoading();
-    mostrarNotificacion('Error', (err && err.message) || 'Error de conexión', 'error');
-  });
-}
-
-
 
     // ============================================
     // MOSTRAR SECCIÓN
