@@ -8568,10 +8568,286 @@ function validarLoginResidente(apartamento) {
       });
     }
 
-    // ========== REGISTRAR SERVICE WORKER ==========
+    // ========== REGISTRAR SERVICE WORKER (con actualizaciones automaticas) ==========
+    // Version local: debe coincidir con APP_VERSION del sw.js
+    // >>> CAMBIAR TAMBIEN AQUI CADA VEZ QUE SUBAS UNA ACTUALIZACION <<<
+    var APP_VERSION_LOCAL = '2026-11-07-v1';
+    var SW_VERSION_KEY = 'claret_sw_version';
+    var SW_LAST_CHECK_KEY = 'claret_sw_last_check';
+    var SW_RELOAD_FLAG = 'claret_sw_reloading';
+    var _updateBannerShown = false;
+
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
-        navigator.serviceWorker.register('sw.js').catch(function() {});
+        registrarServiceWorker();
+        configurarVerificacionPeriodica();
+      });
+    }
+
+    function registrarServiceWorker() {
+      navigator.serviceWorker.register('sw.js')
+        .then(function(registration) {
+          // Detectar nueva version del SW instalando (sin tilde para ASCII)
+          registration.addEventListener('updatefound', function() {
+            var newWorker = registration.installing;
+            if (newWorker) {
+              newWorker.addEventListener('statechange', function() {
+                if (newWorker.state === 'installed') {
+                  if (navigator.serviceWorker.controller) {
+                    // Hay una NUEVA version disponible
+                    console.log('[App] Nueva version del SW instalada');
+                    newWorker.postMessage({ type: 'SKIP_WAITING' });
+                  }
+                }
+              });
+            }
+          });
+
+          // Escuchar mensajes del SW
+          navigator.serviceWorker.addEventListener('message', function(event) {
+            var data = event.data || {};
+            if (data.type === 'SW_UPDATED') {
+              // El SW notifico que hay una nueva version activa
+              mostrarBannerActualizacion(data.version);
+            }
+            if (data.type === 'FORCE_RELOAD') {
+              forzarRecarga();
+            }
+            if (data.type === 'CACHE_CLEARED') {
+              forzarRecarga();
+            }
+          });
+
+          // Escuchar cuando el nuevo SW toma control
+          navigator.serviceWorker.addEventListener('controllerchange', function() {
+            // El nuevo SW tomo control - recargar si no estamos ya recargando
+            if (!sessionStorage.getItem(SW_RELOAD_FLAG)) {
+              sessionStorage.setItem(SW_RELOAD_FLAG, '1');
+              forzarRecarga();
+            }
+          });
+
+          // Verificar actualizaciones cada vez que se carga
+          verificarYCompararVersion();
+        })
+        .catch(function(err) {
+          console.log('[App] SW registration failed:', err);
+        });
+
+      // Verificar si ya hay un SW activo y comparar versiones
+      if (navigator.serviceWorker.controller) {
+        verificarYCompararVersion();
+      }
+    }
+
+    // Verificar y comparar version guardada con la actual
+    function verificarYCompararVersion() {
+      try {
+        var lastVersion = localStorage.getItem(SW_VERSION_KEY);
+        var now = Date.now();
+
+        // Si no hay version guardada, es primera visita
+        if (!lastVersion) {
+          localStorage.setItem(SW_VERSION_KEY, APP_VERSION_LOCAL);
+          localStorage.setItem(SW_LAST_CHECK_KEY, String(now));
+          return;
+        }
+
+        // Si la version cambio, mostrar banner de actualizacion
+        if (lastVersion !== APP_VERSION_LOCAL) {
+          localStorage.setItem(SW_VERSION_KEY, APP_VERSION_LOCAL);
+          localStorage.setItem(SW_LAST_CHECK_KEY, String(now));
+          mostrarBannerActualizacion(APP_VERSION_LOCAL);
+        }
+      } catch (e) {
+        console.log('[App] Error verificando version:', e);
+      }
+    }
+
+    // Mostrar banner de actualizacion al usuario
+    function mostrarBannerActualizacion(version) {
+      if (_updateBannerShown) return;
+      _updateBannerShown = true;
+
+      // Si hay splash screen activo, esperar a que termine
+      var splash = document.getElementById('splashScreen');
+      if (splash && splash.style.display !== 'none' && !splash.classList.contains('fade-out')) {
+        setTimeout(function() { mostrarBannerActualizacion(version); }, 1000);
+        _updateBannerShown = false;
+        return;
+      }
+
+      // Eliminar banner existente si lo hay
+      var existing = document.getElementById('updateBanner');
+      if (existing) existing.remove();
+
+      // Crear estilos
+      if (!document.getElementById('updateBannerStyles')) {
+        var style = document.createElement('style');
+        style.id = 'updateBannerStyles';
+        style.textContent =
+          '@keyframes updateSlideDown { from { transform: translateY(-100%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }' +
+          '#updateBanner { animation: updateSlideDown 0.4s cubic-bezier(0.16, 1, 0.3, 1); }' +
+          '#updateBanner button:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }';
+        document.head.appendChild(style);
+      }
+
+      var banner = document.createElement('div');
+      banner.id = 'updateBanner';
+      banner.style.cssText =
+        'position:fixed;top:0;left:0;right:0;z-index:10000;' +
+        'background:linear-gradient(135deg,#0f172a 0%,#1e293b 100%);' +
+        'color:white;padding:14px 20px;' +
+        'display:flex;align-items:center;justify-content:space-between;gap:12px;' +
+        'box-shadow:0 8px 32px rgba(15,23,42,0.3);' +
+        'font-family:Inter,sans-serif;flex-wrap:wrap;';
+
+      banner.innerHTML =
+        '<div style="display:flex;align-items:center;gap:12px;flex:1;min-width:200px;">' +
+          '<div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#059669,#10b981);display:flex;align-items:center;justify-content:center;flex-shrink:0;">' +
+            '<i class="fas fa-sync-alt" style="font-size:16px;color:white;"></i>' +
+          '</div>' +
+          '<div>' +
+            '<div style="font-weight:700;font-size:14px;line-height:1.3;">Hay una nueva version disponible</div>' +
+            '<div style="font-size:12px;opacity:0.8;line-height:1.3;margin-top:2px;">Actualizamos el portal para mejorar tu experiencia</div>' +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;align-items:center;">' +
+          '<button id="btnActualizarDespues" style="background:rgba(255,255,255,0.1);color:white;border:1px solid rgba(255,255,255,0.2);padding:9px 16px;border-radius:8px;font-weight:600;cursor:pointer;font-size:12.5px;transition:all 0.2s;font-family:inherit;">Despues</button>' +
+          '<button id="btnActualizarAhora" style="background:linear-gradient(135deg,#059669,#10b981);color:white;border:none;padding:9px 20px;border-radius:8px;font-weight:700;cursor:pointer;font-size:12.5px;transition:all 0.2s;font-family:inherit;">Actualizar ahora</button>' +
+        '</div>';
+
+      document.body.appendChild(banner);
+
+      // Ajustar padding superior del dashboard para que no tape contenido
+      var dashboard = document.getElementById('dashboard');
+      if (dashboard && !dashboard.classList.contains('hidden')) {
+        dashboard.style.paddingTop = '110px';
+      }
+
+      // Boton: Actualizar ahora
+      document.getElementById('btnActualizarAhora').addEventListener('click', function() {
+        limpiarCacheYRecargar();
+      });
+
+      // Boton: Despues (ocultar banner)
+      document.getElementById('btnActualizarDespues').addEventListener('click', function() {
+        banner.style.transition = 'transform 0.3s ease, opacity 0.3s ease';
+        banner.style.transform = 'translateY(-100%)';
+        banner.style.opacity = '0';
+        setTimeout(function() {
+          banner.remove();
+          if (dashboard && !dashboard.classList.contains('hidden')) {
+            dashboard.style.paddingTop = '58px';
+          }
+        }, 300);
+        _updateBannerShown = false;
+        // Volver a mostrar en 30 minutos
+        setTimeout(function() {
+          mostrarBannerActualizacion(version);
+        }, 30 * 60 * 1000);
+      });
+
+      // Auto-recargar despues de 60 segundos si el usuario no hace nada
+      // (solo si no hay modal abierto para no interrumpir)
+      setTimeout(function() {
+        if (document.getElementById('updateBanner')) {
+          var modalAbierto = document.querySelector('.modal.active');
+          if (!modalAbierto) {
+            limpiarCacheYRecargar();
+          }
+        }
+      }, 60000);
+    }
+
+    // Limpiar cache y recargar la pagina
+    function limpiarCacheYRecargar() {
+      mostrarLoading('Actualizando a la nueva version...');
+
+      // Limpiar todo el cache del navegador
+      if ('caches' in window) {
+        caches.keys().then(function(names) {
+          return Promise.all(names.map(function(name) {
+            return caches.delete(name);
+          }));
+        }).then(function() {
+          // Desregistrar SW viejos y recargar
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(function(registrations) {
+              return Promise.all(registrations.map(function(reg) {
+                return reg.unregister();
+              }));
+            }).then(function() {
+              sessionStorage.setItem(SW_RELOAD_FLAG, '1');
+              setTimeout(function() {
+                window.location.reload();
+              }, 800);
+            });
+          } else {
+            sessionStorage.setItem(SW_RELOAD_FLAG, '1');
+            setTimeout(function() {
+              window.location.reload();
+            }, 800);
+          }
+        });
+      } else {
+        sessionStorage.setItem(SW_RELOAD_FLAG, '1');
+        window.location.reload();
+      }
+    }
+
+    // Forzar recarga (usada por controllerchange)
+    function forzarRecarga() {
+      if (sessionStorage.getItem(SW_RELOAD_FLAG)) {
+        sessionStorage.removeItem(SW_RELOAD_FLAG);
+        // Limpiar cache antes de recargar
+        if ('caches' in window) {
+          caches.keys().then(function(names) {
+            return Promise.all(names.map(function(name) { return caches.delete(name); }));
+          }).then(function() {
+            window.location.reload();
+          });
+        } else {
+          window.location.reload();
+        }
+      } else {
+        sessionStorage.setItem(SW_RELOAD_FLAG, '1');
+        window.location.reload();
+      }
+    }
+
+    // Verificacion periodica de actualizaciones cada 10 minutos
+    function configurarVerificacionPeriodica() {
+      setInterval(function() {
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          // Preguntar al SW si hay nueva version
+          navigator.serviceWorker.controller.postMessage({ type: 'GET_VERSION' });
+        }
+      }, 10 * 60 * 1000);
+
+      // Tambien verificar cuando la pagina vuelve a estar visible
+      document.addEventListener('visibilitychange', function() {
+        if (!document.hidden) {
+          // La pagina volvio a estar visible, verificar version
+          if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistration().then(function(reg) {
+              if (reg) {
+                reg.update().catch(function() {});
+              }
+            });
+          }
+          verificarYCompararVersion();
+        }
+      });
+
+      // Verificar al volver de offline
+      window.addEventListener('online', function() {
+        if ('serviceWorker' in navigator) {
+          navigator.serviceWorker.getRegistration().then(function(reg) {
+            if (reg) reg.update().catch(function() {});
+          });
+        }
+        verificarYCompararVersion();
       });
     }
 
